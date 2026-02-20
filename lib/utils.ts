@@ -1,0 +1,48 @@
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+export function formatCurrency(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value / 100)
+}
+
+export function getYouTubeEmbedUrl(url: string | null | undefined) {
+  if (!url) return null
+
+  // Support various YouTube URL formats
+  // https://www.youtube.com/watch?v=dQw4w9WgXcQ
+  // https://youtu.be/dQw4w9WgXcQ
+  // https://www.youtube.com/shorts/dQw4w9WgXcQ
+  // https://www.youtube.com/embed/dQw4w9WgXcQ
+
+  let videoId = ''
+
+  try {
+    const urlObj = new URL(url)
+    if (urlObj.hostname === 'youtu.be') {
+      videoId = urlObj.pathname.slice(1)
+    } else if (urlObj.hostname.includes('youtube.com')) {
+      if (urlObj.pathname.includes('/shorts/')) {
+        videoId = urlObj.pathname.split('/shorts/')[1]
+      } else if (urlObj.pathname.includes('/embed/')) {
+        videoId = urlObj.pathname.split('/embed/')[1]
+      } else {
+        videoId = urlObj.searchParams.get('v') || ''
+      }
+    }
+  } catch (e) {
+    // If URL is invalid, try manual regex fallback
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/|.*embed\/|.*shorts\/))([^?&"'>]+)/)
+    if (match) videoId = match[1]
+  }
+
+  if (!videoId) return null
+
+  return `https://www.youtube.com/embed/${videoId}`
+}
