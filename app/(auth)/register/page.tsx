@@ -117,13 +117,19 @@ export default function RegisterPage() {
                 return false
             }
 
-            if (!validatePassword(formData.password)) {
+            if (!validatePassword(formData.password).isValid) {
                 alert("A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, um número e um caractere especial.")
                 return false
             }
 
-            if (selectedRole === 'READER' && !formData.social_name) return false
-            if (selectedRole === 'CLIENT' && (!formData.cpf || !formData.cellphone)) return false
+            if (selectedRole === 'READER' && !formData.social_name) {
+                alert("Por favor, preencha o seu Nome Místico.")
+                return false
+            }
+            if (selectedRole === 'CLIENT' && (!formData.cpf || !formData.cellphone)) {
+                alert("Por favor, preencha o seu CPF e Celular.")
+                return false
+            }
         }
         if (currentStep === 3) { // Reader Personal
             if (!formData.cpf || !formData.birth_date || !formData.cellphone) return false
@@ -500,7 +506,7 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="flex items-center space-x-2 pt-4">
-                            <input type="checkbox" id="terms" name="ethics_accepted" required className="rounded border-gray-300 text-primary focus:ring-primary" />
+                            <input type="checkbox" id="terms" name="ethics_accepted" required={selectedRole === 'READER'} className="rounded border-gray-300 text-primary focus:ring-primary" />
                             <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">Concordo com os Termos de Uso e Código de Ética.</Label>
                         </div>
 
