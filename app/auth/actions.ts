@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 // We use different clients: one for standard context (cookies) and potentially direct use for admin
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createClientJs } from '@supabase/supabase-js'
+import { validateCPF } from '@/lib/utils'
 
 export async function login(prevState: any, formData: FormData) {
     const supabase = await createClient()
@@ -66,6 +67,10 @@ export async function signup(prevState: any, formData: FormData) {
     const bio = formData.get('bio') as string
     const specialties = formData.get('specialties') ? JSON.parse(formData.get('specialties') as string) : []
     const ethicsAccepted = formData.get('ethics_accepted') === 'on'
+
+    if (cpf && !validateCPF(cpf)) {
+        return { error: 'O CPF informado é inválido.' }
+    }
 
     const { error, data: authData } = await supabase.auth.signUp({
         email,

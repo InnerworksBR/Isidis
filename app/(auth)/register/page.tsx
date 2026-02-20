@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { signup } from '@/app/auth/actions'
 import Link from 'next/link'
 import { Sparkles, Eye, Loader2, MapPin, CreditCard, Upload, Check, X, AlertCircle } from 'lucide-react'
+import { validateCPF } from '@/lib/utils'
 
 // Specialties List
 const PREDEFINED_SPECIALTIES = [
@@ -49,6 +50,8 @@ export default function RegisterPage() {
         has_doc_back: false,
         has_doc_selfie: false
     })
+
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -130,10 +133,37 @@ export default function RegisterPage() {
                 alert("Por favor, preencha o seu CPF e Celular.")
                 return false
             }
+
+            if (formData.cpf && !validateCPF(formData.cpf)) {
+                setErrors(prev => ({ ...prev, cpf: "O CPF informado é inválido." }))
+                return false
+            } else {
+                setErrors(prev => {
+                    const next = { ...prev }
+                    delete next.cpf
+                    return next
+                })
+            }
         }
         if (currentStep === 3) { // Reader Personal
-            if (!formData.cpf || !formData.birth_date || !formData.cellphone) return false
-            if (!formData.address_zip_code || !formData.address_street || !formData.address_number) return false
+            if (!formData.cpf || !formData.birth_date || !formData.cellphone) {
+                alert("Preencha todos os campos obrigatórios.")
+                return false
+            }
+            if (formData.cpf && !validateCPF(formData.cpf)) {
+                setErrors(prev => ({ ...prev, cpf: "O CPF informado é inválido." }))
+                return false
+            } else {
+                setErrors(prev => {
+                    const next = { ...prev }
+                    delete next.cpf
+                    return next
+                })
+            }
+            if (!formData.address_zip_code || !formData.address_street || !formData.address_number) {
+                alert("Preencha o seu endereço completo.")
+                return false
+            }
         }
         if (currentStep === 4) { // Reader Docs
             if (!formData.has_doc_front || !formData.has_doc_back || !formData.has_doc_selfie) return false
@@ -322,11 +352,27 @@ export default function RegisterPage() {
 
                         {selectedRole === 'CLIENT' && (
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                                <div className="space-y-1">
                                     <Label>CPF</Label>
-                                    <Input name="cpf_client" required={selectedRole === 'CLIENT'} value={formData.cpf} onChange={(e) => setFormData(prev => ({ ...prev, cpf: formatCpf(e.target.value) }))} placeholder="000.000.000-00" />
+                                    <Input
+                                        name="cpf_client"
+                                        required={selectedRole === 'CLIENT'}
+                                        value={formData.cpf}
+                                        onChange={(e) => {
+                                            const val = formatCpf(e.target.value)
+                                            setFormData(prev => ({ ...prev, cpf: val }))
+                                            if (errors.cpf) setErrors(prev => {
+                                                const next = { ...prev }
+                                                delete next.cpf
+                                                return next
+                                            })
+                                        }}
+                                        placeholder="000.000.000-00"
+                                        className={errors.cpf ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                    />
+                                    {errors.cpf && <p className="text-xs text-red-500 animate-fade-in">{errors.cpf}</p>}
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-1">
                                     <Label>Celular</Label>
                                     <Input name="cellphone_client" required={selectedRole === 'CLIENT'} value={formData.cellphone} onChange={(e) => setFormData(prev => ({ ...prev, cellphone: formatPhone(e.target.value) }))} placeholder="(11) 99999-9999" />
                                 </div>
@@ -350,16 +396,26 @@ export default function RegisterPage() {
                         <h2 className="text-2xl font-bold mb-6">Dados Pessoais</h2>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label>CPF</Label>
-                                {/* Note: We reuse 'cpf' state but rendering a new input if we wanted. But here we just show it if Reader. Warning: ID collision if we render both? No, different steps. */}
-                                {/* Actually, to avoid ID conflicts and Form data issues, we should reuse the NAME if possible, or use different names and coalesce in backend. */}
-                                {/* But here, Step 2 is hidden, Step 3 is visible. Both have name='cpf' if we are not careful? */}
-                                {/* In Step 2 Client, I named it 'cpf_client'. Here 'cpf'. Backend needs to check both? or just 'cpf' */}
-                                {/* Let's use 'cpf' for Reader here. */}
-                                <Input name="cpf" required={selectedRole === 'READER'} value={formData.cpf} onChange={(e) => setFormData(prev => ({ ...prev, cpf: formatCpf(e.target.value) }))} />
+                                <Input
+                                    name="cpf"
+                                    required={selectedRole === 'READER'}
+                                    value={formData.cpf}
+                                    onChange={(e) => {
+                                        const val = formatCpf(e.target.value)
+                                        setFormData(prev => ({ ...prev, cpf: val }))
+                                        if (errors.cpf) setErrors(prev => {
+                                            const next = { ...prev }
+                                            delete next.cpf
+                                            return next
+                                        })
+                                    }}
+                                    className={errors.cpf ? "border-red-500 focus-visible:ring-red-500" : ""}
+                                />
+                                {errors.cpf && <p className="text-xs text-red-500 animate-fade-in">{errors.cpf}</p>}
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label>Data de Nascimento</Label>
                                 <Input type="date" name="birth_date" required={selectedRole === 'READER'} value={formData.birth_date} onChange={handleInputChange} />
                             </div>
