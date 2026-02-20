@@ -35,9 +35,9 @@ export async function submitOnboardingStep1(prevState: any, formData: FormData) 
         .from('profiles')
         .update({
             birth_date: birthDate,
-            tax_id: cpf, // Using tax_id for CPF
+            tax_id: cpf ? cpf.replace(/\D/g, "") : null, // Store clean CPF
             company_name: companyName,
-            cnpj: cnpj,
+            cnpj: cnpj ? cnpj.replace(/\D/g, "") : null, // Store clean CNPJ
             cbo: cbo,
             address_street: addressStreet,
             address_number: addressNumber,
@@ -45,7 +45,7 @@ export async function submitOnboardingStep1(prevState: any, formData: FormData) 
             address_neighborhood: addressNeighborhood,
             address_city: addressCity,
             address_state: addressState,
-            address_zip_code: addressZipCode,
+            address_zip_code: addressZipCode ? addressZipCode.replace(/\D/g, "") : null,
             bank_code: bankCode,
             agency: agency,
             account_number: accountNumber,

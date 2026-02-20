@@ -13,6 +13,47 @@ import { toast } from 'sonner'
 export default function OnboardingPage() {
     const [step, setStep] = useState(1)
     const [isLoading, setIsLoading] = useState(false)
+    const [isLoadingCep, setIsLoadingCep] = useState(false)
+
+    // Masks
+    const formatCpf = (value: string) => {
+        const digits = value.replace(/\D/g, '').slice(0, 11)
+        if (digits.length <= 3) return digits
+        if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+        if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+        return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`
+    }
+    const formatPhone = (v: string) => {
+        const d = v.replace(/\D/g, '').slice(0, 11)
+        if (d.length <= 2) return d.length ? `(${d}` : ''
+        if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+        return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+    }
+
+    const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+        const cep = e.target.value.replace(/\D/g, '')
+        if (cep.length !== 8) return
+
+        setIsLoadingCep(true)
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            const data = await response.json()
+
+            if (!data.erro) {
+                setFormData(prev => ({
+                    ...prev,
+                    address_street: data.logradouro,
+                    address_neighborhood: data.bairro,
+                    address_city: data.localidade,
+                    address_state: data.uf
+                }))
+            }
+        } catch (error) {
+            console.error('Erro ao buscar CEP:', error)
+        } finally {
+            setIsLoadingCep(false)
+        }
+    }
 
     // Form State (simplified for MVP)
     const [formData, setFormData] = useState({
@@ -161,10 +202,16 @@ export default function OnboardingPage() {
 
         formData.specialties.forEach(s => form.append('specialties', s))
 
-        const result = await submitOnboardingStep4(null, form)
-        setIsLoading(false)
-        if (result?.error) {
-            toast.error(result.error)
+        try {
+            const result = await submitOnboardingStep4(null, form)
+            if (result?.error) {
+                toast.error(result.error)
+            }
+        } catch (err) {
+            // Server actions that redirect throw an error on the client
+            // We can ignore it as Next.js will handle the redirect
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -222,7 +269,13 @@ export default function OnboardingPage() {
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label>CPF *</Label>
-                                    <Input name="cpf" value={formData.cpf} onChange={handleInputChange} required placeholder="000.000.000-00" />
+                                    <Input
+                                        name="cpf"
+                                        value={formData.cpf}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, cpf: formatCpf(e.target.value) }))}
+                                        required
+                                        placeholder="000.000.000-00"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Data de Nascimento *</Label>
@@ -250,7 +303,14 @@ export default function OnboardingPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2 md:col-span-1">
                                         <Label>CEP *</Label>
-                                        <Input name="address_zip_code" value={formData.address_zip_code} onChange={handleInputChange} required />
+                                        <Input
+                                            name="address_zip_code"
+                                            value={formData.address_zip_code}
+                                            onChange={handleInputChange}
+                                            onBlur={handleCepBlur}
+                                            required
+                                            disabled={isLoadingCep}
+                                        />
                                     </div>
                                     <div className="col-span-2 md:col-span-1">
                                         <Label>Cidade *</Label>

@@ -160,8 +160,22 @@ export default function RegisterPage() {
                     return next
                 })
             }
-            if (!formData.address_zip_code || !formData.address_street || !formData.address_number) {
+            if (!formData.address_zip_code || !formData.address_street || !formData.address_number || !formData.address_neighborhood || !formData.address_city || !formData.address_state) {
                 alert("Preencha o seu endereço completo.")
+                return false
+            }
+        }
+        if (currentStep === 5) { // Reader Profile & Bank
+            if (!formData.bio || !formData.bank_code || !formData.agency || !formData.account_number) {
+                alert("Por favor, preencha todos os campos obrigatórios do perfil e dados bancários.")
+                return false
+            }
+            if (specialties.length === 0) {
+                alert("Por favor, selecione pelo menos uma especialidade.")
+                return false
+            }
+            if (!formData.ethics_accepted) {
+                alert("Você deve aceitar os Termos de Uso e Código de Ética.")
                 return false
             }
         }
@@ -191,8 +205,8 @@ export default function RegisterPage() {
                 e.preventDefault()
             }
         } else {
-            // Reader: prevent submit on Enter if not on final step
-            if (step !== 5) {
+            // Reader: prevent submit if any step validation fails
+            if (!validateStep(step)) {
                 e.preventDefault()
             }
         }
@@ -282,12 +296,12 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <Label>Nome Completo</Label>
-                            <Input name="full_name" required value={formData.full_name} onChange={handleInputChange} placeholder="Seu nome" />
+                            <Input name="full_name" value={formData.full_name} onChange={handleInputChange} placeholder="Seu nome" />
                         </div>
 
                         <div className="space-y-2">
                             <Label>Email</Label>
-                            <Input type="email" name="email" required value={formData.email} onChange={handleInputChange} placeholder="seu@email.com" />
+                            <Input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="seu@email.com" />
                         </div>
 
                         <div className="space-y-2">
@@ -295,7 +309,6 @@ export default function RegisterPage() {
                             <Input
                                 type="password"
                                 name="password"
-                                required
                                 value={formData.password}
                                 onChange={handleInputChange}
                                 placeholder="Crie uma senha segura"
@@ -329,7 +342,6 @@ export default function RegisterPage() {
                             <Input
                                 type="password"
                                 name="confirm_password"
-                                required
                                 value={formData.confirm_password}
                                 onChange={handleInputChange}
                                 placeholder="Confirme sua senha"
@@ -346,7 +358,7 @@ export default function RegisterPage() {
                         {selectedRole === 'READER' && (
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-purple-500" /> Nome Místico</Label>
-                                <Input name="social_name" required={selectedRole === 'READER'} value={formData.social_name} onChange={handleInputChange} placeholder="Ex: Taróloga Luna" />
+                                <Input name="social_name" value={formData.social_name} onChange={handleInputChange} placeholder="Ex: Taróloga Luna" />
                             </div>
                         )}
 
@@ -356,7 +368,6 @@ export default function RegisterPage() {
                                     <Label>CPF</Label>
                                     <Input
                                         name="cpf_client"
-                                        required={selectedRole === 'CLIENT'}
                                         value={formData.cpf}
                                         onChange={(e) => {
                                             const val = formatCpf(e.target.value)
@@ -374,7 +385,7 @@ export default function RegisterPage() {
                                 </div>
                                 <div className="space-y-1">
                                     <Label>Celular</Label>
-                                    <Input name="cellphone_client" required={selectedRole === 'CLIENT'} value={formData.cellphone} onChange={(e) => setFormData(prev => ({ ...prev, cellphone: formatPhone(e.target.value) }))} placeholder="(11) 99999-9999" />
+                                    <Input name="cellphone_client" value={formData.cellphone} onChange={(e) => setFormData(prev => ({ ...prev, cellphone: formatPhone(e.target.value) }))} placeholder="(11) 99999-9999" />
                                 </div>
                             </div>
                         )}
@@ -400,7 +411,6 @@ export default function RegisterPage() {
                                 <Label>CPF</Label>
                                 <Input
                                     name="cpf"
-                                    required={selectedRole === 'READER'}
                                     value={formData.cpf}
                                     onChange={(e) => {
                                         const val = formatCpf(e.target.value)
@@ -417,13 +427,13 @@ export default function RegisterPage() {
                             </div>
                             <div className="space-y-1">
                                 <Label>Data de Nascimento</Label>
-                                <Input type="date" name="birth_date" required={selectedRole === 'READER'} value={formData.birth_date} onChange={handleInputChange} />
+                                <Input type="date" name="birth_date" value={formData.birth_date} onChange={handleInputChange} />
                             </div>
                         </div>
 
                         <div className="space-y-2">
                             <Label>Celular (WhatsApp)</Label>
-                            <Input name="cellphone" required={selectedRole === 'READER'} value={formData.cellphone} onChange={(e) => setFormData(prev => ({ ...prev, cellphone: formatPhone(e.target.value) }))} />
+                            <Input name="cellphone" value={formData.cellphone} onChange={(e) => setFormData(prev => ({ ...prev, cellphone: formatPhone(e.target.value) }))} />
                         </div>
 
                         <div className="border-t pt-4 mt-4">
@@ -431,27 +441,33 @@ export default function RegisterPage() {
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="col-span-1 space-y-2">
                                     <Label>CEP</Label>
-                                    <Input name="address_zip_code" required={selectedRole === 'READER'} value={formData.address_zip_code} onChange={handleInputChange} />
+                                    <Input
+                                        name="address_zip_code"
+                                        value={formData.address_zip_code}
+                                        onChange={handleInputChange}
+                                        onBlur={handleCepBlur}
+                                        placeholder="00000-000"
+                                    />
                                 </div>
                                 <div className="col-span-2 space-y-2">
                                     <Label>Rua</Label>
-                                    <Input name="address_street" required={selectedRole === 'READER'} value={formData.address_street} onChange={handleInputChange} />
+                                    <Input name="address_street" value={formData.address_street} onChange={handleInputChange} />
                                 </div>
                                 <div className="col-span-1 space-y-2">
                                     <Label>Número</Label>
-                                    <Input name="address_number" required={selectedRole === 'READER'} value={formData.address_number} onChange={handleInputChange} />
+                                    <Input name="address_number" value={formData.address_number} onChange={handleInputChange} />
                                 </div>
                                 <div className="col-span-2 space-y-2">
                                     <Label>Bairro</Label>
-                                    <Input name="address_neighborhood" required={selectedRole === 'READER'} value={formData.address_neighborhood} onChange={handleInputChange} />
+                                    <Input name="address_neighborhood" value={formData.address_neighborhood} onChange={handleInputChange} />
                                 </div>
                                 <div className="col-span-2 space-y-2">
                                     <Label>Cidade</Label>
-                                    <Input name="address_city" required={selectedRole === 'READER'} value={formData.address_city} onChange={handleInputChange} />
+                                    <Input name="address_city" value={formData.address_city} onChange={handleInputChange} />
                                 </div>
                                 <div className="col-span-1 space-y-2">
                                     <Label>Estado</Label>
-                                    <Input name="address_state" required={selectedRole === 'READER'} value={formData.address_state} onChange={handleInputChange} maxLength={2} />
+                                    <Input name="address_state" value={formData.address_state} onChange={handleInputChange} maxLength={2} placeholder="UF" />
                                 </div>
                             </div>
                         </div>
@@ -517,7 +533,7 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <Label>Biografia</Label>
-                            <Textarea name="bio" required={selectedRole === 'READER'} value={formData.bio} onChange={handleInputChange} placeholder="Conte um pouco sobre sua experiência e estilo de leitura..." className="h-32" />
+                            <Textarea name="bio" value={formData.bio} onChange={handleInputChange} placeholder="Conte um pouco sobre sua experiência e estilo de leitura..." className="h-32" />
                         </div>
 
                         <div className="space-y-2">
@@ -541,7 +557,7 @@ export default function RegisterPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Código Banco</Label>
-                                    <Input name="bank_code" required={selectedRole === 'READER'} value={formData.bank_code} onChange={handleInputChange} placeholder="Ex: 001" />
+                                    <Input name="bank_code" value={formData.bank_code} onChange={handleInputChange} placeholder="Ex: 001" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Tipo Conta</Label>
@@ -552,18 +568,28 @@ export default function RegisterPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Agência</Label>
-                                    <Input name="agency" required={selectedRole === 'READER'} value={formData.agency} onChange={handleInputChange} />
+                                    <Input name="agency" value={formData.agency} onChange={handleInputChange} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Conta</Label>
-                                    <Input name="account_number" required={selectedRole === 'READER'} value={formData.account_number} onChange={handleInputChange} />
+                                    <Input name="account_number" value={formData.account_number} onChange={handleInputChange} />
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex items-center space-x-2 pt-4">
-                            <input type="checkbox" id="terms" name="ethics_accepted" required={selectedRole === 'READER'} className="rounded border-gray-300 text-primary focus:ring-primary" />
-                            <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">Concordo com os Termos de Uso e Código de Ética.</Label>
+                            <input
+                                type="checkbox"
+                                id="terms_check"
+                                name="ethics_accepted"
+                                checked={!!formData.ethics_accepted}
+                                onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    setFormData(prev => ({ ...prev, ethics_accepted: isChecked }));
+                                }}
+                                className="rounded border-gray-300 text-primary focus:ring-primary"
+                            />
+                            <Label htmlFor="terms_check" className="text-sm font-normal text-muted-foreground">Concordo com os Termos de Uso e Código de Ética.</Label>
                         </div>
 
                         <div className="pt-4 flex gap-3">
