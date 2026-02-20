@@ -566,12 +566,6 @@ export default function RegisterPage() {
                             <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">Concordo com os Termos de Uso e Código de Ética.</Label>
                         </div>
 
-                        {state?.error && (
-                            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm mt-4">
-                                {state.error}
-                            </div>
-                        )}
-
                         <div className="pt-4 flex gap-3">
                             <Button type="button" variant="outline" onClick={prevStep}>Voltar</Button>
                             <Button type="submit" className="flex-1" disabled={isPending}>
@@ -579,6 +573,12 @@ export default function RegisterPage() {
                             </Button>
                         </div>
                     </div>
+
+                    {state?.error && (
+                        <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm mt-4 animate-shake">
+                            {state.error}
+                        </div>
+                    )}
                 </form>
             </div>
         </div>

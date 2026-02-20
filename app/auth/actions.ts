@@ -72,6 +72,36 @@ export async function signup(prevState: any, formData: FormData) {
         return { error: 'O CPF informado é inválido.' }
     }
 
+    // Initialize Admin Client to check for existing email
+    // (This is necessary because Supabase signUp might return success even if email exists to prevent enumeration)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!serviceRoleKey) {
+        console.error('Missing SUPABASE_SERVICE_ROLE_KEY')
+        return { error: 'Erro interno de configuração.' }
+    }
+
+    const supabaseAdmin = createClientJs(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
+        }
+    )
+
+    // Check if email already exists
+    const { data: { users: existingUsers }, error: listError } = await (supabaseAdmin.auth.admin as any).listUsers()
+    if (listError) {
+        console.error('Error listing users:', listError)
+    } else {
+        const emailExists = existingUsers?.some((u: any) => u.email?.toLowerCase() === email.toLowerCase())
+        if (emailExists) {
+            return { error: 'Este email já está cadastrado.' }
+        }
+    }
+
     const { error, data: authData } = await supabase.auth.signUp({
         email,
         password,
@@ -94,24 +124,6 @@ export async function signup(prevState: any, formData: FormData) {
 
     if (authData.user) {
         const userId = authData.user.id
-
-        // Initialize Admin Client for operations requiring elevated privileges (bypassing RLS)
-        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-        if (!serviceRoleKey) {
-            console.error('Missing SUPABASE_SERVICE_ROLE_KEY')
-            return { error: 'Erro interno de configuração: Chave de API ausente.' }
-        }
-
-        const supabaseAdmin = createClientJs(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            serviceRoleKey,
-            {
-                auth: {
-                    autoRefreshToken: false,
-                    persistSession: false
-                }
-            }
-        ) as any
 
         // Initialize update data
         let updateData: any = {
