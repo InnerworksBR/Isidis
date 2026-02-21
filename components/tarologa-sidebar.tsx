@@ -42,7 +42,7 @@ export function TarologaSidebar({ profile, userId }: TarologaSidebarProps) {
             {/* Logo */}
             <div className="px-5 py-5 border-b border-white/5">
                 <Link href="/" className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
+                    <img src="/logo.png" alt="Isidis Logo" className="w-8 h-8 object-contain" />
                     <span className="font-bold text-primary">Isidis</span>
                 </Link>
             </div>

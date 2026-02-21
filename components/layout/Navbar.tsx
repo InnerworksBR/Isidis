@@ -24,10 +24,8 @@ export async function Navbar() {
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="text-lg font-bold text-gradient-primary">Isidis</span>
+                    <img src="/logo.png" alt="Isidis Logo" className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110" />
+                    <span className="text-xl font-bold text-gradient-primary tracking-tight">Isidis</span>
                 </Link>
 
                 {/* Nav Links */}

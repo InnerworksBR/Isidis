@@ -9,9 +9,7 @@ export function Footer() {
                     {/* Brand */}
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                                <Sparkles className="w-4 h-4 text-primary" />
-                            </div>
+                            <img src="/logo.png" alt="Isidis Logo" className="w-8 h-8 object-contain" />
                             <span className="text-lg font-bold text-gradient-primary">Isidis</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed">
