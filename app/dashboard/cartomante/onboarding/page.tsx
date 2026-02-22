@@ -70,10 +70,8 @@ export default function OnboardingPage() {
         address_neighborhood: '',
         address_city: '',
         address_state: '',
-        bank_code: '',
-        agency: '',
-        account_number: '',
-        account_type: 'CHECKING',
+        pix_key_type: 'CPF/CNPJ',
+        pix_key: '',
 
         // Step 2: Security (URLs after upload)
         document_front_url: '',
@@ -337,36 +335,31 @@ export default function OnboardingPage() {
 
                             <div className="space-y-4 pt-4 border-t">
                                 <h3 className="font-semibold text-lg flex items-center gap-2">
-                                    <Banknote className="w-4 h-4" /> Dados Bancários
+                                    <Banknote className="w-4 h-4" /> Chave Pix para Repasses
                                 </h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <Label>Banco (Código) *</Label>
-                                        <Input name="bank_code" value={formData.bank_code} onChange={handleInputChange} required placeholder="Ex: 001" />
-                                    </div>
-                                    <div>
-                                        <Label>Tipo de Conta</Label>
+                                        <Label>Tipo de Chave *</Label>
                                         <select
-                                            name="account_type"
-                                            value={formData.account_type}
+                                            name="pix_key_type"
+                                            value={formData.pix_key_type}
                                             onChange={handleInputChange}
                                             className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                                            required
                                         >
-                                            <option value="CHECKING">Corrente</option>
-                                            <option value="SAVINGS">Poupança</option>
+                                            <option value="CPF/CNPJ">CPF/CNPJ</option>
+                                            <option value="CELULAR">Celular</option>
+                                            <option value="EMAIL">E-mail</option>
+                                            <option value="ALEATORIA">Chave Aleatória</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <Label>Agência *</Label>
-                                        <Input name="agency" value={formData.agency} onChange={handleInputChange} required />
-                                    </div>
-                                    <div>
-                                        <Label>Conta *</Label>
-                                        <Input name="account_number" value={formData.account_number} onChange={handleInputChange} required />
+                                        <Label>Chave Pix *</Label>
+                                        <Input name="pix_key" value={formData.pix_key} onChange={handleInputChange} required placeholder="Sua chave Pix" />
                                     </div>
                                 </div>
                                 <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                                    ⚠️ A conta deve ter a mesma titularidade do CPF/CNPJ informado (trava de segurança).
+                                    ⚠️ A chave Pix deve ter a mesma titularidade do CPF/CNPJ informado (trava de segurança).
                                 </p>
                             </div>
 

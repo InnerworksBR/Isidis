@@ -41,10 +41,8 @@ export default function RegisterPage() {
         address_neighborhood: '',
         address_city: '',
         address_state: '',
-        bank_code: '',
-        agency: '',
-        account_number: '',
-        account_type: 'CHECKING',
+        pix_key_type: 'CPF/CNPJ',
+        pix_key: '',
         bio: '',
         ethics_accepted: false,
         confirm_password: '',
@@ -169,8 +167,8 @@ export default function RegisterPage() {
             }
         }
         if (currentStep === 5) { // Reader Profile & Bank
-            if (!formData.bio || !formData.bank_code || !formData.agency || !formData.account_number) {
-                alert("Por favor, preencha todos os campos obrigatórios do perfil e dados bancários.")
+            if (!formData.bio || !formData.pix_key_type || !formData.pix_key) {
+                alert("Por favor, preencha todos os campos obrigatórios do perfil e chave Pix.")
                 return false
             }
             if (specialties.length === 0) {
@@ -589,28 +587,25 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="border-t pt-4 mt-4">
-                            <h3 className="font-semibold mb-3 flex items-center gap-2"><CreditCard className="w-4 h-4" /> Dados Bancários</h3>
+                            <h3 className="font-semibold mb-3 flex items-center gap-2"><CreditCard className="w-4 h-4" /> Chave Pix para Repasses</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Código Banco</Label>
-                                    <Input name="bank_code" value={formData.bank_code} onChange={handleInputChange} placeholder="Ex: 001" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Tipo Conta</Label>
-                                    <select name="account_type" className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm" value={formData.account_type} onChange={handleInputChange}>
-                                        <option value="CHECKING">Corrente</option>
-                                        <option value="SAVINGS">Poupança</option>
+                                    <Label>Tipo de Chave</Label>
+                                    <select name="pix_key_type" className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm" value={formData.pix_key_type} onChange={handleInputChange}>
+                                        <option value="CPF/CNPJ">CPF/CNPJ</option>
+                                        <option value="CELULAR">Celular</option>
+                                        <option value="EMAIL">E-mail</option>
+                                        <option value="ALEATORIA">Chave Aleatória</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Agência</Label>
-                                    <Input name="agency" value={formData.agency} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Conta</Label>
-                                    <Input name="account_number" value={formData.account_number} onChange={handleInputChange} />
+                                    <Label>Chave Pix</Label>
+                                    <Input name="pix_key" value={formData.pix_key} onChange={handleInputChange} placeholder="Sua chave Pix" />
                                 </div>
                             </div>
+                            <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded mt-3">
+                                ⚠️ A chave Pix deve pertencer à mesma titularidade do CPF/CNPJ informado (trava de segurança).
+                            </p>
                         </div>
 
                         <div className="flex items-center space-x-2 pt-4">

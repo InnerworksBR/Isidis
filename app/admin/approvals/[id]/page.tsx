@@ -143,12 +143,11 @@ export default async function ApprovalDetailsPage({ params: paramsPromise }: Pag
 
                     <div className="border rounded-xl p-6 bg-card space-y-4">
                         <h3 className="font-semibold flex items-center gap-2">
-                            <CreditCard className="w-4 h-4" /> Dados Bancários
+                            <CreditCard className="w-4 h-4" /> Dados de Pagamento (Pix)
                         </h3>
                         <div className="text-sm space-y-1 text-muted-foreground">
-                            <p>Banco: {reader.bank_code}</p>
-                            <p>Agência: {reader.agency} | Conta: {reader.account_number}</p>
-                            <p>Tipo: {reader.account_type === 'CHECKING' ? 'Corrente' : 'Poupança'}</p>
+                            <p>Tipo de Chave: {reader.pix_key_type || 'Não informado'}</p>
+                            <p>Chave Pix: {reader.pix_key || 'Não informada'}</p>
                         </div>
                     </div>
                 </div>

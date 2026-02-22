@@ -60,10 +60,8 @@ export async function signup(prevState: any, formData: FormData) {
     const addressCity = formData.get('address_city') as string
     const addressState = formData.get('address_state') as string
 
-    const bankCode = formData.get('bank_code') as string
-    const agency = formData.get('agency') as string
-    const accountNumber = formData.get('account_number') as string
-    const accountType = formData.get('account_type') as string
+    const pixKeyType = formData.get('pix_key_type') as string
+    const pixKey = formData.get('pix_key') as string
 
     const bio = formData.get('bio') as string
     const specialties = formData.get('specialties') ? JSON.parse(formData.get('specialties') as string) : []
@@ -183,10 +181,8 @@ export async function signup(prevState: any, formData: FormData) {
                 address_neighborhood: addressNeighborhood || null,
                 address_city: addressCity || null,
                 address_state: addressState || null,
-                bank_code: bankCode || null,
-                agency: agency || null,
-                account_number: accountNumber || null,
-                account_type: accountType || 'CHECKING',
+                pix_key_type: pixKeyType || 'CPF/CNPJ',
+                pix_key: pixKey || null,
                 bio: bio || null,
                 specialties: specialties || [],
                 document_front_url: frontUrl,

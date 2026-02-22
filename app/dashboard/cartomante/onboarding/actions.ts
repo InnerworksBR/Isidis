@@ -26,10 +26,8 @@ export async function submitOnboardingStep1(prevState: any, formData: FormData) 
     const addressState = formData.get('address_state') as string
     const addressZipCode = formData.get('address_zip_code') as string
 
-    const bankCode = formData.get('bank_code') as string
-    const agency = formData.get('agency') as string
-    const accountNumber = formData.get('account_number') as string
-    const accountType = formData.get('account_type') as string
+    const pixKeyType = formData.get('pix_key_type') as string
+    const pixKey = formData.get('pix_key') as string
 
     const { error } = await supabase
         .from('profiles')
@@ -46,10 +44,8 @@ export async function submitOnboardingStep1(prevState: any, formData: FormData) 
             address_city: addressCity,
             address_state: addressState,
             address_zip_code: addressZipCode ? addressZipCode.replace(/\D/g, "") : null,
-            bank_code: bankCode,
-            agency: agency,
-            account_number: accountNumber,
-            account_type: accountType,
+            pix_key_type: pixKeyType || 'CPF/CNPJ',
+            pix_key: pixKey,
         })
         .eq('id', user.id)
 
