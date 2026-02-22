@@ -1,15 +1,16 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { login } from '@/app/auth/actions'
 import Link from 'next/link'
-import { LogIn, Sparkles } from 'lucide-react'
+import { LogIn, Sparkles, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
     const [state, formAction] = useActionState(login, null)
+    const [showPassword, setShowPassword] = useState(false)
 
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12 relative overflow-hidden">
@@ -19,8 +20,8 @@ export default function LoginPage() {
 
             <div className="w-full max-w-md relative z-10 animate-fade-in-up">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4 animate-float">
-                        <Sparkles className="w-8 h-8 text-primary" />
+                    <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-primary/5 border border-primary/10 mb-6 animate-float">
+                        <img src="/logo.png" alt="Isidis Logo" className="w-16 h-16 object-contain" />
                     </div>
                     <h1 className="text-3xl font-bold mb-2">Bem-vindo de volta</h1>
                     <p className="text-muted-foreground">Entre para acessar sua jornada espiritual.</p>
@@ -47,14 +48,23 @@ export default function LoginPage() {
                                     Esqueceu a senha?
                                 </Link>
                             </div>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="Sua senha"
-                                required
-                                className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Sua senha"
+                                    required
+                                    className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         {state?.error && (

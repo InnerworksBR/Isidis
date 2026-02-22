@@ -4,6 +4,7 @@ export interface Profile {
     avatar_url?: string
     email?: string
     role: 'USER' | 'READER' | 'ADMIN'
+    sexo?: 'masculino' | 'feminino' | 'não binário'
     bio?: string
     specialties?: string[]
     verification_status?: 'PENDING' | 'APPROVED' | 'REJECTED'

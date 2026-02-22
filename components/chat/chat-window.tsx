@@ -44,10 +44,11 @@ interface ChatWindowProps {
     orderId?: string
     variant?: 'floating' | 'inline'
     title?: string
+    isCartomante?: boolean
     onBack?: () => void
 }
 
-export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floating', title, onBack }: ChatWindowProps) {
+export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floating', title, isCartomante = false, onBack }: ChatWindowProps) {
     const [isOpen, setIsOpen] = useState(variant === 'inline')
     const [newMessage, setNewMessage] = useState('')
     const [isMinimized, setIsMinimized] = useState(false)
@@ -71,9 +72,9 @@ export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floatin
         }
     )
 
-    // Fetch gigs on mount (if user works as tarologa)
+    // Fetch gigs on mount (if user works as cartomante)
     useEffect(() => {
-        if (isOpen && !isMinimized && availableGigs.length === 0) {
+        if (isOpen && !isMinimized && isCartomante && availableGigs.length === 0) {
             setIsGigsLoading(true)
             getActiveGigs()
                 .then((gigs: Gig[]) => {
@@ -304,7 +305,7 @@ export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floatin
                                                     <img src={msg.gig.image_url} alt={msg.gig.title} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center bg-indigo-900/20">
-                                                        <Sparkles className="w-8 h-8 text-indigo-400" />
+                                                        <img src="/logo.png" alt="" className="w-8 h-8 object-contain opacity-50" />
                                                     </div>
                                                 )}
                                             </div>
@@ -341,72 +342,74 @@ export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floatin
                     {/* Input Area */}
                     <div className="p-3 border-t border-border/50 bg-card/50 shrink-0">
                         {/* Gig Selector */}
-                        {availableGigs.length > 0 && (
+                        {isCartomante && availableGigs.length > 0 && (
                             <div className="flex gap-2 mb-2 overflow-x-auto pb-1 scrollbar-hide">
                             </div>
                         )}
 
                         <div className="flex gap-2 items-end">
-                            <DropdownMenu open={isGigMenuOpen} onOpenChange={setIsGigMenuOpen}>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        className="shrink-0 h-10 px-3 flex gap-2 items-center text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
-                                        disabled={isGigsLoading}
-                                    >
-                                        {isGigsLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                                        <span className="hidden sm:inline text-xs font-bold">Oferta</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-72 p-0 bg-card border-border/50 shadow-xl" align="start" side="top">
-                                    <div className="p-3 border-b border-border/50">
-                                        <h3 className="text-sm font-bold text-foreground">Recomendar Serviço</h3>
-                                        <p className="text-[10px] text-muted-foreground mt-1 text-balance">
-                                            Escolha um de seus serviços para oferecer ao consulente.
-                                        </p>
-                                    </div>
-                                    <ScrollArea className="h-72">
-                                        <div className="p-1 space-y-1">
-                                            {availableGigs.length > 0 ? (
-                                                availableGigs.map(gig => (
-                                                    <DropdownMenuItem
-                                                        key={gig.id}
-                                                        onClick={() => handleSend(`Confira este serviço: ${gig.title}`, gig.id)}
-                                                        className="w-full text-left p-2 rounded-lg hover:bg-accent/50 transition-colors flex gap-2 items-start cursor-pointer"
-                                                    >
-                                                        <div className="w-12 h-12 rounded-md bg-muted shrink-0 overflow-hidden border border-border/50">
-                                                            {gig.image_url ? (
-                                                                <img src={gig.image_url} alt="" className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center bg-indigo-900/10">
-                                                                    <Sparkles className="w-4 h-4 text-indigo-400/50" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-medium text-foreground truncate">{gig.title}</p>
-                                                            <div className="flex items-center gap-2 mt-0.5">
-                                                                <span className="text-[10px] text-green-400 font-bold bg-green-400/10 px-1.5 py-0.5 rounded">
-                                                                    R$ {(gig.price / 100).toFixed(2)}
-                                                                </span>
-                                                                {gig.status === 'PENDING' && (
-                                                                    <span className="text-[8px] text-yellow-500 font-bold px-1 py-0.5 bg-yellow-500/10 rounded uppercase">Pendente</span>
+                            {isCartomante && (
+                                <DropdownMenu open={isGigMenuOpen} onOpenChange={setIsGigMenuOpen}>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="shrink-0 h-10 px-3 flex gap-2 items-center text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/10"
+                                            disabled={isGigsLoading}
+                                        >
+                                            {isGigsLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                                            <span className="hidden sm:inline text-xs font-bold">Oferta</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-72 p-0 bg-card border-border/50 shadow-xl" align="start" side="top">
+                                        <div className="p-3 border-b border-border/50">
+                                            <h3 className="text-sm font-bold text-foreground">Recomendar Serviço</h3>
+                                            <p className="text-[10px] text-muted-foreground mt-1 text-balance">
+                                                Escolha um de seus serviços para oferecer ao consulente.
+                                            </p>
+                                        </div>
+                                        <ScrollArea className="h-72">
+                                            <div className="p-1 space-y-1">
+                                                {availableGigs.length > 0 ? (
+                                                    availableGigs.map(gig => (
+                                                        <DropdownMenuItem
+                                                            key={gig.id}
+                                                            onClick={() => handleSend(`Confira este serviço: ${gig.title}`, gig.id)}
+                                                            className="w-full text-left p-2 rounded-lg hover:bg-accent/50 transition-colors flex gap-2 items-start cursor-pointer"
+                                                        >
+                                                            <div className="w-12 h-12 rounded-md bg-muted shrink-0 overflow-hidden border border-border/50">
+                                                                {gig.image_url ? (
+                                                                    <img src={gig.image_url} alt="" className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    <div className="w-full h-full flex items-center justify-center bg-indigo-900/10">
+                                                                        <img src="/logo.png" alt="" className="w-4 h-4 object-contain opacity-30" />
+                                                                    </div>
                                                                 )}
                                                             </div>
-                                                        </div>
-                                                    </DropdownMenuItem>
-                                                ))
-                                            ) : (
-                                                <div className="p-4 text-center">
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {isGigsLoading ? "Carregando serviços..." : "Nenhum serviço disponível para oferecer."}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </ScrollArea>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-medium text-foreground truncate">{gig.title}</p>
+                                                                <div className="flex items-center gap-2 mt-0.5">
+                                                                    <span className="text-[10px] text-green-400 font-bold bg-green-400/10 px-1.5 py-0.5 rounded">
+                                                                        R$ {(gig.price / 100).toFixed(2)}
+                                                                    </span>
+                                                                    {gig.status === 'PENDING' && (
+                                                                        <span className="text-[8px] text-yellow-500 font-bold px-1 py-0.5 bg-yellow-500/10 rounded uppercase">Pendente</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </DropdownMenuItem>
+                                                    ))
+                                                ) : (
+                                                    <div className="p-4 text-center">
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {isGigsLoading ? "Carregando serviços..." : "Nenhum serviço disponível para oferecer."}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </ScrollArea>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
 
                             <form
                                 onSubmit={(e) => {

@@ -72,7 +72,7 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'DB update failed' }, { status: 500 })
             }
 
-            // Criar wallet para a taróloga se não existir
+            // Criar wallet para a cartomante se não existir
             const { data: existingWallet } = await supabaseAdmin
                 .from('wallets')
                 .select('id')
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
                 walletId = newWallet?.id
             }
 
-            // Criar transação de crédito para a taróloga
+            // Criar transação de crédito para a cartomante
             if (walletId) {
                 await supabaseAdmin
                     .from('transactions')

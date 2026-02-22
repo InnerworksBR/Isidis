@@ -44,7 +44,13 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
         }
 
         console.log('PresenceProvider: Subscribing to global_presence')
-        const channel = supabase.channel('global_presence')
+        const channel = supabase.channel('global_presence', {
+            config: {
+                presence: {
+                    key: user ? user.id : undefined,
+                },
+            },
+        })
 
         channel
             .on('presence', { event: 'sync' }, () => {
@@ -61,26 +67,6 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
                 console.log('PresenceProvider Online Users:', Array.from(onlineIds))
                 setOnlineUsers(onlineIds)
             })
-            .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-                console.log('PresenceProvider Join:', newPresences)
-                setOnlineUsers(prev => {
-                    const next = new Set(prev)
-                    newPresences.forEach((p: any) => {
-                        if (p.user_id) next.add(p.user_id)
-                    })
-                    return next
-                })
-            })
-            .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-                console.log('PresenceProvider Leave:', leftPresences)
-                setOnlineUsers(prev => {
-                    const next = new Set(prev)
-                    leftPresences.forEach((p: any) => {
-                        if (p.user_id) next.delete(p.user_id)
-                    })
-                    return next
-                })
-            })
             .subscribe(async (status) => {
                 console.log('PresenceProvider Status:', status)
                 if (status === 'SUBSCRIBED') {
@@ -95,8 +81,23 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
                 }
             })
 
+        const handleUnload = () => {
+            if (user) {
+                // Attempt to explicitly untrack before the tab closes completely
+                channel.untrack().catch(() => { })
+            }
+            supabase.removeChannel(channel)
+        }
+
+        window.addEventListener('beforeunload', handleUnload)
+
         return () => {
             console.log('PresenceProvider: Cleaning up/Unsubscribing')
+            window.removeEventListener('beforeunload', handleUnload)
+
+            if (user) {
+                channel.untrack().catch(() => { })
+            }
             supabase.removeChannel(channel)
         }
     }, [supabase, user]) // Re-run if user changes to track/untrack

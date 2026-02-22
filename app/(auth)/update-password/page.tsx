@@ -1,14 +1,16 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { resetPassword } from '@/app/auth/actions'
-import { Lock, Sparkles } from 'lucide-react'
+import { Lock, Sparkles, Eye, EyeOff } from 'lucide-react'
 
 export default function UpdatePasswordPage() {
     const [state, formAction] = useActionState(resetPassword, null)
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     return (
         <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12 relative overflow-hidden">
@@ -29,26 +31,44 @@ export default function UpdatePasswordPage() {
                     <form action={formAction} className="space-y-5">
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-sm font-medium">Nova Senha</Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                placeholder="******"
-                                required
-                                className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="******"
+                                    required
+                                    className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="confirm_password" className="text-sm font-medium">Confirmar Nova Senha</Label>
-                            <Input
-                                id="confirm_password"
-                                name="confirm_password"
-                                type="password"
-                                placeholder="******"
-                                required
-                                className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="******"
+                                    required
+                                    className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
 
                         {state?.error && (

@@ -43,7 +43,7 @@ export async function sendMessage({ receiverId, content, orderId, gigId, id }: {
             'MESSAGE',
             `Nova mensagem de ${senderName}`,
             content.length > 50 ? content.substring(0, 50) + '...' : content,
-            orderId ? `/dashboard/leitura/${orderId}` : `/dashboard/tarologa/mensagens`
+            orderId ? `/dashboard/leitura/${orderId}` : `/dashboard/cartomante/mensagens`
         )
     } catch (err) {
         console.error('Failed to create notification', err)

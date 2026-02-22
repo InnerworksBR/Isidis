@@ -182,10 +182,10 @@ export function DashboardClient({
                                 {activeFilter === 'all' ? 'Nenhuma leitura ainda' : 'Nenhuma leitura nesta categoria'}
                             </h2>
                             <p className="text-slate-500 mb-6 max-w-md">
-                                Explore nossas tarólogas e agende sua primeira leitura para começar sua jornada espiritual.
+                                Explore nossas cartomantes e agende sua primeira leitura para começar sua jornada espiritual.
                             </p>
                             <Button asChild className="bg-indigo-500 hover:bg-indigo-600">
-                                <Link href="/tarologas">Explorar Tarólogas</Link>
+                                <Link href="/cartomantes">Explorar Cartomantes</Link>
                             </Button>
                         </div>
                     ) : (
@@ -322,7 +322,7 @@ export function DashboardClient({
 
                                                     {isPending && (
                                                         <Button asChild size="sm" className="bg-yellow-500 hover:bg-yellow-600 text-black h-8 text-xs font-bold gap-1.5">
-                                                            <Link href={`/checkout/${order.gigId}`}>
+                                                            <Link href={`/checkout/${order.gigId}?order_id=${order.id}`}>
                                                                 <CreditCard className="w-3.5 h-3.5" />
                                                                 Pagar
                                                             </Link>
@@ -347,7 +347,7 @@ export function DashboardClient({
                                 Explore nossas mestras mais bem avaliadas e descubra os segredos escritos nas estrelas.
                             </p>
                             <Button asChild variant="outline" className="border-indigo-400 text-indigo-300 hover:bg-indigo-500/10 gap-2">
-                                <Link href="/tarologas">
+                                <Link href="/cartomantes">
                                     Explorar Profissionais
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
@@ -417,7 +417,7 @@ function TrackingModal({ order, onClose }: { order: OrderData, onClose: () => vo
                             />
                         </div>
                         <p className="text-[10px] text-slate-500 mt-2 italic text-center">
-                            A taróloga está canalizando as energias para sua leitura.
+                            A cartomante está canalizando as energias para sua leitura.
                         </p>
                     </div>
 
@@ -450,7 +450,7 @@ function TrackingModal({ order, onClose }: { order: OrderData, onClose: () => vo
                                     </div>
                                     {step.status === 'current' && (
                                         <p className="text-xs text-slate-400 mt-0.5">
-                                            Aguardando a conclusão pela taróloga {order.readerName}.
+                                            Aguardando a conclusão pela cartomante {order.readerName}.
                                         </p>
                                     )}
                                 </div>

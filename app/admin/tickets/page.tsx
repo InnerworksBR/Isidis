@@ -63,7 +63,7 @@ export default async function AdminTicketsPage() {
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Tickets de Suporte</h2>
                     <p className="text-muted-foreground">
-                        Gerencie as solicitações de suporte dos usuários e tarólogas.
+                        Gerencie as solicitações de suporte dos usuários e cartomantes.
                     </p>
                 </div>
             </div>

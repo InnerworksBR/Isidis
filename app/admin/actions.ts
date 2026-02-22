@@ -25,6 +25,6 @@ export async function updateGigStatus(gigId: string, status: 'APPROVED' | 'REJEC
     }
 
     revalidatePath('/admin/gigs')
-    revalidatePath('/dashboard/tarologa/gigs') // Update reader dashboard
+    revalidatePath('/dashboard/cartomante/gigs') // Update reader dashboard
     revalidatePath('/') // Update public marketplace
 }

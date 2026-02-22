@@ -88,7 +88,7 @@ export default async function AdminTicketDetailPage({ params }: { params: { id: 
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium">{ticket.user?.full_name || 'Usuário'}</p>
-                                    <p className="text-xs text-muted-foreground">{ticket.user?.role === 'READER' ? 'Taróloga' : 'Cliente'}</p>
+                                    <p className="text-xs text-muted-foreground">{ticket.user?.role === 'READER' ? 'Cartomante' : 'Cliente'}</p>
                                 </div>
                             </div>
                         </CardContent>

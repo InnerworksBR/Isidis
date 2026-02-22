@@ -16,11 +16,11 @@ interface PixData {
     devMode?: boolean
 }
 
-export function CheckoutForm({ gigId, readerId, selectedAddOns = [] }: { gigId: string, readerId: string, selectedAddOns?: GigAddOn[] }) {
+export function CheckoutForm({ gigId, readerId, selectedAddOns = [], existingOrderId }: { gigId: string, readerId: string, selectedAddOns?: GigAddOn[], existingOrderId?: string }) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [pixData, setPixData] = useState<PixData | null>(null)
-    const [orderId, setOrderId] = useState<string | null>(null)
+    const [orderId, setOrderId] = useState<string | null>(existingOrderId || null)
     const [copied, setCopied] = useState(false)
     const router = useRouter()
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -56,7 +56,7 @@ export function CheckoutForm({ gigId, readerId, selectedAddOns = [] }: { gigId: 
         setError('')
         try {
             logAnalyticsEvent(gigId, readerId, 'click_buy')
-            const result = await createPixPayment(gigId, selectedAddOns.map(a => a.id))
+            const result = await createPixPayment(gigId, selectedAddOns.map(a => a.id), existingOrderId)
 
             if (result.error) {
                 setError(result.error)

@@ -88,7 +88,7 @@ export default async function CheckoutSuccessPage({
                     </div>
 
                     <p className="text-sm text-slate-400">
-                        A taróloga foi notificada e iniciará sua leitura em breve.
+                        A cartomante foi notificada e iniciará sua leitura em breve.
                         Você receberá uma notificação quando estiver pronta.
                     </p>
 
@@ -99,7 +99,7 @@ export default async function CheckoutSuccessPage({
                             </Link>
                         </Button>
                         <Button variant="ghost" asChild className="text-slate-400 hover:text-white hover:bg-white/5">
-                            <Link href="/tarologas">Continuar Explorando</Link>
+                            <Link href="/cartomantes">Continuar Explorando</Link>
                         </Button>
                     </div>
                 </CardContent>

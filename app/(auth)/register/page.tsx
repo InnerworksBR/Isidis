@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { signup } from '@/app/auth/actions'
 import Link from 'next/link'
-import { Sparkles, Eye, Loader2, MapPin, CreditCard, Upload, Check, X, AlertCircle } from 'lucide-react'
+import { Sparkles, Eye, EyeOff, Loader2, MapPin, CreditCard, Upload, Check, X, AlertCircle } from 'lucide-react'
 import { validateCPF } from '@/lib/utils'
 
 // Specialties List
@@ -23,12 +23,15 @@ export default function RegisterPage() {
     const [step, setStep] = useState(1)
     const [selectedRole, setSelectedRole] = useState<string | null>(null)
     const [specialties, setSpecialties] = useState<string[]>([])
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     const [formData, setFormData] = useState({
         full_name: '',
         email: '',
         password: '',
         social_name: '',
+        sexo: '',
         cpf: '',
         birth_date: '',
         cellphone: '',
@@ -110,7 +113,7 @@ export default function RegisterPage() {
 
     const validateStep = (currentStep: number) => {
         if (currentStep === 2) {
-            if (!formData.full_name || !formData.email || !formData.password || !formData.confirm_password) {
+            if (!formData.full_name || !formData.email || !formData.password || !formData.confirm_password || !formData.sexo) {
                 alert("Por favor, preencha todos os campos obrigatórios.")
                 return false
             }
@@ -280,7 +283,7 @@ export default function RegisterPage() {
                                 className="group relative p-8 rounded-2xl border-2 text-left transition-all duration-300 hover:border-purple-500/50 hover:bg-purple-500/5"
                             >
                                 <Sparkles className="w-8 h-8 text-purple-500 mb-4" />
-                                <h3 className="text-lg font-bold mb-2">Sou Taróloga</h3>
+                                <h3 className="text-lg font-bold mb-2">Sou Cartomante</h3>
                                 <p className="text-sm text-muted-foreground">Quero oferecer minhas leituras.</p>
                             </button>
                         </div>
@@ -300,20 +303,44 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="space-y-2">
+                            <Label>Sexo</Label>
+                            <select
+                                name="sexo"
+                                value={formData.sexo}
+                                onChange={handleInputChange}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <option value="" disabled>Selecione...</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="feminino">Feminino</option>
+                                <option value="não binário">Não Binário</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-2">
                             <Label>Email</Label>
                             <Input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="seu@email.com" />
                         </div>
 
                         <div className="space-y-2">
                             <Label>Senha</Label>
-                            <Input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                placeholder="Crie uma senha segura"
-                                className={showPasswordErrors && !passwordValidation.isValid ? "border-red-500/50 focus-visible:ring-red-500" : ""}
-                            />
+                            <div className="relative">
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    placeholder="Crie uma senha segura"
+                                    className={`pr-10 ${showPasswordErrors && !passwordValidation.isValid ? "border-red-500/50 focus-visible:ring-red-500" : ""}`}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                             {showPasswordErrors && (
                                 <div className="space-y-1 mt-2 p-3 bg-muted/50 rounded-lg text-xs transition-all animate-fade-in-down">
                                     <p className="font-semibold text-muted-foreground mb-2">A senha deve conter:</p>
@@ -339,14 +366,23 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <Label>Confirmar Senha</Label>
-                            <Input
-                                type="password"
-                                name="confirm_password"
-                                value={formData.confirm_password}
-                                onChange={handleInputChange}
-                                placeholder="Confirme sua senha"
-                                className={showConfirmError ? "border-red-500/50 focus-visible:ring-red-500" : ""}
-                            />
+                            <div className="relative">
+                                <Input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirm_password"
+                                    value={formData.confirm_password}
+                                    onChange={handleInputChange}
+                                    placeholder="Confirme sua senha"
+                                    className={`pr-10 ${showConfirmError ? "border-red-500/50 focus-visible:ring-red-500" : ""}`}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                             {showConfirmError && (
                                 <div className="flex items-center gap-2 text-red-500 text-xs animate-fade-in-down">
                                     <AlertCircle className="w-3 h-3" />
@@ -358,7 +394,7 @@ export default function RegisterPage() {
                         {selectedRole === 'READER' && (
                             <div className="space-y-2">
                                 <Label className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-purple-500" /> Nome Místico</Label>
-                                <Input name="social_name" value={formData.social_name} onChange={handleInputChange} placeholder="Ex: Taróloga Luna" />
+                                <Input name="social_name" value={formData.social_name} onChange={handleInputChange} placeholder="Ex: Cartomante Luna" />
                             </div>
                         )}
 
@@ -589,7 +625,9 @@ export default function RegisterPage() {
                                 }}
                                 className="rounded border-gray-300 text-primary focus:ring-primary"
                             />
-                            <Label htmlFor="terms_check" className="text-sm font-normal text-muted-foreground">Concordo com os Termos de Uso e Código de Ética.</Label>
+                            <Label htmlFor="terms_check" className="text-sm font-normal text-muted-foreground">
+                                Concordo com os <Link href="/termos-de-uso" target="_blank" className="text-primary hover:underline">Termos de Uso</Link> e o <Link href="/termos-da-tarologa" target="_blank" className="text-primary hover:underline">Código de Ética (Termos da Taróloga)</Link>.
+                            </Label>
                         </div>
 
                         <div className="pt-4 flex gap-3">

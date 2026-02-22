@@ -9,7 +9,7 @@ export default async function AdminDashboard() {
     // Fetch KPIs (simplified for now, ideally count queries)
     // Note: count entries is efficient in Postgres
     const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-    // Tarologas
+    // Cartomantes
     const { count: readerCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'READER');
     // Gigs
     const { count: gigCount } = await supabase.from('gigs').select('*', { count: 'exact', head: true });
@@ -35,7 +35,7 @@ export default async function AdminDashboard() {
                     <CardContent>
                         <div className="text-2xl font-bold">{userCount || 0}</div>
                         <p className="text-xs text-muted-foreground">
-                            {readerCount || 0} são tarólogas
+                            {readerCount || 0} são cartomantes
                         </p>
                     </CardContent>
                 </Card>

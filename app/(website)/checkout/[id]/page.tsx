@@ -5,9 +5,9 @@ import { CheckoutForm } from './checkout-form'
 import { User, Shield, Zap, CheckCircle2 } from 'lucide-react'
 import { GigAddOn } from '@/types'
 
-export default async function CheckoutPage({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ addons?: string }> }) {
+export default async function CheckoutPage({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ addons?: string, order_id?: string }> }) {
     const { id } = await params
-    const { addons } = await searchParams
+    const { addons, order_id } = await searchParams
     const selectedAddOnIds = addons ? addons.split(',') : []
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -60,7 +60,7 @@ export default async function CheckoutPage({ params, searchParams }: { params: P
                             </div>
                         )}
                         <div>
-                            <h3 className="font-bold">{reader?.full_name || 'Taróloga'}</h3>
+                            <h3 className="font-bold">{reader?.full_name || 'Cartomante'}</h3>
                             <p className="text-sm text-muted-foreground">{gig.title}</p>
                         </div>
                     </div>
@@ -106,7 +106,7 @@ export default async function CheckoutPage({ params, searchParams }: { params: P
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <CheckoutForm gigId={gig.id} readerId={gig.owner_id} selectedAddOns={selectedAddOns} />
+                    <CheckoutForm gigId={gig.id} readerId={gig.owner_id} selectedAddOns={selectedAddOns} existingOrderId={order_id} />
                 </CardFooter>
             </Card>
         </div>

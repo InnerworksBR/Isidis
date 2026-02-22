@@ -71,7 +71,7 @@ export async function requestWithdrawal(amountCents: number, pixKey: string) {
         return { error: 'Falha ao solicitar saque: ' + insertError.message }
     }
 
-    revalidatePath('/dashboard/tarologa/carteira')
-    revalidatePath('/dashboard/tarologa')
+    revalidatePath('/dashboard/cartomante/carteira')
+    revalidatePath('/dashboard/cartomante')
     return { success: true }
 }

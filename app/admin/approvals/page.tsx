@@ -21,7 +21,7 @@ export default async function ApprovalsPage() {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Aprovações Pendentes</h1>
                     <p className="text-muted-foreground">
-                        Analise e aprove as solicitações de cadastro de novas tarólogas.
+                        Analise e aprove as solicitações de cadastro de novas cartomantes.
                     </p>
                 </div>
             </div>

@@ -17,9 +17,9 @@ export function DashboardBottomNav() {
         },
         {
             label: 'Buscar',
-            href: '/tarologas',
+            href: '/cartomantes',
             icon: Search,
-            active: pathname === '/tarologas'
+            active: pathname === '/cartomantes'
         },
         {
             label: 'Minhas Tiragens',
@@ -41,43 +41,43 @@ export function DashboardBottomNav() {
         }
     ]
 
-    const tarologaNavItems = [
+    const cartomanteNavItems = [
         {
             label: 'Início',
-            href: '/dashboard/tarologa',
+            href: '/dashboard/cartomante',
             icon: LayoutGrid,
-            active: pathname === '/dashboard/tarologa'
+            active: pathname === '/dashboard/cartomante'
         },
         {
             label: 'Pedidos',
-            href: '/dashboard/tarologa/pedidos',
+            href: '/dashboard/cartomante/pedidos',
             icon: Package,
-            active: pathname.startsWith('/dashboard/tarologa/pedidos')
+            active: pathname.startsWith('/dashboard/cartomante/pedidos')
         },
         {
             label: 'Mensagens',
-            href: '/dashboard/tarologa/mensagens',
+            href: '/dashboard/cartomante/mensagens',
             icon: MessageCircle,
-            active: pathname.startsWith('/dashboard/tarologa/mensagens')
+            active: pathname.startsWith('/dashboard/cartomante/mensagens')
         },
         {
             label: 'Carteira',
-            href: '/dashboard/tarologa/carteira',
+            href: '/dashboard/cartomante/carteira',
             icon: Wallet,
-            active: pathname.startsWith('/dashboard/tarologa/carteira')
+            active: pathname.startsWith('/dashboard/cartomante/carteira')
         },
         {
             label: 'Perfil',
-            href: '/dashboard/tarologa/perfil',
+            href: '/dashboard/cartomante/perfil',
             icon: User,
-            active: pathname.startsWith('/dashboard/tarologa/perfil')
+            active: pathname.startsWith('/dashboard/cartomante/perfil')
         }
     ]
 
     // Determine which nav items to use
     let currentNavItems = clientNavItems
-    if (pathname.startsWith('/dashboard/tarologa')) {
-        currentNavItems = tarologaNavItems
+    if (pathname.startsWith('/dashboard/cartomante')) {
+        currentNavItems = cartomanteNavItems
     } else if (pathname.startsWith('/admin')) {
         return null
     }

@@ -45,7 +45,7 @@ export const practitioners: Practitioner[] = [
         price: 75,
         image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB3Cw2sQ2opMjaFhrkw4q-34-ObLGGberwBK3x38xf4X_kxhtkGqk75EwgSBeUlgTRmXrBPOp1AXKadR3XHuwWKYS4byGmwUg4VJ1LzjJk5mdjmBsVyMCv_j2Bz8xD3aeX9ysdSymZK8oSUnrDoZwNwfoTWsGDcISc_z8VN-9TjELyaSkL7OS4glIrREoi1lHJAY6bFu7QEaNCxsny0wLbzMot-QoNbOToMCqfRmmPl4QUVXC5NGtJni4Hw2s54htoE39bx3Euv21qZ',
         tags: ['Espiritual', 'Tarot'],
-        bio: 'Taróloga intuitiva com abordagem terapêutica. Ajudando você a encontrar clareza emocional e paz interior através das cartas.',
+        bio: 'Cartomante intuitiva com abordagem terapêutica. Ajudando você a encontrar clareza emocional e paz interior através das cartas.',
         specialties: ['Tarot Rider-Waite', 'Aconselhamento Emocional', 'Meditação Guiada']
     },
     {

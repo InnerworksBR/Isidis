@@ -198,7 +198,7 @@ export function PhysicalReadingView({
                             </div>
                             <div className="text-left">
                                 <p className="text-sm font-bold text-white">{readerName}</p>
-                                <p className="text-[10px] text-amber-600">Taróloga • Isidis</p>
+                                <p className="text-[10px] text-amber-600">Cartomante • Isidis</p>
                             </div>
                         </div>
                     </div>

@@ -4,27 +4,27 @@ import { UserSidebar } from '@/components/user-sidebar'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export default async function MessagesPage({ searchParams }: { searchParams: Promise<{ orderId?: string, tarologaId?: string }> }) {
+export default async function MessagesPage({ searchParams }: { searchParams: Promise<{ orderId?: string, cartomanteId?: string }> }) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) redirect('/login')
 
     const conversations = await getConversations()
-    const { orderId, tarologaId } = await searchParams
+    const { orderId, cartomanteId } = await searchParams
 
-    let targetTarologa = null
-    if (tarologaId) {
+    let targetCartomante = null
+    if (cartomanteId) {
         const { data } = await supabase
             .from('profiles')
             .select('id, full_name, avatar_url')
-            .eq('id', tarologaId)
+            .eq('id', cartomanteId)
             .single()
 
         if (data) {
-            targetTarologa = {
+            targetCartomante = {
                 id: data.id,
-                name: data.full_name || 'Taróloga',
+                name: data.full_name || 'Cartomante',
                 avatar: data.avatar_url
             }
         }
@@ -39,7 +39,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                         initialConversations={conversations}
                         currentUserId={user.id}
                         initialOrderId={orderId}
-                        targetTarologa={targetTarologa}
+                        targetCartomante={targetCartomante}
                     />
                 </div>
             </main>

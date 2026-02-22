@@ -56,7 +56,7 @@ export async function createTicket({
     }
 
     revalidatePath('/dashboard/tickets')
-    revalidatePath('/dashboard/tarologa/tickets')
+    revalidatePath('/dashboard/cartomante/tickets')
     revalidatePath('/admin/tickets')
 
     return { success: true, ticketId: ticket.id }
@@ -120,7 +120,7 @@ export async function addTicketMessage({
     }
 
     revalidatePath(`/dashboard/tickets/${ticketId}`)
-    revalidatePath(`/dashboard/tarologa/tickets/${ticketId}`)
+    revalidatePath(`/dashboard/cartomante/tickets/${ticketId}`)
     revalidatePath(`/admin/tickets/${ticketId}`)
 
     return { success: true }

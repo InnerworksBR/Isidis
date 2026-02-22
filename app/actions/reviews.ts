@@ -55,7 +55,7 @@ export async function submitReview(formData: FormData) {
         return { error: 'Falha ao enviar avaliação: ' + insertError.message }
     }
 
-    revalidatePath(`/tarologa/${readerId}`)
+    revalidatePath(`/cartomante/${readerId}`)
     revalidatePath('/dashboard')
 
     return { success: true }

@@ -49,6 +49,13 @@ export async function middleware(request: NextRequest) {
             }
         }
 
+        // Cartomante Route Protection
+        if (request.nextUrl.pathname.startsWith('/dashboard/cartomante')) {
+            if (profile?.role !== 'READER') {
+                return NextResponse.redirect(new URL('/dashboard', request.url))
+            }
+        }
+
         // Reader Onboarding Enforcement
         // Only redirect if they haven't completed the onboarding steps (Bio is last step, ethics is step 3)
         // If bio is present, they finished step 4.
@@ -60,10 +67,10 @@ export async function middleware(request: NextRequest) {
         ) {
             const path = request.nextUrl.pathname
             if (
-                !path.startsWith('/dashboard/tarologa/onboarding') &&
+                !path.startsWith('/dashboard/cartomante/onboarding') &&
                 path.startsWith('/dashboard') // Only block dashboard access
             ) {
-                return NextResponse.redirect(new URL('/dashboard/tarologa/onboarding', request.url))
+                return NextResponse.redirect(new URL('/dashboard/cartomante/onboarding', request.url))
             }
         }
 
@@ -76,10 +83,10 @@ export async function middleware(request: NextRequest) {
         ) {
             const path = request.nextUrl.pathname
             if (
-                !path.startsWith('/dashboard/tarologa/under-review') &&
+                !path.startsWith('/dashboard/cartomante/under-review') &&
                 path.startsWith('/dashboard') // Block dashboard access
             ) {
-                return NextResponse.redirect(new URL('/dashboard/tarologa/under-review', request.url))
+                return NextResponse.redirect(new URL('/dashboard/cartomante/under-review', request.url))
             }
         }
     } else if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/dashboard')) {

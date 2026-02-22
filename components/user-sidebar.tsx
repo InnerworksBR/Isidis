@@ -21,7 +21,7 @@ export function UserSidebar({ className, activeFilter, onFilterChange }: UserSid
 
     const sidebarLinks = [
         { icon: Home, label: 'Início', href: '/dashboard' },
-        { icon: Search, label: 'Explorar', href: '/tarologas' },
+        { icon: Search, label: 'Explorar', href: '/cartomantes' },
         { icon: BookOpen, label: 'Minhas Leituras', href: '/dashboard/minhas-tiragens' },
         { icon: MessageCircle, label: 'Mensagens', href: '/dashboard/mensagens' },
         { icon: Bell, label: 'Notificações', href: '/dashboard/notifications' },

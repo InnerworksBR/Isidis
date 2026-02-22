@@ -21,26 +21,27 @@ export function Footer() {
                     <div>
                         <h4 className="text-sm font-bold uppercase tracking-wider mb-4 text-foreground">Plataforma</h4>
                         <ul className="space-y-2.5">
-                            <li><Link href="/tarologas" className="text-sm text-muted-foreground hover:text-primary transition-colors">Explorar Tarólogas</Link></li>
+                            <li><Link href="/cartomantes" className="text-sm text-muted-foreground hover:text-primary transition-colors">Explorar Cartomantes</Link></li>
                             <li><Link href="/register" className="text-sm text-muted-foreground hover:text-primary transition-colors">Criar Conta</Link></li>
                             <li><Link href="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">Entrar</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="text-sm font-bold uppercase tracking-wider mb-4 text-foreground">Para Tarólogas</h4>
+                        <h4 className="text-sm font-bold uppercase tracking-wider mb-4 text-foreground">Para Cartomantes</h4>
                         <ul className="space-y-2.5">
                             <li><Link href="/register" className="text-sm text-muted-foreground hover:text-primary transition-colors">Cadastrar-se</Link></li>
-                            <li><Link href="/dashboard/tarologa" className="text-sm text-muted-foreground hover:text-primary transition-colors">Painel Profissional</Link></li>
+                            <li><Link href="/dashboard/cartomante" className="text-sm text-muted-foreground hover:text-primary transition-colors">Painel Profissional</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="text-sm font-bold uppercase tracking-wider mb-4 text-foreground">Legal</h4>
                         <ul className="space-y-2.5">
-                            <li><span className="text-sm text-muted-foreground cursor-default">Termos de Uso</span></li>
-                            <li><span className="text-sm text-muted-foreground cursor-default">Privacidade</span></li>
-                            <li><span className="text-sm text-muted-foreground cursor-default">Contato</span></li>
+                            <li><Link href="/termos-de-uso" className="text-sm text-muted-foreground hover:text-primary transition-colors">Termos de Uso</Link></li>
+                            <li><Link href="/termos-da-tarologa" className="text-sm text-muted-foreground hover:text-primary transition-colors">Termos da Taróloga</Link></li>
+                            <li><Link href="/termos-do-consulente" className="text-sm text-muted-foreground hover:text-primary transition-colors">Termos do Consulente</Link></li>
+                            <li><Link href="/como-funciona-o-saque" className="text-sm text-muted-foreground hover:text-primary transition-colors">Como Funciona o Saque</Link></li>
                         </ul>
                     </div>
                 </div>

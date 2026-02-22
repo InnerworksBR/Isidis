@@ -55,7 +55,7 @@ export async function createCheckoutSession(gigId: string, selectedAddOnIds: str
                 .neq('status', 'CANCELED')
 
             if ((dailyCount || 0) >= reader.max_orders_per_day) {
-                return { error: 'Esta taróloga já atingiu o limite de atendimentos para hoje. Tente novamente amanhã! ✨' }
+                return { error: 'Esta cartomante já atingiu o limite de atendimentos para hoje. Tente novamente amanhã! ✨' }
             }
         }
 
@@ -68,7 +68,7 @@ export async function createCheckoutSession(gigId: string, selectedAddOnIds: str
                 .in('status', ['PAID', 'DELIVERED']) // Only confirmed and in-progress
 
             if ((activeCount || 0) >= reader.max_simultaneous_orders) {
-                return { error: 'A fila desta taróloga está cheia no momento. Aguarde uma vaga abrir! 🔮' }
+                return { error: 'A fila desta cartomante está cheia no momento. Aguarde uma vaga abrir! 🔮' }
             }
         }
     }
@@ -138,7 +138,7 @@ export async function createCheckoutSession(gigId: string, selectedAddOnIds: str
             products: [
                 {
                     externalId: order.id,
-                    name: `Leitura com ${reader?.full_name || 'Taróloga'} — ${gig.title}`,
+                    name: `Leitura com ${reader?.full_name || 'Cartomante'} — ${gig.title}`,
                     quantity: 1,
                     price: gig.price,
                 },
@@ -155,7 +155,7 @@ export async function createCheckoutSession(gigId: string, selectedAddOnIds: str
                 cellphone: buyerProfile.cellphone,
                 taxId: buyerProfile.tax_id,
             },
-            returnUrl: `${siteUrl}/tarologa/${gig.owner_id}`,
+            returnUrl: `${siteUrl}/cartomante/${gig.owner_id}`,
             completionUrl: `${siteUrl}/checkout/success?order_id=${order.id}`,
         })
 
@@ -213,7 +213,7 @@ export async function saveOrderRequirements(orderId: string, answers: Record<str
     return { success: true }
 }
 
-export async function createPixPayment(gigId: string, selectedAddOnIds: string[] = []) {
+export async function createPixPayment(gigId: string, selectedAddOnIds: string[] = [], existingOrderId?: string) {
     const supabase = await createClient()
 
     // 1. Verify authentication
@@ -269,25 +269,44 @@ export async function createPixPayment(gigId: string, selectedAddOnIds: string[]
     const amountReaderNet = amountTotal - amountPlatformFee
 
     try {
-        // 5. Create order in Supabase
-        const { data: order, error: orderError } = await supabase
-            .from('orders')
-            .insert({
-                client_id: user.id,
-                gig_id: gig.id,
-                reader_id: gig.owner_id,
-                status: 'PENDING_PAYMENT',
-                amount_total: amountTotal,
-                amount_platform_fee: amountPlatformFee,
-                amount_reader_net: amountReaderNet,
-                selected_addons: selectedAddOnIds,
-            })
-            .select('id')
-            .single()
+        let orderId = existingOrderId
 
-        if (orderError || !order) {
-            console.error('[Checkout] Order creation failed:', orderError?.message)
-            return { error: 'Erro ao criar pedido.' }
+        if (orderId) {
+            // Verify order exists and belongs to client
+            const { data: existingOrder } = await supabase
+                .from('orders')
+                .select('id, amount_total')
+                .eq('id', orderId)
+                .eq('client_id', user.id)
+                .eq('status', 'PENDING_PAYMENT')
+                .single()
+
+            if (!existingOrder) {
+                return { error: 'Pedido pendente não encontrado.' }
+            }
+            amountTotal = existingOrder.amount_total
+        } else {
+            // 5. Create order in Supabase
+            const { data: order, error: orderError } = await supabase
+                .from('orders')
+                .insert({
+                    client_id: user.id,
+                    gig_id: gig.id,
+                    reader_id: gig.owner_id,
+                    status: 'PENDING_PAYMENT',
+                    amount_total: amountTotal,
+                    amount_platform_fee: amountPlatformFee,
+                    amount_reader_net: amountReaderNet,
+                    selected_addons: selectedAddOnIds,
+                })
+                .select('id')
+                .single()
+
+            if (orderError || !order) {
+                console.error('[Checkout] Order creation failed:', orderError?.message)
+                return { error: 'Erro ao criar pedido.' }
+            }
+            orderId = order.id
         }
 
         // PIX description limit is roughly 35-40 chars. Abacate says 37.
@@ -305,7 +324,7 @@ export async function createPixPayment(gigId: string, selectedAddOnIds: string[]
                 taxId: buyerProfile.tax_id,
             },
             metadata: {
-                order_id: order.id
+                order_id: orderId as string
             }
         }))
 
@@ -317,10 +336,10 @@ export async function createPixPayment(gigId: string, selectedAddOnIds: string[]
         await supabase
             .from('orders')
             .update({ asaas_payment_id: pixResponse.data.id })
-            .eq('id', order.id)
+            .eq('id', orderId)
 
         return {
-            orderId: order.id,
+            orderId: orderId as string,
             pixId: pixResponse.data.id,
             qrcode: pixResponse.data.brCodeBase64,
             content: pixResponse.data.brCode,

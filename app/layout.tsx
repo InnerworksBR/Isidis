@@ -10,7 +10,7 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif"
 
 export const metadata: Metadata = {
   title: "Isidis - Tarot & Esoterismo",
-  description: "Conecte-se com tarólogas qualificadas para orientação e autoconhecimento.",
+  description: "Conecte-se com cartomantes qualificadas para orientação e autoconhecimento.",
 };
 
 

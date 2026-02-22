@@ -26,7 +26,7 @@ export default async function ReadingRoomPage({ params }: { params: Promise<{ id
         .single()
 
     const deliveryContent = order?.delivery_content
-    const readerName = (order as any)?.profiles?.full_name || 'Taróloga'
+    const readerName = (order as any)?.profiles?.full_name || 'Cartomante'
 
     // ─── Physical Mode ────────────────────────────────────────────
     if (deliveryContent?.mode === 'physical') {

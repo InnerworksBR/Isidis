@@ -72,7 +72,7 @@ export default async function DashboardHome() {
 
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                             {categoryCounts.map((item, i) => (
-                                <Link href={`/tarologas?category=${encodeURIComponent(item.slug)}`} key={i} className="group relative h-[280px] md:h-[380px] rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border border-white/5 bg-card-deep hover:border-purple-500/30 transition-all hover:-translate-y-1">
+                                <Link href={`/cartomantes?category=${encodeURIComponent(item.slug)}`} key={i} className="group relative h-[280px] md:h-[380px] rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden border border-white/5 bg-card-deep hover:border-purple-500/30 transition-all hover:-translate-y-1">
                                     <Image
                                         src={item.image}
                                         alt={item.category}
@@ -90,7 +90,7 @@ export default async function DashboardHome() {
                         </div>
                     </PageSection>
 
-                    {/* 3. Tarólogas Online */}
+                    {/* 3. Cartomantes Online */}
                     <PageSection padding="none" className="mb-16">
                         <div className="flex items-end justify-between mb-8">
                             <PageHeader
@@ -98,14 +98,14 @@ export default async function DashboardHome() {
                                 title="Online Agora"
                                 className="mb-0"
                             />
-                            <Link href="/tarologas" className="text-purple-400 text-xs md:text-sm font-bold flex items-center hover:text-purple-300">
+                            <Link href="/cartomantes" className="text-purple-400 text-xs md:text-sm font-bold flex items-center hover:text-purple-300">
                                 Ver todas <ArrowRight className="ml-1 w-4 h-4" />
                             </Link>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                             {activeReaders && activeReaders.slice(0, 4).map((reader, i) => (
-                                <div key={reader.id} className="bg-card-item border border-white/5 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center text-center relative group hover:border-purple-500/30 transition-all">
+                                <Link href={`/cartomante/${reader.id}`} key={reader.id} className="bg-card-item border border-white/5 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center text-center relative group hover:border-purple-500/30 transition-all">
                                     <div className="relative mb-4">
                                         <div className="w-16 h-16 md:w-20 md:h-20 rounded-full p-1 bg-gradient-to-tr from-purple-500 to-amber-500 relative">
                                             <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-card-item">
@@ -131,10 +131,10 @@ export default async function DashboardHome() {
                                         Atendimento Imediato
                                     </div>
 
-                                    <Button variant="outline" className="w-full rounded-full border-white/10 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all font-bold text-xs h-9 md:h-11">
+                                    <div className="w-full rounded-full border border-white/10 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all font-bold text-xs h-9 md:h-11 flex items-center justify-center mt-auto">
                                         Consultar
-                                    </Button>
-                                </div>
+                                    </div>
+                                </Link>
                             ))}
                         </div>
                     </PageSection>
@@ -160,7 +160,7 @@ export default async function DashboardHome() {
                                         />
                                         <div className="absolute top-4 left-4">
                                             <Badge className="bg-amber-400 text-black font-bold border-none hover:bg-amber-500 text-[9px] md:text-[10px] uppercase tracking-wider">
-                                                {i === 0 ? 'Mais Vendida' : i === 1 ? 'Premium' : '5 Estrelas'}
+                                                {i === 0 ? 'Mais Vendida' : i === 1 ? 'Destaque' : '5 Estrelas'}
                                             </Badge>
                                         </div>
                                     </div>

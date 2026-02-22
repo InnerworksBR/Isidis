@@ -134,7 +134,7 @@ export function WithdrawalModal({ availableBalance, pixKey, pixKeyType, children
                                         className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 h-8"
                                         onClick={() => {
                                             setOpen(false)
-                                            router.push('/dashboard/tarologa/perfil')
+                                            router.push('/dashboard/cartomante/perfil')
                                         }}
                                     >
                                         Configurar PIX

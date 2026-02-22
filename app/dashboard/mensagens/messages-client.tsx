@@ -28,14 +28,14 @@ interface MessagesClientProps {
     initialConversations: Conversation[]
     currentUserId: string
     initialOrderId?: string
-    targetTarologa?: {
+    targetCartomante?: {
         id: string
         name: string
         avatar?: string
     } | null
 }
 
-export function MessagesClient({ initialConversations, currentUserId, initialOrderId, targetTarologa }: MessagesClientProps) {
+export function MessagesClient({ initialConversations, currentUserId, initialOrderId, targetCartomante }: MessagesClientProps) {
     // SWR for data fetching
     // refreshInterval: 5000 (5 seconds) ensures we always get updates even if realtime fails
     const { data: conversations, mutate } = useSWR('conversations', getConversations, {
@@ -49,8 +49,8 @@ export function MessagesClient({ initialConversations, currentUserId, initialOrd
     const initializedRef = useRef(false)
 
     useEffect(() => {
-        if ((initialOrderId || targetTarologa) && !initializedRef.current) {
-            console.log('Trying to init chat. OrderId:', initialOrderId, 'Tarologa:', targetTarologa)
+        if ((initialOrderId || targetCartomante) && !initializedRef.current) {
+            console.log('Trying to init chat. OrderId:', initialOrderId, 'Cartomante:', targetCartomante)
 
             if (conversations) {
                 // Try to find existing conversation
@@ -58,8 +58,8 @@ export function MessagesClient({ initialConversations, currentUserId, initialOrd
 
                 if (initialOrderId) {
                     found = conversations.find(c => c.orderId === initialOrderId)
-                } else if (targetTarologa) {
-                    found = conversations.find(c => c.otherUser.id === targetTarologa.id && !c.orderId)
+                } else if (targetCartomante) {
+                    found = conversations.find(c => c.otherUser.id === targetCartomante.id && !c.orderId)
                 }
 
                 console.log('Found conversation:', found)
@@ -67,11 +67,11 @@ export function MessagesClient({ initialConversations, currentUserId, initialOrd
                 if (found) {
                     setActiveConv(found)
                     initializedRef.current = true
-                } else if (targetTarologa) {
-                    console.log('Creating temp conversation with tarologa:', targetTarologa)
+                } else if (targetCartomante) {
+                    console.log('Creating temp conversation with cartomante:', targetCartomante)
                     // Create temporary conversation if not found
                     setActiveConv({
-                        otherUser: targetTarologa,
+                        otherUser: targetCartomante,
                         orderId: initialOrderId || null,
                         lastMessage: {
                             content: '',
@@ -85,7 +85,7 @@ export function MessagesClient({ initialConversations, currentUserId, initialOrd
                 }
             }
         }
-    }, [initialOrderId, conversations, targetTarologa, currentUserId])
+    }, [initialOrderId, conversations, targetCartomante, currentUserId])
 
     // Realtime subscription
     useEffect(() => {

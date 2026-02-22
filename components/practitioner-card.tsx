@@ -34,7 +34,7 @@ export function PractitionerCard({ practitioner }: { practitioner: PractitionerP
                     eventType="impression"
                 />
             )}
-            <Link href={`/tarologa/${practitioner.id}`} className="absolute inset-0 z-10">
+            <Link href={`/cartomante/${practitioner.id}`} className="absolute inset-0 z-10">
                 <span className="sr-only">Ver perfil de {practitioner.name}</span>
             </Link>
 
@@ -104,7 +104,7 @@ export function PractitionerCard({ practitioner }: { practitioner: PractitionerP
                                 className="font-bold pointer-events-auto rounded-xl gap-1.5 group/btn hover:gap-2.5 transition-all"
                                 asChild
                             >
-                                <Link href={`/tarologa/${practitioner.id}`}>
+                                <Link href={`/cartomante/${practitioner.id}`}>
                                     Agendar
                                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                                 </Link>
@@ -116,7 +116,7 @@ export function PractitionerCard({ practitioner }: { practitioner: PractitionerP
                             className="font-bold pointer-events-auto rounded-xl gap-1.5 group/btn hover:gap-2.5 transition-all"
                             asChild
                         >
-                            <Link href={`/tarologa/${practitioner.id}`}>
+                            <Link href={`/cartomante/${practitioner.id}`}>
                                 Agendar
                                 <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                             </Link>

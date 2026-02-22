@@ -59,7 +59,7 @@ export function RequirementsForm({ orderId, requirements }: RequirementsFormProp
             <CardHeader>
                 <CardTitle className="text-2xl text-white">Informações Necessárias</CardTitle>
                 <CardDescription className="text-slate-400">
-                    A taróloga precisa destas informações para realizar sua leitura com precisão.
+                    A cartomante precisa destas informações para realizar sua leitura com precisão.
                 </CardDescription>
             </CardHeader>
             <CardContent>

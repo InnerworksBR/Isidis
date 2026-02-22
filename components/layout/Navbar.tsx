@@ -31,10 +31,10 @@ export async function Navbar() {
                 {/* Nav Links */}
                 <div className="flex items-center gap-1">
                     <Link
-                        href="/tarologas"
+                        href="/cartomantes"
                         className="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary/5 text-muted-foreground hover:text-foreground"
                     >
-                        Tarólogas
+                        Cartomantes
                     </Link>
 
                     {user ? (
@@ -42,7 +42,7 @@ export async function Navbar() {
                             {/* Show relevant dashboard link based on role */}
                             {role === 'READER' ? (
                                 <Button variant="ghost" size="sm" asChild className="hidden md:flex text-muted-foreground hover:text-foreground">
-                                    <Link href="/dashboard/tarologa" className="nav-link">Meu Painel</Link>
+                                    <Link href="/dashboard/cartomante" className="nav-link">Meu Painel</Link>
                                 </Button>
                             ) : (
                                 <Button variant="ghost" size="sm" asChild className="hidden md:flex text-muted-foreground hover:text-foreground">
@@ -66,7 +66,7 @@ export async function Navbar() {
                                             <p className="text-xs text-muted-foreground">{user.email}</p>
                                             {role && (
                                                 <span className="text-[10px] uppercase tracking-widest text-primary font-bold mt-1">
-                                                    {role === 'READER' ? '✨ Taróloga' : '🔮 Consulente'}
+                                                    {role === 'READER' ? '✨ Cartomante' : '🔮 Consulente'}
                                                 </span>
                                             )}
                                         </div>
@@ -76,19 +76,19 @@ export async function Navbar() {
                                     {role === 'READER' ? (
                                         <>
                                             <DropdownMenuItem asChild>
-                                                <Link href="/dashboard/tarologa" className="cursor-pointer">
+                                                <Link href="/dashboard/cartomante" className="cursor-pointer">
                                                     <LayoutDashboard className="mr-2 h-4 w-4" />
                                                     Painel Profissional
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
-                                                <Link href="/dashboard/tarologa/gigs" className="cursor-pointer">
+                                                <Link href="/dashboard/cartomante/gigs" className="cursor-pointer">
                                                     <Moon className="mr-2 h-4 w-4" />
                                                     Meus Serviços
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
-                                                <Link href="/dashboard/tarologa/perfil" className="cursor-pointer">
+                                                <Link href="/dashboard/cartomante/perfil" className="cursor-pointer">
                                                     <User className="mr-2 h-4 w-4" />
                                                     Editar Perfil
                                                 </Link>

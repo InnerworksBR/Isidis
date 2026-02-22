@@ -59,7 +59,7 @@ export default async function MinhasTiragensPage() {
         isFavorite: order.is_favorite,
         gigTitle: order.gigs?.title || (Array.isArray(order.gigs) ? order.gigs[0]?.title : 'Leitura de Tarot'),
         deliveryTimeHours: order.gigs?.delivery_time_hours || (Array.isArray(order.gigs) ? order.gigs[0]?.delivery_time_hours : 48),
-        readerName: order.profiles?.full_name || (Array.isArray(order.profiles) ? order.profiles[0]?.full_name : 'Taróloga'),
+        readerName: order.profiles?.full_name || (Array.isArray(order.profiles) ? order.profiles[0]?.full_name : 'Cartomante'),
         readerAvatar: order.profiles?.avatar_url || (Array.isArray(order.profiles) ? order.profiles[0]?.avatar_url : null),
         gigId: order.gig_id,
         readerId: order.reader_id,

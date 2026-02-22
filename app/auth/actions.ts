@@ -31,7 +31,7 @@ export async function login(prevState: any, formData: FormData) {
     // Redirect based on role
     const role = authData.user?.user_metadata?.role
     if (role === 'READER') {
-        redirect('/dashboard/tarologa')
+        redirect('/dashboard/cartomante')
     }
     redirect('/dashboard')
 }
@@ -49,6 +49,7 @@ export async function signup(prevState: any, formData: FormData) {
     const cpf = (formData.get('cpf') as string) || (formData.get('cpf_client') as string)
     const cellphone = (formData.get('cellphone') as string) || (formData.get('cellphone_client') as string)
     const socialName = formData.get('social_name') as string
+    const sexo = formData.get('sexo') as string
 
     // Additional fields (Reader)
     const birthDate = formData.get('birth_date') as string
@@ -131,6 +132,7 @@ export async function signup(prevState: any, formData: FormData) {
             full_name: fullName,
             social_name: socialName,
             role: role,
+            sexo: sexo || null,
             cellphone: cellphone || null,
             tax_id: cpf ? cpf.replace(/\D/g, "") : null, // Store clean CPF
         }

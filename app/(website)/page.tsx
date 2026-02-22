@@ -39,11 +39,11 @@ async function getFeaturedReaders(): Promise<PractitionerProps[]> {
   return readers.map(reader => {
     const readerGigs = gigs?.filter(g => g.owner_id === reader.id) || []
     const cheapestPrice = readerGigs.length > 0 ? readerGigs[0].price / 100 : 0
-    const gigTitle = readerGigs.length > 0 ? readerGigs[0].title : 'Taróloga'
+    const gigTitle = readerGigs.length > 0 ? readerGigs[0].title : 'Cartomante'
 
     return {
       id: reader.id,
-      name: reader.full_name || 'Taróloga',
+      name: reader.full_name || 'Cartomante',
       title: gigTitle,
       rating: reader.rating_average || 5.0,
       reviews: reader.reviews_count || 0,
@@ -71,20 +71,20 @@ export default async function Home() {
               <PageHeader
                 align="left"
                 badge="O Marketplace de Tarot mais Moderno do Brasil"
-                badgeIcon={<Sparkles className="w-3 h-3" />}
+                badgeIcon={<img src="/logo.png" alt="" className="w-4 h-4 object-contain" />}
                 title={
                   <>
                     Encontre clareza para sua <span className="text-gradient-primary">jornada espiritual</span>
                   </>
                 }
-                description="Conecte-se com as melhores tarólogas do país em uma experiência única. Receba leituras profundas com áudio, vídeo e fotos das cartas, tudo em um só lugar."
+                description="Conecte-se com as melhores cartomantes do país em uma experiência única. Receba leituras profundas com áudio, vídeo e fotos das cartas, tudo em um só lugar."
                 className="mb-8"
                 titleClassName="text-4xl md:text-6xl"
               />
 
               <div className="flex flex-col sm:flex-row gap-4 mb-10">
                 <Button size="lg" className="h-14 px-8 text-base font-bold rounded-2xl animate-glow-pulse" asChild>
-                  <Link href="/tarologas">Agendar Leitura Agora</Link>
+                  <Link href="/cartomantes">Agendar Leitura Agora</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="h-14 px-8 text-base font-bold rounded-2xl glass hover:bg-white/5" asChild>
                   <Link href="#como-funciona">Como Funciona</Link>
@@ -207,7 +207,7 @@ export default async function Home() {
             {[
               { value: `${stats.totalConsultations}+`, label: 'Consultas Realizadas', icon: Zap },
               { value: `${stats.satisfactionRate}%`, label: 'Satisfação Garantida', icon: Heart },
-              { value: `${stats.activeReaders}+`, label: 'Tarólogas Premium', icon: Users },
+              { value: `${stats.activeReaders}+`, label: 'Cartomantes', icon: Users },
               { value: `${stats.averageRating}`, label: 'Avaliação Média', icon: Star, fill: true },
             ].map((stat, i) => (stat &&
               <div key={stat.label} className="group cursor-default">
@@ -244,7 +244,7 @@ export default async function Home() {
               <PageHeader
                 badge="A Experiência Isidis"
                 title="Longe de ser apenas um chat de texto"
-                description="Nós entregamos um produto digital completo. Sua leitura contém fotos reais das cartas tiradas, áudios detalhados com a voz da taróloga e uma interpretação escrita."
+                description="Nós entregamos um produto digital completo. Sua leitura contém fotos reais das cartas tiradas, áudios detalhados com a voz da cartomante e uma interpretação escrita."
                 className="mb-8"
               />
 
@@ -258,7 +258,7 @@ export default async function Home() {
                   {
                     icon: MessageCircle,
                     title: 'Voz e Alma',
-                    desc: 'Ouça a interpretação da taróloga através de áudios exclusivos para sua tiragem.'
+                    desc: 'Ouça a interpretação da cartomante através de áudios exclusivos para sua tiragem.'
                   },
                   {
                     icon: ShieldCheck,
@@ -296,7 +296,7 @@ export default async function Home() {
               titleClassName="text-3xl md:text-4xl"
             />
             <Button variant="ghost" className="text-primary font-bold gap-2 mt-6 md:mt-0 hover:bg-primary/10 h-12 rounded-xl" asChild>
-              <Link href="/tarologas">
+              <Link href="/cartomantes">
                 Ver Todas as Profissionais <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
@@ -317,7 +317,7 @@ export default async function Home() {
               </div>
               <h3 className="text-2xl font-bold mb-2 italic">Novos portais se abrindo...</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
-                Estamos finalizando a curadoria das melhores tarólogas do Brasil. Ouse esperar pelo extraordinário.
+                Estamos finalizando a curadoria das melhores cartomantes do Brasil. Ouse esperar pelo extraordinário.
               </p>
               <Button className="mt-8 font-bold rounded-xl px-10 h-12" asChild>
                 <Link href="/register">Ser Notificado</Link>
@@ -412,8 +412,8 @@ export default async function Home() {
 
           <div className="space-y-4">
             {[
-              { q: 'Quanto tempo demora para receber a leitura?', a: 'Cada taróloga tem seu prazo de entrega, mas a maioria entrega em menos de 24 horas. Você verá o prazo exato no perfil da profissional antes de contratar.' },
-              { q: 'Como recebo o acesso à minha tiragem?', a: 'Assim que a taróloga concluir a leitura, você receberá um e-mail e uma notificação. O conteúdo estará disponível no seu Dashboard em "Minhas Tiragens".' },
+              { q: 'Quanto tempo demora para receber a leitura?', a: 'Cada cartomante tem seu prazo de entrega, mas a maioria entrega em menos de 24 horas. Você verá o prazo exato no perfil da profissional antes de contratar.' },
+              { q: 'Como recebo o acesso à minha tiragem?', a: 'Assim que a cartomante concluir a leitura, você receberá um e-mail e uma notificação. O conteúdo estará disponível no seu Dashboard em "Minhas Tiragens".' },
               { q: 'O pagamento via PIX é seguro?', a: 'Sim, utilizamos os protocolos de segurança mais rígidos. O pagamento é instantâneo e garantido pela nossa plataforma.' },
               { q: 'E se eu não gostar da leitura?', a: 'Prezamos pela qualidade. Se você tiver qualquer problema com o conteúdo entregue, nosso suporte está pronto para analisar cada caso individualmente.' }
             ].map((faq, i) => (
@@ -455,7 +455,7 @@ export default async function Home() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="h-16 px-12 text-lg font-bold rounded-2xl glass hover:bg-white/5" asChild>
-                <Link href="/tarologas">
+                <Link href="/cartomantes">
                   Explorar Especialistas
                 </Link>
               </Button>

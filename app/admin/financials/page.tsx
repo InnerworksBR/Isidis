@@ -61,7 +61,7 @@ export default function AdminFinancialsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-red-400">{formatCurrency(data.totalWithdrawn)}</div>
-                        <p className="text-xs text-muted-foreground">Fluxo de saída para tarólogas</p>
+                        <p className="text-xs text-muted-foreground">Fluxo de saída para cartomantes</p>
                     </CardContent>
                 </Card>
 
