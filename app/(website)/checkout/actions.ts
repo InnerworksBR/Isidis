@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createBilling } from '@/services/abacate'
 
-const PLATFORM_FEE_PERCENT = 15
+const PLATFORM_FEE_PERCENT = 8
 
 import { GigAddOn } from '@/types'
 

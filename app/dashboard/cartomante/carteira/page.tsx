@@ -13,7 +13,7 @@ import { WithdrawalModal } from '@/components/withdrawal-modal'
 import { NotificationsBell } from '@/components/notifications-bell'
 import { getWalletBalances } from '@/app/actions/finance'
 
-const PLATFORM_FEE_PERCENT = 15
+const PLATFORM_FEE_PERCENT = 8
 
 export default async function WalletPage() {
     const supabase = await createClient()
