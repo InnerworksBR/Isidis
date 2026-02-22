@@ -181,7 +181,10 @@ export default function RegisterPage() {
             }
         }
         if (currentStep === 4) { // Reader Docs
-            if (!formData.has_doc_front || !formData.has_doc_back || !formData.has_doc_selfie) return false
+            if (!formData.has_doc_front || !formData.has_doc_back || !formData.has_doc_selfie) {
+                alert("Por favor, envie todos os documentos solicitados.")
+                return false
+            }
         }
         return true
     }
@@ -526,7 +529,16 @@ export default function RegisterPage() {
                                 </Label>
                                 <Input
                                     id="doc_front" name="doc_front" type="file" accept="image/*" className="hidden"
-                                    onChange={(e) => setFormData(prev => ({ ...prev, has_doc_front: !!e.target.files?.length }))}
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        if (file && file.size > 5 * 1024 * 1024) {
+                                            alert("O arquivo é muito grande (máximo 5MB). Por favor, escolha um arquivo menor.")
+                                            e.target.value = ''
+                                            setFormData(prev => ({ ...prev, has_doc_front: false }))
+                                            return
+                                        }
+                                        setFormData(prev => ({ ...prev, has_doc_front: !!e.target.files?.length }))
+                                    }}
                                 />
                             </div>
 
@@ -538,7 +550,16 @@ export default function RegisterPage() {
                                 </Label>
                                 <Input
                                     id="doc_back" name="doc_back" type="file" accept="image/*" className="hidden"
-                                    onChange={(e) => setFormData(prev => ({ ...prev, has_doc_back: !!e.target.files?.length }))}
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        if (file && file.size > 5 * 1024 * 1024) {
+                                            alert("O arquivo é muito grande (máximo 5MB). Por favor, escolha um arquivo menor.")
+                                            e.target.value = ''
+                                            setFormData(prev => ({ ...prev, has_doc_back: false }))
+                                            return
+                                        }
+                                        setFormData(prev => ({ ...prev, has_doc_back: !!e.target.files?.length }))
+                                    }}
                                 />
                             </div>
 
@@ -550,7 +571,16 @@ export default function RegisterPage() {
                                 </Label>
                                 <Input
                                     id="doc_selfie" name="doc_selfie" type="file" accept="image/*" className="hidden"
-                                    onChange={(e) => setFormData(prev => ({ ...prev, has_doc_selfie: !!e.target.files?.length }))}
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        if (file && file.size > 5 * 1024 * 1024) {
+                                            alert("O arquivo é muito grande (máximo 5MB). Por favor, escolha um arquivo menor.")
+                                            e.target.value = ''
+                                            setFormData(prev => ({ ...prev, has_doc_selfie: false }))
+                                            return
+                                        }
+                                        setFormData(prev => ({ ...prev, has_doc_selfie: !!e.target.files?.length }))
+                                    }}
                                 />
                             </div>
                         </div>
