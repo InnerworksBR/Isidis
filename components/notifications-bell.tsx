@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import useSWR from 'swr'
-import { Bell, Check, ExternalLink, MessageCircle } from 'lucide-react'
+import { Bell, Check, ExternalLink, MessageCircle, Sparkles, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '@/app/actions/notifications'
 import { useRouter } from 'next/navigation'
@@ -152,6 +152,14 @@ export function NotificationsBell({ currentUserId }: { currentUserId?: string })
                                                     <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center">
                                                         <MessageCircle className="w-4 h-4" />
                                                     </div>
+                                                ) : n.type === 'ADMIN_GIG_PENDING' ? (
+                                                    <div className="w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 flex items-center justify-center">
+                                                        <Sparkles className="w-4 h-4" />
+                                                    </div>
+                                                ) : n.type === 'ADMIN_USER_PENDING' ? (
+                                                    <div className="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                                                        <Users className="w-4 h-4" />
+                                                    </div>
                                                 ) : (
                                                     <div className="w-8 h-8 rounded-full bg-slate-500/20 text-slate-400 flex items-center justify-center">
                                                         <Bell className="w-3 h-3" />
@@ -180,7 +188,11 @@ export function NotificationsBell({ currentUserId }: { currentUserId?: string })
                         <Button
                             variant="ghost"
                             className="w-full text-xs text-indigo-400 hover:text-white h-8"
-                            onClick={() => { setOpen(false); router.push('/dashboard/notifications') }}
+                            onClick={() => {
+                                setOpen(false);
+                                const isAdmin = notifications.some((n: Notification) => n.type.startsWith('ADMIN_'));
+                                router.push(isAdmin ? '/admin' : '/dashboard/notifications')
+                            }}
                         >
                             Ver todas as notificações
                             <ExternalLink className="w-3 h-3 ml-2" />

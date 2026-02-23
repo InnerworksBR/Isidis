@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { sendReadingDelivered } from '@/lib/email'
 
 export interface ReadingCard {
     cardId: number
@@ -64,6 +65,38 @@ export async function sendReading(orderId: string, content: ReadingContent) {
     if (error) {
         console.error('[Reading] Send failed:', error.message)
         return { error: 'Erro ao enviar leitura.' }
+    }
+
+    // ── Disparar email para o cliente ─────────────────────────────────────────
+    try {
+        const { data: order } = await supabase
+            .from('orders')
+            .select(`
+                id,
+                gigs(title),
+                client:profiles!orders_client_id_fkey(full_name, email),
+                reader:profiles!orders_reader_id_fkey(full_name)
+            `)
+            .eq('id', orderId)
+            .single()
+
+        if (order) {
+            const client = order.client as any
+            const gig = order.gigs as any
+            const reader = order.reader as any
+
+            if (client?.email) {
+                await sendReadingDelivered({
+                    clientEmail: client.email,
+                    clientName: client.full_name || 'Cliente',
+                    orderId,
+                    gigTitle: gig?.title || 'Leitura de Tarot',
+                    readerName: reader?.full_name || 'Sua cartomante',
+                })
+            }
+        }
+    } catch (emailErr) {
+        console.error('[Reading] Falha ao enviar email de entrega:', emailErr)
     }
 
     revalidatePath('/dashboard/cartomante')
@@ -151,7 +184,38 @@ export async function sendPhysicalReading(orderId: string, content: PhysicalRead
         return { error: 'Erro ao enviar leitura.' }
     }
 
+    // ── Disparar email para o cliente ─────────────────────────────────────────
+    try {
+        const { data: order } = await supabase
+            .from('orders')
+            .select(`
+                id,
+                gigs(title),
+                client:profiles!orders_client_id_fkey(full_name, email),
+                reader:profiles!orders_reader_id_fkey(full_name)
+            `)
+            .eq('id', orderId)
+            .single()
+
+        if (order) {
+            const client = order.client as any
+            const gig = order.gigs as any
+            const reader = order.reader as any
+
+            if (client?.email) {
+                await sendReadingDelivered({
+                    clientEmail: client.email,
+                    clientName: client.full_name || 'Cliente',
+                    orderId,
+                    gigTitle: gig?.title || 'Leitura de Tarot',
+                    readerName: reader?.full_name || 'Sua cartomante',
+                })
+            }
+        }
+    } catch (emailErr) {
+        console.error('[Physical Reading] Falha ao enviar email de entrega:', emailErr)
+    }
+
     revalidatePath('/dashboard/cartomante')
     return { success: true }
 }
-

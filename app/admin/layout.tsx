@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LayoutDashboard, Users, Sparkles, DollarSign, LogOut, CheckCircle2, LifeBuoy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { NotificationsBell } from "@/components/notifications-bell";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -73,6 +74,7 @@ export default async function AdminLayout({
                 <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card/30 backdrop-blur-md">
                     <h1 className="text-lg font-semibold text-foreground">Painel Administrativo</h1>
                     <div className="flex items-center gap-4">
+                        <NotificationsBell currentUserId={user.id} />
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                             A
                         </div>

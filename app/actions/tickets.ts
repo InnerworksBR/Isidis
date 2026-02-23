@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { createNotification } from './notifications'
+import { sendTicketReply } from '@/lib/email'
 
 export type TicketCategory = 'REEMBOLSO' | 'SAQUE' | 'MUDANCA_PIX' | 'DUVIDA' | 'OUTRO';
 export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
@@ -114,6 +115,29 @@ export async function addTicketMessage({
                 content.length > 50 ? content.substring(0, 50) + '...' : content,
                 `/dashboard/tickets/${ticketId}`
             )
+
+            // Send email to user when admin responds
+            const { data: userProfile } = await supabase
+                .from('profiles')
+                .select('full_name, email')
+                .eq('id', receiverId)
+                .single()
+
+            if (userProfile?.email) {
+                const { data: ticketData } = await supabase
+                    .from('tickets')
+                    .select('subject')
+                    .eq('id', ticketId)
+                    .single()
+
+                await sendTicketReply({
+                    userEmail: userProfile.email,
+                    userName: userProfile.full_name || 'Usuário',
+                    ticketId,
+                    ticketSubject: ticketData?.subject || 'Suporte',
+                    replyPreview: content,
+                }).catch(err => console.error('[Ticket] Falha ao enviar email:', err))
+            }
         }
     } catch (err) {
         console.error('Failed to create notification', err)

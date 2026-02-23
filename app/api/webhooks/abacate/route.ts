@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import {
+    sendOrderPaidToReader,
+    sendOrderPaidToClient,
+    sendOrderCanceled,
+} from '@/lib/email'
 
 
 
@@ -46,7 +51,12 @@ export async function POST(request: Request) {
             // Buscar order pelo asaas_payment_id (que armazena o billing id do Abacate)
             const { data: order, error: findError } = await supabaseAdmin
                 .from('orders')
-                .select('id, reader_id, amount_reader_net, status')
+                .select(`
+                    id, reader_id, client_id, amount_reader_net, status,
+                    gigs(title),
+                    reader:profiles!orders_reader_id_fkey(full_name, email),
+                    client:profiles!orders_client_id_fkey(full_name, email)
+                `)
                 .eq('asaas_payment_id', billingId)
                 .single()
 
@@ -104,6 +114,38 @@ export async function POST(request: Request) {
             }
 
             console.log('Webhook: Pedido', order.id, 'atualizado para PAID')
+
+            // ── Disparar emails ──────────────────────────────────────────────
+            const reader = order.reader as any
+            const client = order.client as any
+            const gig = order.gigs as any
+            const gigTitle = gig?.title || 'Leitura de Tarot'
+
+            try {
+                await Promise.all([
+                    // Email para a cartomante
+                    reader?.email && sendOrderPaidToReader({
+                        readerEmail: reader.email,
+                        readerName: reader.full_name || 'Cartomante',
+                        orderId: order.id,
+                        gigTitle,
+                        clientName: client?.full_name || 'Cliente',
+                        amount: order.amount_reader_net,
+                    }),
+                    // Email para o cliente
+                    client?.email && sendOrderPaidToClient({
+                        clientEmail: client.email,
+                        clientName: client.full_name || 'Cliente',
+                        orderId: order.id,
+                        gigTitle,
+                        readerName: reader?.full_name || 'Sua cartomante',
+                    }),
+                ])
+                console.log('Webhook: Emails de confirmação enviados para pedido', order.id)
+            } catch (emailErr) {
+                // Não falhar o webhook por causa de email
+                console.error('Webhook: Falha ao enviar emails:', emailErr)
+            }
         }
 
         return NextResponse.json({ received: true })
