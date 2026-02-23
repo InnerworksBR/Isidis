@@ -21,7 +21,6 @@ export function Footer() {
                     <div>
                         <h4 className="text-sm font-bold uppercase tracking-wider mb-4 text-foreground">Plataforma</h4>
                         <ul className="space-y-2.5">
-                            <li><Link href="/cartomantes" className="text-sm text-muted-foreground hover:text-primary transition-colors">Explorar Cartomantes</Link></li>
                             <li><Link href="/register" className="text-sm text-muted-foreground hover:text-primary transition-colors">Criar Conta</Link></li>
                             <li><Link href="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">Entrar</Link></li>
                         </ul>

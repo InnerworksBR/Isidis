@@ -12,6 +12,7 @@ import { ChatWindow } from '@/components/chat/chat-window'
 import { getYouTubeEmbedUrl } from '@/lib/utils'
 import { AnalyticsTracker } from '@/components/analytics-tracker'
 import { ClickTracker } from '@/components/click-tracker'
+import { getContrastColor, adjustColor, hexToRgba } from '@/lib/color-utils'
 
 export default async function CartomantePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -51,8 +52,31 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
         : '5.0'
     const totalReviews = reviewsList.length
 
+    const profileColor = profile.profile_color || '#0a0a0f'
+    const contrastColor = getContrastColor(profileColor)
+    const secondaryColor = contrastColor === '#ffffff' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
+    const mutedTextColor = contrastColor === '#ffffff' ? 'text-slate-300' : 'text-slate-700'
+    const labelColor = contrastColor === '#ffffff' ? 'text-slate-400' : 'text-slate-600'
+    const sectionBg = contrastColor === '#ffffff' ? 'bg-white/5' : 'bg-black/5'
+    const cardBg = contrastColor === '#ffffff' ? 'bg-[#12121a]' : 'bg-white'
+    const borderSemi = contrastColor === '#ffffff' ? 'border-white/10' : 'border-black/10'
+    const borderSoft = contrastColor === '#ffffff' ? 'border-white/5' : 'border-black/5'
+
+    const adaptiveCardStyle = {
+        backgroundColor: contrastColor === '#ffffff'
+            ? adjustColor(profileColor, 15)
+            : adjustColor(profileColor, -10),
+        borderColor: contrastColor === '#ffffff' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+    }
+
+    const adaptiveInnerCardStyle = {
+        backgroundColor: contrastColor === '#ffffff'
+            ? adjustColor(profileColor, 5)
+            : adjustColor(profileColor, -5),
+    }
+
     return (
-        <div className="min-h-screen text-slate-200 font-sans relative" style={{ backgroundColor: profile.profile_color || '#0a0a0f' }}>
+        <div className={`min-h-screen font-sans relative ${contrastColor === '#ffffff' ? 'text-slate-200' : 'text-slate-900'}`} style={{ backgroundColor: profileColor }}>
             {gigs && gigs.length > 0 && (
                 <AnalyticsTracker
                     gigId={gigs[0].id}
@@ -69,7 +93,10 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                 ) : (
                     <div className="w-full h-full bg-gradient-to-r from-indigo-900 to-purple-900 opacity-50" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/60 to-transparent" />
+                <div
+                    className="absolute inset-0 bg-gradient-to-t"
+                    style={{ backgroundImage: `linear-gradient(to top, ${profileColor}, ${hexToRgba(profileColor, 0.6)}, transparent)` }}
+                />
 
                 <div className="absolute bottom-0 left-0 w-full p-6 md:p-12">
                     <div className="container mx-auto px-4 flex flex-col md:flex-row items-end gap-8">
@@ -89,21 +116,21 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                         {/* Info */}
                         <div className="flex-1 mb-2">
                             <div className="flex items-center gap-3 mb-2">
-                                <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">{profile.full_name}</h1>
+                                <h1 className={`text-3xl md:text-5xl font-bold tracking-tight ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>{profile.full_name}</h1>
 
                                 {profile.instagram_handle && (
-                                    <Link href={`https://instagram.com/${profile.instagram_handle}`} target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-pink-500/20 hover:text-pink-500 transition-colors">
+                                    <Link href={`https://instagram.com/${profile.instagram_handle}`} target="_blank" className={`p-2 ${sectionBg} rounded-full hover:bg-pink-500/20 hover:text-pink-500 transition-colors`}>
                                         <Instagram className="w-5 h-5" />
                                     </Link>
                                 )}
                                 {profile.youtube_url && (
-                                    <Link href={profile.youtube_url} target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-red-500/20 hover:text-red-500 transition-colors">
+                                    <Link href={profile.youtube_url} target="_blank" className={`p-2 ${sectionBg} rounded-full hover:bg-red-500/20 hover:text-red-500 transition-colors`}>
                                         <Youtube className="w-5 h-5" />
                                     </Link>
                                 )}
                             </div>
 
-                            <p className="text-lg md:text-xl text-slate-300 font-medium mb-4 max-w-2xl">
+                            <p className={`text-lg md:text-xl font-medium mb-4 max-w-2xl ${mutedTextColor}`}>
                                 {profile.tagline || profile.bio?.slice(0, 100) + '...'}
                             </p>
 
@@ -138,24 +165,24 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
 
                         {/* About */}
                         <section>
-                            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                            <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>
                                 <User className="w-6 h-6 text-indigo-500" />
                                 Sobre Mim
                             </h3>
-                            <div className="prose prose-invert prose-lg max-w-none text-slate-300 leading-relaxed whitespace-pre-line">
+                            <div className={`prose prose-lg max-w-none leading-relaxed whitespace-pre-line ${contrastColor === '#ffffff' ? 'prose-invert text-slate-300' : 'text-slate-800'}`}>
                                 {profile.bio}
                             </div>
                         </section>
 
                         {profile.youtube_url && getYouTubeEmbedUrl(profile.youtube_url) && (
                             <>
-                                <div className="h-px bg-white/5" />
+                                <div className={`h-px ${borderSoft}`} />
                                 <section>
-                                    <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                                    <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>
                                         <Youtube className="w-6 h-6 text-red-500" />
                                         Apresentação em Vídeo
                                     </h3>
-                                    <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/10 bg-[#12121a] shadow-2xl">
+                                    <div className={`aspect-video w-full rounded-2xl overflow-hidden border shadow-2xl`} style={adaptiveCardStyle}>
                                         <iframe
                                             src={getYouTubeEmbedUrl(profile.youtube_url)!}
                                             title="YouTube video player"
@@ -169,21 +196,21 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                             </>
                         )}
 
-                        <div className="h-px bg-white/5" />
+                        <div className={`h-px ${borderSoft}`} />
 
                         {/* Specialties */}
                         <section>
-                            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                            <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>
                                 <Sparkles className="w-6 h-6 text-indigo-500" />
                                 Especialidades & Ferramentas
                             </h3>
 
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Áreas de Foco</h4>
+                                    <h4 className={`text-sm font-bold uppercase tracking-wider mb-4 ${labelColor}`}>Áreas de Foco</h4>
                                     <div className="flex flex-wrap gap-3">
                                         {profile.specialties?.map((spec: string) => (
-                                            <span key={spec} className="px-4 py-2 bg-[#1a1a24] border border-white/5 rounded-xl text-indigo-300 font-medium">
+                                            <span key={spec} className={`px-4 py-2 border rounded-xl font-medium ${contrastColor === '#ffffff' ? 'text-indigo-300' : 'text-indigo-600'}`} style={adaptiveInnerCardStyle}>
                                                 {spec}
                                             </span>
                                         ))}
@@ -192,10 +219,10 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
 
                                 {profile.decks_used && profile.decks_used.length > 0 && (
                                     <div>
-                                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Baralhos Utilizados</h4>
+                                        <h4 className={`text-sm font-bold uppercase tracking-wider mb-4 ${labelColor}`}>Baralhos Utilizados</h4>
                                         <div className="flex flex-wrap gap-3">
                                             {profile.decks_used.map((deck: string) => (
-                                                <span key={deck} className="px-4 py-2 bg-[#1a1a24] border border-white/5 rounded-xl text-slate-300 text-sm">
+                                                <span key={deck} className={`px-4 py-2 border rounded-xl text-sm ${contrastColor === '#ffffff' ? 'text-slate-300' : 'text-slate-700'}`} style={adaptiveInnerCardStyle}>
                                                     {deck}
                                                 </span>
                                             ))}
@@ -205,18 +232,18 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                             </div>
                         </section>
 
-                        <div className="h-px bg-white/5" />
+                        <div className={`h-px ${borderSoft}`} />
 
                         {/* Recent Reviews */}
                         <section>
-                            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                            <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>
                                 <MessageCircle className="w-6 h-6 text-indigo-500" />
                                 Depoimentos de Clientes
                             </h3>
                             {reviewsList.length > 0 ? (
                                 <div className="space-y-6">
                                     {reviewsList.map((review: any) => (
-                                        <div key={review.id} className="bg-[#12121a] p-6 rounded-2xl border border-white/5">
+                                        <div key={review.id} className={`p-6 rounded-2xl border shadow-sm`} style={adaptiveCardStyle}>
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-full bg-slate-800 overflow-hidden">
@@ -228,8 +255,8 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                                                         />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-white">{review.profiles.full_name}</p>
-                                                        <p className="text-xs text-slate-500">{new Date(review.created_at).toLocaleDateString()}</p>
+                                                        <p className={`font-bold ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>{review.profiles.full_name}</p>
+                                                        <p className={`text-xs ${labelColor}`}>{new Date(review.created_at).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex text-amber-400">
@@ -252,8 +279,8 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                     {/* RIGHT COLUMN (Gigs Sidebar) */}
                     <div className="lg:col-span-1 space-y-8">
                         <div className="sticky top-24">
-                            <div className="bg-[#12121a] rounded-3xl p-6 border border-white/10 shadow-xl mb-8">
-                                <h3 className="text-xl font-bold text-white mb-6">Serviços Disponíveis</h3>
+                            <div className={`rounded-3xl p-6 border shadow-xl mb-8`} style={adaptiveCardStyle}>
+                                <h3 className={`text-xl font-bold mb-6 ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>Serviços Disponíveis</h3>
                                 {gigs && gigs.length > 0 ? (
                                     <div className="space-y-4">
                                         {gigs.map((gig) => (
@@ -263,7 +290,7 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                                                     readerId={profile.id}
                                                     eventType="impression"
                                                 />
-                                                <Link href={`/servico/${gig.id}`} className="block group bg-[#0a0a0f] p-4 rounded-xl border border-white/5 hover:border-indigo-500 transition-colors cursor-pointer">
+                                                <Link href={`/servico/${gig.id}`} className={`block group p-4 rounded-xl border transition-all cursor-pointer hover:shadow-lg`} style={adaptiveInnerCardStyle}>
                                                     {gig.image_url && (
                                                         <div className="w-full h-32 mb-4 rounded-lg overflow-hidden relative">
                                                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -275,20 +302,20 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                                                         </div>
                                                     )}
                                                     <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="font-bold text-white group-hover:text-indigo-400 transition-colors line-clamp-2">
+                                                        <h4 className={`font-bold transition-colors line-clamp-2 ${contrastColor === '#ffffff' ? 'text-white group-hover:text-indigo-400' : 'text-slate-900 group-hover:text-indigo-600'}`}>
                                                             {gig.title}
                                                         </h4>
                                                         <span className="shrink-0 bg-indigo-500/10 text-indigo-400 text-xs font-bold px-2 py-1 rounded">
                                                             {gig.category || 'Geral'}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
+                                                    <div className={`flex items-center gap-4 text-xs mb-4 ${labelColor}`}>
                                                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {gig.delivery_time_hours}h</span>
                                                         <span className="flex items-center gap-1">{gig.delivery_method === 'PHYSICAL_PHOTO' ? <Camera className="w-3 h-3" /> : <Mic className="w-3 h-3" />} {gig.delivery_method === 'PHYSICAL_PHOTO' ? 'Foto' : 'Digital'}</span>
                                                     </div>
-                                                    <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                                                        <span className="text-xs text-slate-500">A partir de</span>
-                                                        <span className="text-lg font-bold text-white">R$ {(gig.price / 100).toFixed(2)}</span>
+                                                    <div className={`flex items-center justify-between pt-3 border-t ${borderSoft}`}>
+                                                        <span className={`text-xs ${labelColor}`}>A partir de</span>
+                                                        <span className={`text-lg font-bold ${contrastColor === '#ffffff' ? 'text-white' : 'text-indigo-600'}`}>R$ {(gig.price / 100).toFixed(2)}</span>
                                                     </div>
                                                     {/* We keep the ClickTracker but it now leads to details page, which is effectively a preliminary "buy" step */}
                                                     <ClickTracker gigId={gig.id} readerId={profile.id} eventType="click_buy">
@@ -305,13 +332,13 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                                 )}
                             </div>
 
-                            <div className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-3xl p-6 border border-white/10 text-center">
-                                <Shield className="w-10 h-10 text-indigo-300 mx-auto mb-4" />
-                                <h4 className="text-lg font-bold text-white mb-2">Satisfação Garantida</h4>
-                                <p className="text-sm text-slate-300 mb-4">
+                            <div className={`rounded-3xl p-6 border text-center shadow-lg`} style={adaptiveCardStyle}>
+                                <Shield className={`w-10 h-10 mx-auto mb-4 ${contrastColor === '#ffffff' ? 'text-indigo-300' : 'text-indigo-600'}`} />
+                                <h4 className={`text-lg font-bold mb-2 ${contrastColor === '#ffffff' ? 'text-white' : 'text-indigo-900'}`}>Satisfação Garantida</h4>
+                                <p className={`text-sm mb-4 ${mutedTextColor}`}>
                                     Seus fundos ficam retidos com segurança até que sua leitura seja entregue.
                                 </p>
-                                <div className="text-xs text-indigo-300 flex items-center justify-center gap-2">
+                                <div className={`text-xs flex items-center justify-center gap-2 ${contrastColor === '#ffffff' ? 'text-indigo-300' : 'text-indigo-600 font-bold'}`}>
                                     <CheckCircle2 className="w-3 h-3" /> Cartomante Verificada
                                 </div>
                             </div>

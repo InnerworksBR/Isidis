@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { getContrastColor, hexToRgba, adjustColor } from '@/lib/color-utils'
 
 interface ProfileFormProps {
     email: string
@@ -509,63 +510,90 @@ export function ProfileForm({ email, profile }: ProfileFormProps) {
                             </div>
 
                             {/* Card Preview */}
-                            <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group" style={{ backgroundColor: formData.profile_color }}>
-                                <div className="h-32 bg-indigo-900 relative overflow-hidden">
-                                    {formData.cover_url && (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img src={formData.cover_url} alt="Cover" className="w-full h-full object-cover opacity-80" />
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#12121a]" />
-                                </div>
+                            {
+                                (() => {
+                                    const contrastColor = getContrastColor(formData.profile_color)
+                                    const mutedTextColor = contrastColor === '#ffffff' ? 'text-slate-500' : 'text-slate-600'
+                                    const labelColor = contrastColor === '#ffffff' ? 'text-slate-500' : 'text-slate-600'
+                                    const borderSoft = contrastColor === '#ffffff' ? 'border-white/5' : 'border-black/5'
 
-                                <div className="px-6 pb-6 relative z-10 -mt-12">
-                                    <div className="w-24 h-24 rounded-full border-4 border-[#12121a] overflow-hidden bg-slate-800 mb-4 shadow-lg">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={formData.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"}
-                                            alt="Avatar"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
+                                    const adaptiveCardStyle = {
+                                        backgroundColor: contrastColor === '#ffffff'
+                                            ? adjustColor(formData.profile_color, 15)
+                                            : adjustColor(formData.profile_color, -10),
+                                        borderColor: contrastColor === '#ffffff' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                                    }
 
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <h4 className="text-xl font-bold text-white">{formData.full_name || 'Seu Nome'}</h4>
-                                            <p className="text-xs text-slate-500 mt-1 line-clamp-2 max-w-[200px]">
-                                                {formData.tagline || 'Seu slogan aparecerá aqui...'}
-                                            </p>
+                                    const adaptiveInnerCardStyle = {
+                                        backgroundColor: contrastColor === '#ffffff'
+                                            ? adjustColor(formData.profile_color, 5)
+                                            : adjustColor(formData.profile_color, -5),
+                                    }
+
+                                    return (
+                                        <div className={`rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative group ${contrastColor === '#ffffff' ? 'text-slate-200' : 'text-slate-900'}`} style={{ backgroundColor: formData.profile_color }}>
+                                            <div className="h-32 bg-indigo-900 relative overflow-hidden">
+                                                {formData.cover_url && (
+                                                    // eslint-disable-next-line @next/next/no-img-element
+                                                    <img src={formData.cover_url} alt="Cover" className="w-full h-full object-cover opacity-80" />
+                                                )}
+                                                <div
+                                                    className="absolute inset-0 bg-gradient-to-t"
+                                                    style={{ backgroundImage: `linear-gradient(to top, ${formData.profile_color}, ${hexToRgba(formData.profile_color, 0.6)}, transparent)` }}
+                                                />
+                                            </div>
+
+                                            <div className="px-6 pb-6 relative z-10 -mt-12">
+                                                <div className="w-24 h-24 rounded-full border-4 border-[#12121a] overflow-hidden bg-slate-800 mb-4 shadow-lg">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img
+                                                        src={formData.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"}
+                                                        alt="Avatar"
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div>
+                                                        <h4 className={`text-xl font-bold ${contrastColor === '#ffffff' ? 'text-white' : 'text-black'}`}>{formData.full_name || 'Seu Nome'}</h4>
+                                                        <p className={`text-xs mt-1 line-clamp-2 max-w-[200px] ${mutedTextColor}`}>
+                                                            {formData.tagline || 'Seu slogan aparecerá aqui...'}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 text-amber-400 bg-amber-400/10 px-2 py-1 rounded-lg">
+                                                        <Star className="w-3 h-3 fill-amber-400" />
+                                                        <span className="text-xs font-bold">4.9</span>
+                                                        <span className="text-[10px] opacity-70">(240)</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-2 mb-6">
+                                                    {formData.specialties.slice(0, 2).map(spec => (
+                                                        <span key={spec} className={`text-[10px] px-2 py-1 rounded border ${contrastColor === '#ffffff' ? 'text-slate-400 border-white/5' : 'text-slate-700 border-slate-200'}`} style={adaptiveInnerCardStyle}>
+                                                            {spec}
+                                                        </span>
+                                                    ))}
+                                                    {formData.specialties.length > 2 && (
+                                                        <span className={`text-[10px] px-2 py-1 rounded border ${contrastColor === '#ffffff' ? 'text-slate-400 border-white/5' : 'text-slate-700 border-slate-200'}`} style={adaptiveInnerCardStyle}>
+                                                            +{formData.specialties.length - 2} mais
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <div className={`pt-4 border-t flex items-center justify-between ${borderSoft}`}>
+                                                    <div>
+                                                        <p className={`text-[10px] uppercase font-bold tracking-wider ${labelColor}`}>A partir de</p>
+                                                        <p className="text-xl font-bold text-amber-400">$45<span className={`text-sm font-normal ${mutedTextColor}`}>/sessão</span></p>
+                                                    </div>
+                                                    <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-full px-4 text-xs h-8">
+                                                        Ver Perfil Completo
+                                                    </Button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-amber-400 bg-amber-400/10 px-2 py-1 rounded-lg">
-                                            <Star className="w-3 h-3 fill-amber-400" />
-                                            <span className="text-xs font-bold">4.9</span>
-                                            <span className="text-[10px] opacity-70">(240)</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {formData.specialties.slice(0, 2).map(spec => (
-                                            <span key={spec} className="text-[10px] bg-white/5 text-slate-400 px-2 py-1 rounded border border-white/5">
-                                                {spec}
-                                            </span>
-                                        ))}
-                                        {formData.specialties.length > 2 && (
-                                            <span className="text-[10px] bg-white/5 text-slate-400 px-2 py-1 rounded border border-white/5">
-                                                +{formData.specialties.length - 2} mais
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                                        <div>
-                                            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">A partir de</p>
-                                            <p className="text-xl font-bold text-amber-400">$45<span className="text-sm font-normal text-slate-600">/sessão</span></p>
-                                        </div>
-                                        <Button size="sm" className="bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-full px-4 text-xs h-8">
-                                            Ver Perfil Completo
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                                    )
+                                })()
+                            }
                         </div>
 
                         {/* Pro Tip Card */}

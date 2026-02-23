@@ -11,6 +11,7 @@ import { PageSection } from '@/components/layout/PageSection'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { cn } from '@/lib/utils'
 import { InteractiveTarotCards } from '@/components/interactive-tarot-cards'
+import { BetaBanner } from '@/components/beta-banner'
 
 async function getFeaturedReaders(): Promise<PractitionerProps[]> {
   const supabase = await createClient()
@@ -63,6 +64,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col">
+      <BetaBanner />
       {/* =============== HERO =============== */}
       <PageSection padding="xl" withOrbs withShootingStars className="pt-28 pb-32 text-center md:text-left">
         <PageContainer>

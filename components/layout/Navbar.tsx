@@ -30,12 +30,6 @@ export async function Navbar() {
 
                 {/* Nav Links */}
                 <div className="flex items-center gap-1">
-                    <Link
-                        href="/cartomantes"
-                        className="nav-link text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary/5 text-muted-foreground hover:text-foreground"
-                    >
-                        Cartomantes
-                    </Link>
 
                     {user ? (
                         <div className="flex items-center gap-2">
