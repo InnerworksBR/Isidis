@@ -3,8 +3,8 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 // Configure your verified sender domain in Resend
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'MagicPlace <noreply@magicplace.com.br>'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://magicplace.com.br'
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Isidis <noreply@isidis.com.br>'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://isidis.com.br'
 
 // ─── Shared Layout ──────────────────────────────────────────────────────────
 
@@ -23,9 +23,8 @@ function emailLayout(content: string): string {
         <table width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
           <!-- Header -->
           <tr>
-            <td style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-              <p style="margin:0;font-size:28px;">🔮</p>
-              <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">MagicPlace</h1>
+            <td style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border-radius:12px 12px 0 0;padding:28px 40px;text-align:center;">
+              <img src="${APP_URL}/logo.png" alt="Isidis" width="120" style="display:block;margin:0 auto;max-width:120px;" />
             </td>
           </tr>
           <!-- Body -->
@@ -38,8 +37,8 @@ function emailLayout(content: string): string {
           <tr>
             <td style="background:#120c24;border-radius:0 0 12px 12px;border:1px solid #2d1f4e;border-top:none;padding:20px 40px;text-align:center;">
               <p style="margin:0;color:#6b5fa0;font-size:12px;">
-                Você está recebendo este email porque tem uma conta na MagicPlace.<br/>
-                <a href="${APP_URL}" style="color:#8b5cf6;text-decoration:none;">magicplace.com.br</a>
+                Você está recebendo este email porque tem uma conta na Isidis.<br/>
+                <a href="${APP_URL}" style="color:#8b5cf6;text-decoration:none;">isidis.com.br</a>
               </p>
             </td>
           </tr>
