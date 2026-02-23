@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createClientJs } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
+import { sendReaderApproved, sendReaderRejected } from '@/lib/email'
 
 // Helper to get admin client
 const getAdminClient = () => {
@@ -40,6 +41,13 @@ export async function approveReader(readerId: string) {
         throw new Error('Unauthorized')
     }
 
+    // Buscar dados do cartomante antes de atualizar
+    const { data: readerProfile } = await supabase
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', readerId)
+        .single()
+
     // 2. Update status using Service Role (Bypass RLS)
     const supabaseAdmin = getAdminClient()
     const { error } = await supabaseAdmin
@@ -50,6 +58,18 @@ export async function approveReader(readerId: string) {
     if (error) {
         console.error('Error approving reader:', error)
         throw new Error('Failed to approve reader')
+    }
+
+    // ── Disparar email para o cartomante ──────────────────────────────────────
+    try {
+        if (readerProfile?.email) {
+            await sendReaderApproved({
+                readerEmail: readerProfile.email,
+                readerName: readerProfile.full_name || 'Cartomante',
+            })
+        }
+    } catch (emailErr) {
+        console.error('[Admin] Falha ao enviar email de aprovação:', emailErr)
     }
 
     revalidatePath('/admin/approvals')
@@ -74,6 +94,13 @@ export async function rejectReader(readerId: string) {
         throw new Error('Unauthorized')
     }
 
+    // Buscar dados do cartomante antes de atualizar
+    const { data: readerProfile } = await supabase
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', readerId)
+        .single()
+
     // 2. Update status using Service Role (Bypass RLS)
     const supabaseAdmin = getAdminClient()
     const { error } = await supabaseAdmin
@@ -84,6 +111,18 @@ export async function rejectReader(readerId: string) {
     if (error) {
         console.error('Error rejecting reader:', error)
         throw new Error('Failed to reject reader')
+    }
+
+    // ── Disparar email para o cartomante ──────────────────────────────────────
+    try {
+        if (readerProfile?.email) {
+            await sendReaderRejected({
+                readerEmail: readerProfile.email,
+                readerName: readerProfile.full_name || 'Cartomante',
+            })
+        }
+    } catch (emailErr) {
+        console.error('[Admin] Falha ao enviar email de rejeição:', emailErr)
     }
 
     revalidatePath('/admin/approvals')

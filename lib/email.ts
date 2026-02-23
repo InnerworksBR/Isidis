@@ -319,3 +319,124 @@ export async function sendAdminUserPending({
         html: body,
     })
 }
+
+// ─── Email: Gig Aprovada → Cartomante ───────────────────────────────────────
+
+export async function sendGigApproved({
+    readerEmail,
+    readerName,
+    gigTitle,
+    gigId,
+}: {
+    readerEmail: string
+    readerName: string
+    gigTitle: string
+    gigId: string
+}) {
+    const gigUrl = `${APP_URL}/dashboard/cartomante/gigs`
+
+    const body = emailLayout(`
+        ${h2('✅ Seu serviço foi aprovado!')}
+        ${p(`Olá, <strong style="color:#e2d9f3;">${readerName}</strong>!`)}
+        ${p(`Ótimas notícias: o seu serviço foi revisado e <strong style="color:#a7f3d0;">aprovado</strong> pela nossa equipe. Ele já está visível na plataforma para os clientes.`)}
+        ${infoBox(`<strong>Serviço:</strong> ${gigTitle}`)}
+        <div style="text-align:center;">
+            ${primaryButton('Ver Meus Serviços', gigUrl)}
+        </div>
+    `)
+
+    return resend.emails.send({
+        from: FROM_EMAIL,
+        to: readerEmail,
+        subject: `✅ Serviço aprovado — ${gigTitle}`,
+        html: body,
+    })
+}
+
+// ─── Email: Gig Rejeitada → Cartomante ──────────────────────────────────────
+
+export async function sendGigRejected({
+    readerEmail,
+    readerName,
+    gigTitle,
+}: {
+    readerEmail: string
+    readerName: string
+    gigTitle: string
+}) {
+    const gigsUrl = `${APP_URL}/dashboard/cartomante/gigs`
+
+    const body = emailLayout(`
+        ${h2('Serviço não aprovado')}
+        ${p(`Olá, <strong style="color:#e2d9f3;">${readerName}</strong>.`)}
+        ${p(`Infelizmente o seu serviço <strong style="color:#e2d9f3;">${gigTitle}</strong> não foi aprovado nesta revisão.`)}
+        ${infoBox('Você pode editar o serviço e submetê-lo novamente para aprovação. Em caso de dúvidas, entre em contato com nosso suporte.')}
+        <div style="text-align:center;">
+            ${primaryButton('Editar Serviços', gigsUrl)}
+        </div>
+    `)
+
+    return resend.emails.send({
+        from: FROM_EMAIL,
+        to: readerEmail,
+        subject: `Serviço não aprovado — ${gigTitle}`,
+        html: body,
+    })
+}
+
+// ─── Email: Cartomante Aprovada ──────────────────────────────────────────────
+
+export async function sendReaderApproved({
+    readerEmail,
+    readerName,
+}: {
+    readerEmail: string
+    readerName: string
+}) {
+    const dashboardUrl = `${APP_URL}/dashboard/cartomante`
+
+    const body = emailLayout(`
+        ${h2('🎉 Sua conta foi aprovada!')}
+        ${p(`Olá, <strong style="color:#e2d9f3;">${readerName}</strong>!`)}
+        ${p('Sua solicitação para atuar como cartomante na plataforma foi <strong style="color:#a7f3d0;">aprovada</strong>. Agora você pode criar seus serviços e começar a atender clientes.')}
+        ${infoBox('Acesse seu painel, crie seus primeiros serviços e aguarde a aprovação para começar a receber pedidos.')}
+        <div style="text-align:center;">
+            ${primaryButton('Acessar Meu Painel', dashboardUrl)}
+        </div>
+    `)
+
+    return resend.emails.send({
+        from: FROM_EMAIL,
+        to: readerEmail,
+        subject: '🎉 Sua conta de cartomante foi aprovada!',
+        html: body,
+    })
+}
+
+// ─── Email: Cartomante Rejeitada ─────────────────────────────────────────────
+
+export async function sendReaderRejected({
+    readerEmail,
+    readerName,
+}: {
+    readerEmail: string
+    readerName: string
+}) {
+    const body = emailLayout(`
+        ${h2('Solicitação não aprovada')}
+        ${p(`Olá, <strong style="color:#e2d9f3;">${readerName}</strong>.`)}
+        ${p('Após análise, sua solicitação para atuar como cartomante na plataforma não foi aprovada neste momento.')}
+        ${infoBox('Em caso de dúvidas ou para mais informações, entre em contato com nosso suporte. Estamos à disposição para ajudar.')}
+        <div style="text-align:center;">
+            ${primaryButton('Abrir Ticket de Suporte', `${APP_URL}/dashboard/tickets`)}
+        </div>
+    `)
+
+    return resend.emails.send({
+        from: FROM_EMAIL,
+        to: readerEmail,
+        subject: 'Atualização sobre sua solicitação na Isidis',
+        html: body,
+    })
+}
+
