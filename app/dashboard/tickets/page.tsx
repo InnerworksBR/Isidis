@@ -31,7 +31,7 @@ export default async function TicketsPage() {
     const tickets = await getTickets()
 
     return (
-        <div className="max-w-6xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-6 p-4 md:p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold">Suporte</h1>
@@ -41,7 +41,7 @@ export default async function TicketsPage() {
             </div>
 
             {tickets.length === 0 ? (
-                <Card className="border-dashed py-12">
+                <Card className="border-dashed py-8">
                     <CardContent className="flex flex-col items-center justify-center text-center space-y-4">
                         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                             <LifeBuoy className="w-8 h-8 text-primary" />
@@ -60,7 +60,7 @@ export default async function TicketsPage() {
                     {tickets.map((ticket) => (
                         <Link key={ticket.id} href={`/dashboard/tickets/${ticket.id}`}>
                             <Card className="hover:border-primary/50 transition-colors cursor-pointer group">
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
                                     <div className="flex items-center gap-3">
                                         <Badge variant="outline" className={statusMap[ticket.status].color}>
                                             {statusMap[ticket.status].label}

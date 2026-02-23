@@ -7,16 +7,14 @@ import { Label } from '@/components/ui/label'
 import { login } from '@/app/auth/actions'
 import Link from 'next/link'
 import { LogIn, Sparkles, Eye, EyeOff } from 'lucide-react'
+import { PageSection } from '@/components/layout/PageSection'
 
 export default function LoginPage() {
     const [state, formAction] = useActionState(login, null)
     const [showPassword, setShowPassword] = useState(false)
 
     return (
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-            {/* Background orbs */}
-            <div className="orb orb-primary w-80 h-80 -top-40 -right-40 animate-float" />
-            <div className="orb orb-accent w-64 h-64 -bottom-32 -left-32 animate-float-slow" />
+        <PageSection padding="none" withOrbs withShootingStars className="min-h-screen flex items-center justify-center">
 
             <div className="w-full max-w-md relative z-10 animate-fade-in-up">
                 <div className="text-center mb-8">
@@ -87,6 +85,6 @@ export default function LoginPage() {
                     </Link>
                 </p>
             </div>
-        </div>
+        </PageSection>
     )
 }

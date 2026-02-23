@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Search, BookOpen, User, LayoutGrid, Package, MessageCircle, Wallet } from 'lucide-react'
+import { Home, Search, BookOpen, User, LayoutGrid, Package, MessageCircle, Wallet, Tag } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function DashboardBottomNav() {
@@ -59,6 +59,12 @@ export function DashboardBottomNav() {
             href: '/dashboard/cartomante/mensagens',
             icon: MessageCircle,
             active: pathname.startsWith('/dashboard/cartomante/mensagens')
+        },
+        {
+            label: 'Gigs',
+            href: '/dashboard/cartomante/gigs',
+            icon: Tag,
+            active: pathname.startsWith('/dashboard/cartomante/gigs')
         },
         {
             label: 'Carteira',

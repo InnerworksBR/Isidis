@@ -57,7 +57,7 @@ export function InteractiveTarotCards() {
                                 <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5">
                                     <Star className="w-6 h-6 text-primary/40" />
                                 </div>
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Tocar para Revelar</div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Clique para Revelar</div>
                             </div>
                             {/* Front */}
                             <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl glass-strong border-white/20 p-1 shadow-2xl overflow-hidden">
@@ -86,7 +86,7 @@ export function InteractiveTarotCards() {
                                 <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5">
                                     <Star className="w-6 h-6 text-primary/40" />
                                 </div>
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Tocar para Revelar</div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-primary/60">Clique para Revelar</div>
                             </div>
                             {/* Front */}
                             <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl glass-strong border-white/20 p-1 shadow-2xl overflow-hidden">

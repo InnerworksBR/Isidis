@@ -11,6 +11,7 @@ import { CartomanteSidebar } from '@/components/cartomante-sidebar'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { PageSection } from '@/components/layout/PageSection'
 import { SearchInput } from '@/components/ui/search-input'
+import { MainHero } from '@/components/marketing/MainHero'
 
 export default async function OrdersPage({
     searchParams,
@@ -146,9 +147,9 @@ export default async function OrdersPage({
             return { label: 'LEITURA PADRÃO', color: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/25' }
         }
         if (status === 'DELIVERED') return { label: 'ENTREGUE', color: 'bg-green-500/15 text-green-400 border-green-500/25' }
-        if (status === 'COMPLETED') return { label: 'CONCLUÍDO', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25' }
+        if (status === 'COMPLETED') return { label: 'CONCLUÍDO', color: 'bg-green-500/15 text-green-400 border-green-500/25' }
         if (status === 'PENDING_PAYMENT') return { label: 'PAGAMENTO PENDENTE', color: 'bg-amber-500/15 text-amber-400 border-amber-500/25' }
-        if (status === 'CANCELED') return { label: 'CANCELADO', color: 'bg-slate-500/15 text-slate-400 border-slate-500/25' }
+        if (status === 'CANCELED') return { label: 'CANCELADO', color: 'bg-red-500/15 text-red-400 border-red-500/25' }
         return { label: status, color: 'bg-slate-500/15 text-slate-400 border-slate-500/25' }
     }
 
@@ -164,30 +165,28 @@ export default async function OrdersPage({
 
             {/* ──── Main Content ──── */}
             <main className="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide pb-24 md:pb-8">
+                <MainHero
+                    className="pt-12 pb-12 px-4 md:px-8 mb-8"
+                    padding="none"
+                    maxWidth="full"
+                    title="Pedidos Profissionais"
+                    description="Gerencie suas consultas místicas e entregas com agilidade."
+                    withMockup={false}
+                >
+                    <div className="flex flex-col sm:flex-row items-center gap-3 mt-6">
+                        <SearchInput placeholder="Buscar por cliente ou ID..." />
+
+                        <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 hover:text-indigo-300 hover:border-indigo-500/30 transition-all w-full sm:w-auto backdrop-blur-sm glass">
+                            <Calendar className="w-4 h-4" />
+                            Período
+                        </button>
+                        <span className="hidden sm:inline-flex text-[10px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/20 px-4 py-2 rounded-full whitespace-nowrap">
+                            {totalActive} Ativos
+                        </span>
+                    </div>
+                </MainHero>
+
                 <PageContainer className="px-4 md:px-8 py-6 md:py-12">
-
-                    {/* Header */}
-                    <PageSection padding="none" withOrbs className="mb-8">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div>
-                                <h1 className="text-3xl font-bold text-white mb-2">Pedidos Profissionais</h1>
-                                <p className="text-sm text-slate-400">Gerencie suas consultas místicas e entregas.</p>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row items-center gap-3">
-                                <SearchInput placeholder="Buscar por cliente ou ID..." />
-
-                                <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 hover:text-indigo-300 hover:border-indigo-500/30 transition-all w-full sm:w-auto backdrop-blur-sm">
-                                    <Calendar className="w-4 h-4" />
-                                    Período
-                                </button>
-                                <span className="hidden sm:inline-flex text-[10px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/20 px-2.5 py-1 rounded-full whitespace-nowrap">
-                                    {totalActive} Ativos
-                                </span>
-                            </div>
-                        </div>
-                    </PageSection>
-
                     {/* Tabs */}
                     <div className="flex items-center gap-6 border-b border-white/10 mb-8 overflow-x-auto scrollbar-hide">
                         <Link

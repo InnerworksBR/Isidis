@@ -178,7 +178,7 @@ export default async function AnalyticsPage() {
                                     <Calendar className="w-4 h-4" />
                                     Últimos 30 Dias
                                 </button>
-                                <Button className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl gap-2 h-10 px-5 shadow-lg shadow-red-900/20">
+                                <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-bold text-sm rounded-xl gap-2 h-10 px-5 shadow-lg shadow-primary/20">
                                     <Download className="w-4 h-4" />
                                     Exportar Relatório
                                 </Button>
@@ -187,7 +187,7 @@ export default async function AnalyticsPage() {
                     </PageSection>
 
                     {/* ──── KPI Cards ──── */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         {/* Impressions */}
                         <div className="p-6 rounded-2xl border border-white/10 bg-card-item hover:border-indigo-500/20 transition-all group">
                             <div className="flex items-center justify-between mb-4">

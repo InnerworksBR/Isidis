@@ -1,7 +1,11 @@
 import Link from 'next/link'
-import { Sparkles } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+import { Instagram } from 'lucide-react'
 
-export function Footer() {
+export async function Footer() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
     return (
         <footer className="border-t border-border/50 bg-card/30 mt-auto">
             <div className="container mx-auto px-4 py-12">
@@ -15,14 +19,29 @@ export function Footer() {
                         <p className="text-sm text-muted-foreground leading-relaxed">
                             Conectando você ao universo através de leituras espirituais personalizadas.
                         </p>
+                        {/* Social Links */}
+                        <div className="flex items-center gap-3 mt-4">
+                            <a href="https://instagram.com/isidis" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-lg hover:bg-primary/10">
+                                <Instagram className="w-5 h-5" />
+                            </a>
+                        </div>
                     </div>
 
-                    {/* Links */}
+                    {/* Links - Dynamic based on auth */}
                     <div>
                         <h4 className="text-sm font-bold uppercase tracking-wider mb-4 text-foreground">Plataforma</h4>
                         <ul className="space-y-2.5">
-                            <li><Link href="/register" className="text-sm text-muted-foreground hover:text-primary transition-colors">Criar Conta</Link></li>
-                            <li><Link href="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">Entrar</Link></li>
+                            {user ? (
+                                <>
+                                    <li><Link href="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">Meu Dashboard</Link></li>
+                                    <li><Link href="/dashboard/mensagens" className="text-sm text-muted-foreground hover:text-primary transition-colors">Mensagens</Link></li>
+                                </>
+                            ) : (
+                                <>
+                                    <li><Link href="/register" className="text-sm text-muted-foreground hover:text-primary transition-colors">Criar Conta</Link></li>
+                                    <li><Link href="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">Entrar</Link></li>
+                                </>
+                            )}
                         </ul>
                     </div>
 

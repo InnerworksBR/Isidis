@@ -11,6 +11,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { PageSection } from '@/components/layout/PageSection'
 import { toggleGigStatus } from '../actions'
 import { CopyLinkIconButton } from '@/components/copy-link-button'
+import { MainHero } from '@/components/marketing/MainHero'
 
 export default async function GigsPage() {
     const supabase = await createClient()
@@ -89,45 +90,43 @@ export default async function GigsPage() {
 
             {/* ──── Main Content ──── */}
             <main className="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide pb-24 md:pb-8">
-                <PageContainer className="px-4 md:px-8 py-6 md:py-12">
-
-                    {/* Header */}
-                    <PageSection padding="none" withOrbs className="mb-8">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div>
-                                <h1 className="text-3xl font-bold text-white mb-2">My Gigs</h1>
-                                <p className="text-sm text-slate-400">Manage your mystical services.</p>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row items-center gap-3">
-                                <div className="relative w-full sm:w-auto">
-                                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                                    <input
-                                        type="text"
-                                        placeholder="Search gigs..."
-                                        className="pl-10 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 placeholder:text-slate-600 w-full sm:w-52 focus:outline-none focus:border-indigo-500/30 backdrop-blur-sm"
-                                    />
-                                </div>
-                                <Link href="/dashboard/cartomante/gigs/novo" className="w-full sm:w-auto">
-                                    <Button className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl gap-2 h-10 px-5 shadow-lg shadow-purple-900/20">
-                                        <Sparkles className="w-4 h-4" />
-                                        Create New Gig
-                                    </Button>
-                                </Link>
-                            </div>
+                <MainHero
+                    className="pt-12 pb-12 px-4 md:px-8 mb-8"
+                    padding="none"
+                    maxWidth="full"
+                    title="Meus Gigs"
+                    description="Gerencie seus serviços místicos e aumente seu alcance no marketplace."
+                    withMockup={false}
+                >
+                    <div className="flex flex-col sm:flex-row items-center gap-3 mt-6">
+                        <div className="relative w-full sm:w-auto">
+                            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                            <input
+                                type="text"
+                                placeholder="Buscar serviços..."
+                                className="pl-10 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 placeholder:text-slate-600 w-full focus:outline-none focus:border-indigo-500/30 backdrop-blur-sm glass"
+                            />
                         </div>
-                    </PageSection>
+                        <Link href="/dashboard/cartomante/gigs/novo" className="w-full sm:w-auto">
+                            <Button className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl gap-2 h-10 px-5 shadow-lg shadow-purple-900/20">
+                                <Sparkles className="w-4 h-4" />
+                                Criar Novo Gig
+                            </Button>
+                        </Link>
+                    </div>
+                </MainHero>
 
+                <PageContainer className="px-4 md:px-8 py-6 md:py-12">
                     {/* Tabs */}
                     <div className="flex items-center gap-6 border-b border-indigo-500/10 mb-8 overflow-x-auto scrollbar-hide">
                         <button className="text-sm font-bold text-purple-400 pb-3 border-b-2 border-purple-500 whitespace-nowrap">
-                            Active Gigs ({activeGigs.length})
+                            Gigs Ativos ({activeGigs.length})
                         </button>
                         <button className="text-sm font-medium text-slate-500 pb-3 border-b-2 border-transparent hover:text-slate-300 whitespace-nowrap">
-                            Drafts (0)
+                            Rascunhos (0)
                         </button>
                         <button className="text-sm font-medium text-slate-500 pb-3 border-b-2 border-transparent hover:text-slate-300 whitespace-nowrap">
-                            Inactive ({inactiveGigs.length})
+                            Inativos ({inactiveGigs.length})
                         </button>
                     </div>
 
@@ -158,22 +157,22 @@ export default async function GigsPage() {
                                         )}
                                         {/* Status Badge */}
                                         <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-                                            <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${gig.is_active
-                                                ? 'bg-green-500/90 text-white'
-                                                : 'bg-slate-600/90 text-slate-200'
-                                                }`}>
-                                                {gig.is_active ? 'ACTIVE' : 'INACTIVE'}
-                                            </span>
-                                            {gig.status === 'PENDING' && (
+                                            {gig.status === 'APPROVED' ? (
+                                                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${gig.is_active
+                                                    ? 'bg-green-500/90 text-white'
+                                                    : 'bg-slate-600/90 text-slate-200'
+                                                    }`}>
+                                                    {gig.is_active ? 'ATIVO' : 'INATIVO'}
+                                                </span>
+                                            ) : gig.status === 'PENDING' ? (
                                                 <span className="bg-yellow-500/90 text-black px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
-                                                    PENDING APPROVAL
+                                                    PENDENTE
                                                 </span>
-                                            )}
-                                            {gig.status === 'REJECTED' && (
+                                            ) : gig.status === 'REJECTED' ? (
                                                 <span className="bg-red-500/90 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md">
-                                                    REJECTED
+                                                    REJEITADO
                                                 </span>
-                                            )}
+                                            ) : null}
                                         </div>
                                     </div>
 
@@ -193,14 +192,14 @@ export default async function GigsPage() {
                                             <span className="flex items-center gap-1">
                                                 <ShoppingCart className="w-3.5 h-3.5 text-slate-500" />
                                                 <span className="font-bold">{sales}</span>
-                                                <span className="text-slate-600 uppercase text-[10px] tracking-wider">Sales</span>
+                                                <span className="text-slate-600 uppercase text-[10px] tracking-wider">Vendas</span>
                                             </span>
                                         </div>
 
                                         {/* Price + Actions */}
                                         <div className="flex items-end justify-between">
                                             <div>
-                                                <p className="text-[10px] uppercase tracking-wider text-slate-600 font-bold">Starts at</p>
+                                                <p className="text-[10px] uppercase tracking-wider text-slate-600 font-bold">A partir de</p>
                                                 <p className="text-xl font-black text-green-400">
                                                     R$ {fmt(gig.price)}
                                                 </p>
@@ -247,9 +246,9 @@ export default async function GigsPage() {
                                 <Plus className="w-6 h-6 text-slate-500 group-hover:text-purple-400 transition-colors" />
                             </div>
                             <p className="text-sm font-bold text-slate-400 group-hover:text-slate-200 transition-colors">
-                                Create a New Gig
+                                Criar um Novo Gig
                             </p>
-                            <p className="text-xs text-slate-600 mt-1">Add another mystical service</p>
+                            <p className="text-xs text-slate-600 mt-1">Adicione outro serviço místico</p>
                         </Link>
                     </div>
 
@@ -257,49 +256,49 @@ export default async function GigsPage() {
                     <div>
                         <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
                             <Sparkles className="w-5 h-5 text-purple-400" />
-                            Performance Insights
+                            Insights de Desempenho
                         </h2>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Total Orders */}
                             <div className="p-5 rounded-2xl border border-white/10 bg-card-item">
-                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Total Orders</p>
+                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Total de Pedidos</p>
                                 <p className="text-2xl font-black text-white">
                                     {totalSales}
                                 </p>
-                                <p className="text-[10px] text-slate-500 mt-1">Across all gigs</p>
+                                <p className="text-[10px] text-slate-500 mt-1">Em todos os gigs</p>
                             </div>
 
                             {/* Active Gigs */}
                             <div className="p-5 rounded-2xl border border-white/10 bg-card-item">
-                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Active Gigs</p>
+                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Gigs Ativos</p>
                                 <p className="text-2xl font-black text-white">
                                     {activeGigs.length}
                                 </p>
-                                <p className="text-[10px] text-slate-500 mt-1">of {allGigs.length} total</p>
+                                <p className="text-[10px] text-slate-500 mt-1">de {allGigs.length} no total</p>
                             </div>
 
                             {/* Average Rating */}
                             <div className="p-5 rounded-2xl border border-white/10 bg-card-item">
-                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Average Rating</p>
+                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Avaliação Média</p>
                                 <p className="text-2xl font-black text-white">
                                     {Object.values(reviewStats).length > 0
                                         ? (Object.values(reviewStats).reduce((sum, r) => sum + r.avg, 0) / Object.values(reviewStats).length).toFixed(1)
                                         : '—'}
                                 </p>
                                 <p className="text-[10px] text-slate-500 mt-1">
-                                    {Object.values(reviewStats).reduce((sum, r) => sum + r.count, 0)} reviews
+                                    {Object.values(reviewStats).reduce((sum, r) => sum + r.count, 0)} avaliações
                                 </p>
                             </div>
 
                             {/* Avg Revenue per Gig */}
                             <div className="p-5 rounded-2xl border border-white/10 bg-card-item">
-                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Avg. Revenue / Gig</p>
+                                <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Receita Média / Gig</p>
                                 <p className="text-2xl font-black text-white">
                                     {allGigs.length > 0
                                         ? `R$ ${fmt(Math.round(allGigs.reduce((sum, g) => sum + ((salesCounts[g.id] || 0) * g.price), 0) / allGigs.length))}`
                                         : 'R$ 0,00'}
                                 </p>
-                                <p className="text-[10px] text-slate-500 mt-1">Net earnings</p>
+                                <p className="text-[10px] text-slate-500 mt-1">Ganhos líquidos</p>
                             </div>
                         </div>
                     </div>

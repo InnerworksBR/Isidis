@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { signout } from '@/app/auth/actions'
-import { LayoutDashboard, LogOut, Sparkles, User, Moon } from 'lucide-react'
+import { LayoutDashboard, LogOut, Sparkles, User, Moon, Menu } from 'lucide-react'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -119,10 +119,43 @@ export async function Navbar() {
                         </div>
                     ) : (
                         <div className="flex items-center gap-2 ml-2">
-                            <Button variant="ghost" size="sm" asChild className="font-medium text-muted-foreground hover:text-foreground">
+                            {/* Mobile hamburger menu */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="md:hidden p-2">
+                                        <Menu className="w-5 h-5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56 glass-strong border-border/50 md:hidden">
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/cartomantes" className="cursor-pointer">
+                                            <Sparkles className="mr-2 h-4 w-4" />
+                                            Explorar Cartomantes
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/#como-funciona" className="cursor-pointer">
+                                            Como Funciona
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator className="bg-border/50" />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/login" className="cursor-pointer">
+                                            Entrar
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/register" className="cursor-pointer font-bold text-primary">
+                                            Criar Conta
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <Button variant="ghost" size="sm" asChild className="hidden md:flex font-medium text-muted-foreground hover:text-foreground">
                                 <Link href="/login">Entrar</Link>
                             </Button>
-                            <Button size="sm" asChild className="font-bold rounded-xl px-5">
+                            <Button size="sm" asChild className="hidden md:flex font-bold rounded-xl px-5">
                                 <Link href="/register">Criar Conta</Link>
                             </Button>
                         </div>

@@ -328,7 +328,7 @@ export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floatin
                                         <div className={cn(
                                             "max-w-[80%] px-3 py-2 rounded-xl text-sm break-words",
                                             isMe
-                                                ? "bg-primary text-primary-foreground rounded-br-none"
+                                                ? "bg-indigo-600/80 text-white rounded-br-none"
                                                 : "bg-muted text-foreground rounded-bl-none"
                                         )}>
                                             {msg.content}

@@ -81,8 +81,7 @@ export function PractitionerCard({ practitioner }: { practitioner: PractitionerP
 
             {/* Content */}
             <CardContent className="p-5 flex flex-col flex-grow relative z-20 pointer-events-none">
-                <h3 className="text-lg font-bold mb-0.5 group-hover:text-primary transition-colors">{practitioner.name}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{practitioner.title}</p>
+                <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors">{practitioner.name}</h3>
 
                 <div className="flex flex-wrap gap-1.5 mb-4">
                     {practitioner.tags.map(tag => (

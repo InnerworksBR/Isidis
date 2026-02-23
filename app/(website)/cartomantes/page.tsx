@@ -29,7 +29,7 @@ async function getAllReaders(filters: FilterParams): Promise<ReaderData[]> {
 
     let query = supabase
         .from('profiles')
-        .select('id, full_name, bio, specialties, avatar_url, rating_average, reviews_count')
+        .select('id, full_name, bio, specialties, avatar_url, cover_url, rating_average, reviews_count')
         .eq('role', 'READER')
         .eq('verification_status', 'APPROVED')
 
@@ -74,7 +74,7 @@ async function getAllReaders(filters: FilterParams): Promise<ReaderData[]> {
             rating: Number(reader.rating_average || 5.0),
             reviews: Number(reader.reviews_count || 0),
             price: cheapestPrice,
-            image: reader.avatar_url,
+            image: reader.cover_url || reader.avatar_url,
             tags: reader.specialties || [],
             isOnline: false, // Client-side PresenceProvider handles the real status
             gigId: readerGigs[0]?.id,

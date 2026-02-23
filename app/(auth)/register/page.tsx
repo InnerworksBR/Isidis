@@ -9,6 +9,7 @@ import { signup } from '@/app/auth/actions'
 import Link from 'next/link'
 import { Sparkles, Eye, EyeOff, Loader2, MapPin, CreditCard, Upload, Check, X, AlertCircle } from 'lucide-react'
 import { validateCPF } from '@/lib/utils'
+import { PageSection } from '@/components/layout/PageSection'
 
 // Specialties List
 const PREDEFINED_SPECIALTIES = [
@@ -237,21 +238,18 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-12 relative overflow-hidden">
-            {/* Background orbs */}
-            <div className="orb orb-primary w-96 h-96 -top-48 -left-48 animate-float" />
-            <div className="orb orb-accent w-72 h-72 -bottom-36 -right-36 animate-float-slow" />
+        <PageSection padding="none" withOrbs withShootingStars className="min-h-screen flex items-center justify-center">
 
             <div className="w-full max-w-2xl relative z-10">
                 {/* Progress indicator (Only for Readers) */}
                 {selectedRole === 'READER' && step > 1 && (
-                    <div className="flex items-center justify-center gap-2 mb-8 animate-fade-in text-xs text-muted-foreground">
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 mb-8 animate-fade-in text-xs sm:text-sm text-muted-foreground">
                         <span className={step >= 2 ? "text-primary font-bold" : ""}>Conta</span>
-                        <div className="w-4 h-0.5 bg-border" />
+                        <div className="w-4 sm:w-6 h-0.5 bg-border" />
                         <span className={step >= 3 ? "text-primary font-bold" : ""}>Dados</span>
-                        <div className="w-4 h-0.5 bg-border" />
+                        <div className="w-4 sm:w-6 h-0.5 bg-border" />
                         <span className={step >= 4 ? "text-primary font-bold" : ""}>Docs</span>
-                        <div className="w-4 h-0.5 bg-border" />
+                        <div className="w-4 sm:w-6 h-0.5 bg-border" />
                         <span className={step >= 5 ? "text-primary font-bold" : ""}>Perfil</span>
                     </div>
                 )}
@@ -400,7 +398,7 @@ export default function RegisterPage() {
                         )}
 
                         {selectedRole === 'CLIENT' && (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label>CPF</Label>
                                     <Input
@@ -443,7 +441,7 @@ export default function RegisterPage() {
                     <div className={(step === 3 && selectedRole === 'READER') ? "space-y-4 animate-fade-in-up" : "hidden"}>
                         <h2 className="text-2xl font-bold mb-6">Dados Pessoais</h2>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <Label>CPF</Label>
                                 <Input
@@ -670,6 +668,6 @@ export default function RegisterPage() {
                     )}
                 </form>
             </div>
-        </div>
+        </PageSection>
     )
 }

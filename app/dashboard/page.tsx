@@ -47,7 +47,7 @@ export default async function DashboardHome() {
                             title={
                                 <>
                                     Olá, {firstName}. <br />
-                                    <span className="italic font-serif opacity-80 text-2xl md:text-3xl lg:text-4xl">
+                                    <span className="italic font-serif text-slate-300 text-2xl md:text-3xl lg:text-4xl">
                                         O que as cartas<br className="hidden sm:block" /> têm para você hoje?
                                     </span>
                                 </>

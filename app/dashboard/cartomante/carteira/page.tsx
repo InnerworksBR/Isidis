@@ -11,6 +11,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { PageSection } from '@/components/layout/PageSection'
 import { WithdrawalModal } from '@/components/withdrawal-modal'
 import { NotificationsBell } from '@/components/notifications-bell'
+import { MainHero } from '@/components/marketing/MainHero'
 import { getWalletBalances } from '@/app/actions/finance'
 
 const PLATFORM_FEE_PERCENT = 8
@@ -110,29 +111,23 @@ export default async function WalletPage() {
 
             {/* ──── Main Content ──── */}
             <main className="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide pb-24 md:pb-8">
-                <PageContainer className="px-4 md:px-8 py-6 md:py-12">
-                    {/* Header */}
-                    <PageSection padding="none" withOrbs className="mb-8">
-                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                            <div>
-                                <h1 className="text-3xl font-bold text-white mb-2">Carteira e Saques</h1>
-                                <p className="text-sm text-slate-400">Gerencie seus ganhos e saques via PIX</p>
-                            </div>
-                            <div className="flex flex-col sm:flex-row items-center gap-3">
-                                <Link
-                                    href="/dashboard/cartomante/perfil"
-                                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-slate-300 hover:text-white hover:border-indigo-500/30 transition-all backdrop-blur-sm"
-                                >
-                                    <DollarSign className="w-4 h-4" />
-                                    {pixKeyMasked ? `PIX: ${pixKeyMasked}` : 'Adicionar Chave PIX'}
-                                </Link>
-                                <div className="hidden sm:block relative z-50">
-                                    <NotificationsBell currentUserId={user.id} />
-                                </div>
-                            </div>
+                {/* Header */}
+                <MainHero
+                    className="pt-12 pb-12 px-4 md:px-8 mb-8"
+                    padding="none"
+                    maxWidth="full"
+                    title="Carteira e Saques"
+                    description="Gerencie seus ganhos e saques via PIX com transparência e segurança."
+                    withMockup={false}
+                >
+                    <div className="flex flex-col sm:flex-row items-center gap-3 mt-6">
+                        <div className="relative z-50">
+                            <NotificationsBell currentUserId={user.id} />
                         </div>
-                    </PageSection>
+                    </div>
+                </MainHero>
 
+                <PageContainer className="px-4 md:px-8 py-6 md:py-12">
                     {/* ──── Financial Cards ──── */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                         {/* Total Earnings */}
@@ -201,9 +196,9 @@ export default async function WalletPage() {
                                     Extrato de Transações
                                 </h2>
                                 <div className="flex items-center gap-1 bg-card-item border border-white/10 rounded-lg p-0.5 w-fit">
-                                    <button className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md bg-indigo-500/15 text-indigo-300">Tudo</button>
-                                    <button className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-500 hover:text-slate-300">Ganhos</button>
-                                    <button className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-slate-500 hover:text-slate-300">Taxas</button>
+                                    <button className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md bg-indigo-500/15 text-indigo-300">Tudo</button>
+                                    <button className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md text-slate-500 hover:text-slate-300">Ganhos</button>
+                                    <button className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md text-slate-500 hover:text-slate-300">Taxas</button>
                                 </div>
                             </div>
 

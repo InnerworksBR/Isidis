@@ -82,7 +82,7 @@ export function CartomanteSidebar({ profile, userId }: CartomanteSidebarProps) {
                         </div>
                     )}
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-foreground truncate">{profile?.full_name || 'Cartomante'}</p>
+                        <p className="text-sm font-bold text-foreground truncate" title={profile?.full_name || 'Cartomante'}>{profile?.full_name || 'Cartomante'}</p>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{profile?.specialties?.[0] || 'Tarot Reader'}</p>
                     </div>
                     <Link href="/dashboard/cartomante/perfil" className="text-muted-foreground hover:text-primary transition-colors">

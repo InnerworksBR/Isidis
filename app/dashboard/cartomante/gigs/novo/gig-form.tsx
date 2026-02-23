@@ -219,7 +219,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                             {initialData?.id ? 'Editar Serviço' : 'Criar Novo Serviço'}
                         </Link>
                         <div className="text-sm font-medium text-indigo-400">
-                            Passo {step} de 4: <span className="text-white ml-2">{STEPS[step - 1].label}</span>
+                            Passo {step} de 6: <span className="text-white ml-2">{STEPS[step - 1].label}</span>
                         </div>
                     </div>
                     {/* Progress Bar */}
@@ -732,7 +732,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                 <Button
                                     variant="outline"
                                     onClick={step === 1 ? () => router.back() : prevStep}
-                                    className="h-14 px-8 rounded-full border-white/10 text-white hover:bg-white/5 bg-transparent hover:text-white"
+                                    className="h-12 md:h-14 px-6 md:px-8 rounded-full border-white/10 text-white hover:bg-white/5 bg-transparent hover:text-white text-sm md:text-base shrink-0"
                                 >
                                     <ChevronLeft className="w-5 h-5 mr-2" />
                                     Voltar
@@ -741,7 +741,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                 {step < 6 ? (
                                     <Button
                                         onClick={nextStep}
-                                        className="h-14 px-10 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-lg shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] transition-all hover:scale-105"
+                                        className="h-12 md:h-14 px-4 md:px-10 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-xs md:text-lg shadow-[0_0_20px_-5px_rgba(99,102,241,0.5)] transition-all hover:scale-105 flex-1 md:flex-none justify-center"
                                     >
                                         Ir para {STEPS[step].label}
                                         <ArrowRight className="w-5 h-5 ml-2" />
@@ -750,7 +750,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                     <Button
                                         onClick={handleSubmit}
                                         disabled={loading}
-                                        className="h-14 px-10 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-lg shadow-[0_0_30px_-5px_rgba(99,102,241,0.6)] transition-all hover:scale-105"
+                                        className="h-12 md:h-14 px-6 md:px-10 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-sm md:text-lg shadow-[0_0_30px_-5px_rgba(99,102,241,0.6)] transition-all hover:scale-105 flex-1 md:flex-none"
                                     >
                                         {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Sparkles className="w-5 h-5 mr-2" />}
                                         {initialData?.id ? 'Salvar Alterações' : 'Publicar Serviço'}
@@ -826,9 +826,10 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                         <p className="text-slate-400 leading-relaxed text-sm">
                                             {step === 1 && "Títulos claros e evocativos como 'Leitura de Alinhamento de Almas' convertem 3x melhor do que títulos genéricos como 'Tarot do Amor'."}
                                             {step === 2 && "Preços competitivos para novas cartomantes variam entre R$ 60 e R$ 150. À medida que você ganha avaliações, pode aumentar seu valor."}
-                                            {step === 3 && "Clientes decidem em 0,5 segundos com base na sua foto. Use iluminação quente e mostre seu baralho real."}
-                                            {step === 4 && "Perguntas claras evitam idas e vindas. Peça apenas o essencial para começar."}
-                                            {step === 5 && "60% das cartomantes mais bem avaliadas oferecem Tiragens Digitais por serem fáceis de compartilhar."}
+                                            {step === 3 && "Oferecer extras como 'Entrega em 24h' pode aumentar seus ganhos em até 20% por pedido."}
+                                            {step === 4 && "Clientes decidem em 0,5 segundos com base na sua foto. Use iluminação quente e mostre seu baralho real."}
+                                            {step === 5 && "Perguntas claras evitam idas e vindas. Peça apenas o essencial para começar."}
+                                            {step === 6 && "60% das cartomantes mais bem avaliadas oferecem Tiragens Digitais por serem fáceis de compartilhar."}
                                         </p>
                                     </div>
                                 </div>
