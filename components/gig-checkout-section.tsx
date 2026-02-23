@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { CheckCircle2, Shield, Plus, Check } from 'lucide-react'
+import { CheckCircle2, Shield, Plus, Check, Repeat, CalendarDays } from 'lucide-react'
 import { Gig, GigAddOn } from '@/types'
 import { ClickTracker } from '@/components/click-tracker'
 
@@ -30,6 +30,11 @@ export function GigCheckoutSection({ gig, readerId }: GigCheckoutSectionProps) {
         .reduce((acc, addon) => acc + addon.price, 0)
 
     const totalPrice = basePrice + addOnsPrice
+    const isRecurring = gig.pricing_type === 'RECURRING'
+
+    const frequencyLabel = gig.readings_per_month === 4 ? 'Semanal'
+        : gig.readings_per_month === 2 ? 'Quinzenal'
+            : 'Mensal'
 
     const handleCheckout = () => {
         const params = new URLSearchParams()
@@ -42,11 +47,25 @@ export function GigCheckoutSection({ gig, readerId }: GigCheckoutSectionProps) {
     return (
         <div className="sticky top-24 space-y-6">
             <div className="bg-[#12121a] rounded-3xl p-6 border border-white/10 shadow-xl">
+                {/* Recurring badge */}
+                {isRecurring && (
+                    <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                        <Repeat className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm font-bold text-purple-300">Assinatura {frequencyLabel}</span>
+                        <span className="ml-auto text-xs text-purple-400/70">{gig.readings_per_month} tiragem{(gig.readings_per_month || 1) > 1 ? 's' : ''}/mês</span>
+                    </div>
+                )}
+
                 <div className="flex justify-between items-end mb-6">
                     <div>
-                        <p className="text-sm text-slate-400 mb-1">Valor do investimento</p>
+                        <p className="text-sm text-slate-400 mb-1">
+                            {isRecurring ? 'Investimento mensal' : 'Valor do investimento'}
+                        </p>
                         <div className="flex items-baseline gap-1">
                             <span className="text-3xl font-bold text-white">R$ {totalPrice.toFixed(2)}</span>
+                            {isRecurring && (
+                                <span className="text-lg text-slate-500">/mês</span>
+                            )}
                             {addOnsPrice > 0 && (
                                 <span className="text-sm text-indigo-400 ml-2 font-medium">
                                     (+ R$ {addOnsPrice.toFixed(2)})
@@ -106,19 +125,31 @@ export function GigCheckoutSection({ gig, readerId }: GigCheckoutSectionProps) {
                         <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                         <span>Atendimento confidencial</span>
                     </div>
+                    {isRecurring && (
+                        <div className="flex items-center gap-3 text-sm text-slate-300">
+                            <CalendarDays className="w-5 h-5 text-purple-400 shrink-0" />
+                            <span>Tiragens periódicas automatizadas</span>
+                        </div>
+                    )}
                 </div>
 
                 <ClickTracker gigId={gig.id} readerId={readerId} eventType="click_buy">
                     <Button
                         onClick={handleCheckout}
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold h-14 rounded-xl shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className={`w-full text-white text-lg font-bold h-14 rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] ${isRecurring
+                            ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/20'
+                            : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20'
+                            }`}
                     >
-                        Agendar Agora
+                        {isRecurring ? 'Assinar Agora' : 'Agendar Agora'}
                     </Button>
                 </ClickTracker>
 
                 <p className="text-xs text-center text-slate-500 mt-4">
-                    Ao continuar, você concorda com nossos termos de serviço.
+                    {isRecurring
+                        ? 'Ao assinar, você concorda com o pagamento mensal via PIX.'
+                        : 'Ao continuar, você concorda com nossos termos de serviço.'
+                    }
                 </p>
             </div>
 
@@ -132,3 +163,4 @@ export function GigCheckoutSection({ gig, readerId }: GigCheckoutSectionProps) {
         </div>
     )
 }
+

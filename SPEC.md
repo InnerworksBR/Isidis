@@ -37,7 +37,7 @@
 - `gig_id`: uuid (FK gigs)
 - `reader_id`: uuid (FK profiles)
 - `status`: text ('PENDING_PAYMENT', 'PAID', 'DELIVERED', 'COMPLETED', 'CANCELED')
-- `asaas_payment_id`: text
+- `payment_id`: text (Abacate Pay billing ID)
 - `amount_total`: integer (cents)
 - `amount_platform_fee`: integer (cents)
 - `amount_reader_net`: integer (cents)
@@ -56,7 +56,7 @@
 - `type`: text ('SALE_CREDIT', 'PLATFORM_FEE', 'WITHDRAWAL')
 - `status`: text ('PENDING', 'COMPLETED', 'FAILED')
 - `order_id`: uuid (Nullable)
-- `external_id`: text (Asaas Transfer ID)
+- `external_id`: text (Abacate Pay Transfer ID)
 
 ### 2.2 Estrutura JSONB (`delivery_content`)
 ``json
@@ -73,7 +73,7 @@
 }
 ``
 
-## 3. Integração com Asaas (Fluxos Críticos)
+## 3. Integração com Abacate Pay (Fluxos Críticos)
 
 ### 3.1 Checkout (Compra)
 
@@ -81,16 +81,16 @@
     
 2.  Backend cria registro em `orders` com status `PENDING_PAYMENT`.
     
-3.  Backend chama Asaas API `/v3/payments` (BillingType: PIX).
+3.  Backend chama Abacate Pay API para criar billing PIX.
     
 4.  Retorna `encodedImage` (QR Code) e `payload` (Copia e Cola) para o frontend.
     
 
 ### 3.2 Webhook (Confirmação)
 
-1.  Rota `/api/webhooks/asaas`.
+1.  Rota `/api/webhooks/abacate`.
     
-2.  Verificar `asaas-access-token` no header (Segurança).
+2.  Verificar token no header (Segurança).
     
 3.  Se evento == `PAYMENT_RECEIVED`:
     
@@ -115,11 +115,11 @@ Deve ser implementado via **Supabase RPC (Postgres Function)** para garantir ato
     
 5.  Retornar ID da transação.
     
-6.  (No Server Action Next.js): Chamar Asaas API `/v3/transfers`.
+6.  (No Server Action Next.js): Chamar Abacate Pay API para transferência.
     
-7.  Se sucesso no Asaas -> Update transação para `COMPLETED`.
+7.  Se sucesso no Abacate Pay -> Update transação para `COMPLETED`.
     
-8.  Se erro no Asaas -> Update transação para `FAILED`.
+8.  Se erro no Abacate Pay -> Update transação para `FAILED`.
     
 
 ## 4. Segurança e RLS (Row Level Security)

@@ -2,7 +2,7 @@
 
 import {
     BookOpen, Heart, Settings, HelpCircle, LogOut,
-    Search, Bell, Ticket, Home, MessageCircle
+    Search, Bell, Ticket, Home, MessageCircle, Repeat
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -23,6 +23,7 @@ export function UserSidebar({ className, activeFilter, onFilterChange }: UserSid
         { icon: Home, label: 'Início', href: '/dashboard' },
         { icon: Search, label: 'Explorar', href: '/cartomantes' },
         { icon: BookOpen, label: 'Minhas Leituras', href: '/dashboard/minhas-tiragens' },
+        { icon: Repeat, label: 'Minhas Assinaturas', href: '/dashboard/minhas-assinaturas' },
         { icon: MessageCircle, label: 'Mensagens', href: '/dashboard/mensagens' },
         { icon: Bell, label: 'Notificações', href: '/dashboard/notifications' },
         { icon: Heart, label: 'Favoritas', href: '#', onClick: () => onFilterChange?.('favorites') },

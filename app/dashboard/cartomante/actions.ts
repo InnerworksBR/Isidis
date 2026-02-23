@@ -78,6 +78,9 @@ export async function createGig(formData: FormData) {
 
     if (!user) return { error: 'Não autorizado' }
 
+    const pricingType = (formData.get('pricing_type') as string) || 'ONE_TIME'
+    const readingsPerMonth = pricingType === 'RECURRING' ? Number(formData.get('readings_per_month')) || 4 : null
+
     const gigData = {
         owner_id: user.id,
         title: formData.get('title') as string,
@@ -90,6 +93,8 @@ export async function createGig(formData: FormData) {
         tags: JSON.parse(formData.get('tags') as string || '[]'),
         requirements: JSON.parse(formData.get('requirements') as string || '[]'),
         add_ons: JSON.parse(formData.get('add_ons') as string || '[]'),
+        pricing_type: pricingType,
+        readings_per_month: readingsPerMonth,
         is_active: true,
         status: 'PENDING'
     }
@@ -116,6 +121,9 @@ export async function updateGig(gigId: string, formData: FormData) {
 
     if (!user) return { error: 'Não autorizado' }
 
+    const pricingType = (formData.get('pricing_type') as string) || 'ONE_TIME'
+    const readingsPerMonth = pricingType === 'RECURRING' ? Number(formData.get('readings_per_month')) || 4 : null
+
     const gigData = {
         title: formData.get('title') as string,
         category: formData.get('category') as string,
@@ -127,6 +135,8 @@ export async function updateGig(gigId: string, formData: FormData) {
         tags: JSON.parse(formData.get('tags') as string || '[]'),
         requirements: JSON.parse(formData.get('requirements') as string || '[]'),
         add_ons: JSON.parse(formData.get('add_ons') as string || '[]'),
+        pricing_type: pricingType,
+        readings_per_month: readingsPerMonth,
         status: 'PENDING', // Reset status to pending for review after edit
     }
 

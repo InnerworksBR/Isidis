@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
     LayoutGrid, Tag, Package, Wallet, BarChart3,
-    Sparkles, Settings, MessageCircle, LogOut, LifeBuoy
+    Sparkles, Settings, MessageCircle, LogOut, LifeBuoy, Repeat
 } from 'lucide-react'
 import { signout } from '@/app/auth/actions'
 
@@ -25,6 +25,7 @@ const navItems = [
     { label: 'Pedidos', href: '/dashboard/cartomante/pedidos', icon: Package },
     { label: 'Mensagens', href: '/dashboard/cartomante/mensagens', icon: MessageCircle },
     { label: 'Meus Gigs', href: '/dashboard/cartomante/gigs', icon: Tag },
+    { label: 'Assinaturas', href: '/dashboard/cartomante/assinaturas', icon: Repeat },
     { label: 'Carteira', href: '/dashboard/cartomante/carteira', icon: Wallet },
     { label: 'Analytics', href: '/dashboard/cartomante/analytics', icon: BarChart3 },
     { label: 'Suporte', href: '/dashboard/cartomante/tickets', icon: LifeBuoy },

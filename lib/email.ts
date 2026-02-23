@@ -440,3 +440,43 @@ export async function sendReaderRejected({
     })
 }
 
+// ─── Email: Leitura de Assinatura Pendente → Cartomante ──────────────────────
+
+export async function sendSubscriptionReadingDue({
+    readerEmail,
+    readerName,
+    clientName,
+    gigTitle,
+    frequencyLabel,
+}: {
+    readerEmail: string
+    readerName: string
+    clientName: string
+    gigTitle: string
+    frequencyLabel: string
+}) {
+    const dashboardUrl = `${APP_URL}/dashboard/cartomante/assinaturas`
+
+    const body = emailLayout(`
+        ${h2('🔮 Tiragem Recorrente Pendente')}
+        ${p(`Olá, <strong style="color:#e2d9f3;">${readerName}</strong>!`)}
+        ${p(`É o momento de realizar a próxima tiragem para a assinatura de <strong style="color:#e2d9f3;">${clientName}</strong>.`)}
+        ${infoBox(`
+            <strong>Serviço:</strong> ${gigTitle}<br/>
+            <strong>Frequência:</strong> ${frequencyLabel}<br/>
+            <strong>Cliente:</strong> ${clientName}
+        `)}
+        ${p('Acesse seu painel para enviar a mensagem ou resultado ao seu cliente, mantendo o acompanhamento em dia.')}
+        <div style="text-align:center;">
+            ${primaryButton('Acessar Assinaturas', dashboardUrl)}
+        </div>
+    `)
+
+    return resend.emails.send({
+        from: FROM_EMAIL,
+        to: readerEmail,
+        subject: `🔮 Tiragem de assinatura pendente: ${clientName}`,
+        html: body,
+    })
+}
+

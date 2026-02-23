@@ -40,6 +40,8 @@ export interface Gig {
     delivery_time_hours?: number
     delivery_method?: string
     tags?: string[]
+    pricing_type?: 'ONE_TIME' | 'RECURRING'
+    readings_per_month?: number
 }
 
 export interface GigAddOn {
@@ -60,6 +62,28 @@ export interface Order {
     client?: Profile
     requirements_answers?: Record<string, string>
     selected_addons?: string[] // Array of AddOn IDs
+    subscription_id?: string
+}
+
+export interface Subscription {
+    id: string
+    gig_id: string
+    client_id: string
+    reader_id: string
+    status: 'ACTIVE' | 'PAUSED' | 'CANCELLED' | 'EXPIRED'
+    monthly_price: number // in cents
+    readings_per_month: number
+    readings_done_this_period: number
+    period_start: string
+    period_end: string
+    next_reading_due: string
+    last_payment_at?: string
+    created_at: string
+    updated_at: string
+    // Joined fields
+    gig?: Gig
+    client?: Profile
+    reader?: Profile
 }
 
 export interface Message {
@@ -71,3 +95,4 @@ export interface Message {
     is_read: boolean
     order_id?: string
 }
+

@@ -8,7 +8,7 @@ import {
     Loader2, CheckCircle2, ChevronRight, ChevronLeft,
     LayoutGrid, DollarSign, Image as ImageIcon, Sparkles,
     CreditCard, Clock, Star, ArrowRight, User, MousePointerClick,
-    Camera, MessageCircle, AlertCircle
+    Camera, MessageCircle, AlertCircle, Repeat, CalendarDays
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -68,7 +68,9 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
         image_url: initialData?.image_url || '',
         tags: initialData?.tags || [] as string[],
         requirements: initialData?.requirements || [] as GigRequirement[],
-        add_ons: initialData?.add_ons || [] as GigAddOn[]
+        add_ons: initialData?.add_ons || [] as GigAddOn[],
+        pricing_type: initialData?.pricing_type || 'ONE_TIME' as 'ONE_TIME' | 'RECURRING',
+        readings_per_month: initialData?.readings_per_month || 4,
     })
 
     const handleChange = (field: string, value: any) => {
@@ -309,8 +311,88 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                     <p className="text-slate-400 text-lg">Determine o valor do seu serviço espiritual e seu compromisso com o cliente.</p>
                                 </div>
 
+                                {/* Pricing Type Toggle */}
                                 <div className="space-y-4">
-                                    <Label className="text-slate-300 text-base">Preço do Serviço (BRL)</Label>
+                                    <Label className="text-slate-300 text-base">Tipo de Cobrança</Label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleChange('pricing_type', 'ONE_TIME')}
+                                            className={`p-6 rounded-2xl border-2 text-left transition-all relative group ${formData.pricing_type === 'ONE_TIME'
+                                                ? 'bg-[#1a1a24] border-indigo-500 shadow-[0_0_30px_-10px_rgba(99,102,241,0.3)]'
+                                                : 'bg-[#12121a] border-white/5 hover:border-indigo-500/30'
+                                                }`}
+                                        >
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${formData.pricing_type === 'ONE_TIME' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-500'}`}>
+                                                <CreditCard className="w-6 h-6" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-white mb-1">Avulso</h3>
+                                            <p className="text-sm text-slate-400">Cliente paga uma vez e recebe uma tiragem.</p>
+                                            <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${formData.pricing_type === 'ONE_TIME' ? 'border-indigo-500' : 'border-slate-700'}`}>
+                                                {formData.pricing_type === 'ONE_TIME' && <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />}
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => handleChange('pricing_type', 'RECURRING')}
+                                            className={`p-6 rounded-2xl border-2 text-left transition-all relative group ${formData.pricing_type === 'RECURRING'
+                                                ? 'bg-[#1a1a24] border-purple-500 shadow-[0_0_30px_-10px_rgba(168,85,247,0.3)]'
+                                                : 'bg-[#12121a] border-white/5 hover:border-purple-500/30'
+                                                }`}
+                                        >
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${formData.pricing_type === 'RECURRING' ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-slate-500'}`}>
+                                                <Repeat className="w-6 h-6" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-white mb-1">Assinatura Recorrente</h3>
+                                            <p className="text-sm text-slate-400">Cliente paga mensalmente e recebe tiragens periódicas.</p>
+                                            <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${formData.pricing_type === 'RECURRING' ? 'border-purple-500' : 'border-slate-700'}`}>
+                                                {formData.pricing_type === 'RECURRING' && <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />}
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Readings per month (only for RECURRING) */}
+                                {formData.pricing_type === 'RECURRING' && (
+                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <Label className="text-slate-300 text-base">Frequência de Tiragens</Label>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            {[
+                                                { value: 1, label: '1x por mês', desc: 'Mensal' },
+                                                { value: 2, label: '2x por mês', desc: 'Quinzenal' },
+                                                { value: 4, label: '4x por mês', desc: 'Semanal' },
+                                            ].map(freq => (
+                                                <button
+                                                    key={freq.value}
+                                                    type="button"
+                                                    onClick={() => handleChange('readings_per_month', freq.value)}
+                                                    className={`p-4 rounded-xl border text-center transition-all ${formData.readings_per_month === freq.value
+                                                        ? 'bg-purple-900/20 border-purple-500 text-purple-300'
+                                                        : 'bg-[#12121a] border-white/5 text-slate-400 hover:border-purple-500/30'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-center justify-center gap-2 mb-1">
+                                                        <CalendarDays className="w-4 h-4" />
+                                                        <span className="font-bold text-white">{freq.label}</span>
+                                                    </div>
+                                                    <span className="text-xs">{freq.desc}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="flex items-start gap-3 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                                            <Repeat className="w-4 h-4 text-purple-400 mt-0.5 shrink-0" />
+                                            <p className="text-sm text-purple-200">
+                                                O cliente pagará <strong>R$ {price.toFixed(2)}/mês</strong> e receberá <strong>{formData.readings_per_month} tiragem{formData.readings_per_month > 1 ? 's' : ''}</strong> por mês. Você será notificada quando for hora de cada tiragem.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="space-y-4">
+                                    <Label className="text-slate-300 text-base">
+                                        {formData.pricing_type === 'RECURRING' ? 'Preço Mensal (BRL)' : 'Preço do Serviço (BRL)'}
+                                    </Label>
                                     <div className="bg-[#12121a] border border-white/10 rounded-2xl p-2 relative flex items-center h-24 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
                                         <span className="text-2xl font-bold text-indigo-400 ml-6">R$</span>
                                         <Input
@@ -320,13 +402,16 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                             className="bg-transparent border-none text-white h-full text-4xl font-bold px-4 focus-visible:ring-0 placeholder:text-slate-700"
                                             placeholder="120,00"
                                         />
+                                        {formData.pricing_type === 'RECURRING' && (
+                                            <span className="text-lg text-slate-500 mr-6 shrink-0">/mês</span>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="bg-[#1a1a24] rounded-2xl p-8 space-y-6 border border-white/5">
                                     <div className="flex justify-between items-center text-slate-400 text-lg">
-                                        <span>Preço do Serviço</span>
-                                        <span>R$ {price.toFixed(2)}</span>
+                                        <span>{formData.pricing_type === 'RECURRING' ? 'Preço Mensal' : 'Preço do Serviço'}</span>
+                                        <span>R$ {price.toFixed(2)}{formData.pricing_type === 'RECURRING' ? '/mês' : ''}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-rose-400/80 text-lg">
                                         <span>Taxa da Plataforma (8%)</span>
@@ -334,7 +419,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                     </div>
                                     <div className="h-px bg-white/10 my-2" />
                                     <div className="flex justify-between items-center">
-                                        <span className="text-white font-bold text-xl">Seus Ganhos</span>
+                                        <span className="text-white font-bold text-xl">Seus Ganhos{formData.pricing_type === 'RECURRING' ? '/mês' : ''}</span>
                                         <span className="text-emerald-400 font-bold text-2xl">R$ {earnings.toFixed(2)}</span>
                                     </div>
                                 </div>
@@ -342,7 +427,9 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                 <div className="space-y-4">
                                     <Label className="text-slate-300 text-base">Tempo Estimado de Entrega</Label>
                                     <div className="bg-[#12121a] border border-white/10 rounded-2xl p-6 flex flex-wrap gap-4 items-center justify-between">
-                                        <div className="text-slate-400 text-sm md:text-base">Entrega Padrão (em até 48 horas)</div>
+                                        <div className="text-slate-400 text-sm md:text-base">
+                                            {formData.pricing_type === 'RECURRING' ? 'Tempo para cada tiragem' : 'Entrega Padrão (em até 48 horas)'}
+                                        </div>
                                         <div className="flex bg-black/40 rounded-lg p-1">
                                             {DELIVERY_TIMES.map(time => (
                                                 <button

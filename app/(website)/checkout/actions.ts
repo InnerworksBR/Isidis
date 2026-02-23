@@ -226,7 +226,7 @@ export async function createPixPayment(gigId: string, selectedAddOnIds: string[]
     // 2. Fetch gig from database
     const { data: gig, error: gigError } = await supabase
         .from('gigs')
-        .select('id, title, price, owner_id, add_ons')
+        .select('id, title, price, owner_id, add_ons, pricing_type, readings_per_month')
         .eq('id', gigId)
         .single()
 
@@ -362,7 +362,7 @@ export async function checkPaymentStatus(pixId: string, orderId: string) {
         // Verify if already processed to avoid race conditions
         const { data: order } = await supabase
             .from('orders')
-            .select('status, reader_id, amount_reader_net')
+            .select('status, reader_id, amount_reader_net, gig_id, client_id')
             .eq('id', orderId)
             .single()
 
@@ -400,6 +400,47 @@ export async function checkPaymentStatus(pixId: string, orderId: string) {
                         status: 'PENDING',
                         order_id: orderId,
                     })
+            }
+
+            // Create subscription if this is a recurring gig
+            if (order.gig_id) {
+                const { data: gig } = await supabase
+                    .from('gigs')
+                    .select('pricing_type, readings_per_month, price')
+                    .eq('id', order.gig_id)
+                    .single()
+
+                if (gig?.pricing_type === 'RECURRING') {
+                    const intervalDays = 30 / (gig.readings_per_month || 4)
+                    const now = new Date()
+                    const nextReading = new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000)
+                    const periodEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+
+                    const { data: sub } = await supabase
+                        .from('subscriptions')
+                        .insert({
+                            gig_id: order.gig_id,
+                            client_id: order.client_id,
+                            reader_id: order.reader_id,
+                            status: 'ACTIVE',
+                            monthly_price: gig.price,
+                            readings_per_month: gig.readings_per_month || 4,
+                            readings_done_this_period: 0,
+                            period_start: now.toISOString(),
+                            period_end: periodEnd.toISOString(),
+                            next_reading_due: nextReading.toISOString(),
+                        })
+                        .select('id')
+                        .single()
+
+                    // Link the order to the subscription
+                    if (sub) {
+                        await supabase
+                            .from('orders')
+                            .update({ subscription_id: sub.id })
+                            .eq('id', orderId)
+                    }
+                }
             }
 
             return { status: 'PAID' }
