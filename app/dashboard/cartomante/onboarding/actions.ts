@@ -29,24 +29,36 @@ export async function submitOnboardingStep1(prevState: any, formData: FormData) 
     const pixKeyType = formData.get('pix_key_type') as string
     const pixKey = formData.get('pix_key') as string
 
+    const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('tax_id')
+        .eq('id', user.id)
+        .single()
+
+    const updateData: any = {
+        birth_date: birthDate,
+        company_name: companyName,
+        cnpj: cnpj ? cnpj.replace(/\D/g, "") : null, // Store clean CNPJ
+        cbo: cbo,
+        address_street: addressStreet,
+        address_number: addressNumber,
+        address_complement: addressComplement,
+        address_neighborhood: addressNeighborhood,
+        address_city: addressCity,
+        address_state: addressState,
+        address_zip_code: addressZipCode ? addressZipCode.replace(/\D/g, "") : null,
+        pix_key_type: pixKeyType || 'CPF/CNPJ',
+        pix_key: pixKey,
+    }
+
+    // Only update tax_id if it's not already set
+    if (!existingProfile?.tax_id && cpf) {
+        updateData.tax_id = cpf.replace(/\D/g, "")
+    }
+
     const { error } = await supabase
         .from('profiles')
-        .update({
-            birth_date: birthDate,
-            tax_id: cpf ? cpf.replace(/\D/g, "") : null, // Store clean CPF
-            company_name: companyName,
-            cnpj: cnpj ? cnpj.replace(/\D/g, "") : null, // Store clean CNPJ
-            cbo: cbo,
-            address_street: addressStreet,
-            address_number: addressNumber,
-            address_complement: addressComplement,
-            address_neighborhood: addressNeighborhood,
-            address_city: addressCity,
-            address_state: addressState,
-            address_zip_code: addressZipCode ? addressZipCode.replace(/\D/g, "") : null,
-            pix_key_type: pixKeyType || 'CPF/CNPJ',
-            pix_key: pixKey,
-        })
+        .update(updateData)
         .eq('id', user.id)
 
     if (error) {

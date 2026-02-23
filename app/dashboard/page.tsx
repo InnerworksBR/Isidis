@@ -149,7 +149,7 @@ export default async function DashboardHome() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                             {recommendedGigs && recommendedGigs.map((gig, i) => (
-                                <Link href={`/gigs/${gig.slug}`} key={gig.id} className="bg-card-item border border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group hover:border-purple-500/30 transition-all flex flex-col">
+                                <Link href={`/servico/${gig.id}`} key={gig.id} className="bg-card-item border border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group hover:border-purple-500/30 transition-all flex flex-col">
                                     <div className="h-40 md:h-48 relative overflow-hidden">
                                         <Image
                                             src={gig.image_url || 'https://images.unsplash.com/photo-1630325458098-4fc173335e21?q=80&w=800'}

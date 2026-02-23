@@ -135,7 +135,7 @@ export function CartomantesClient({ readers, initialFilters, userId }: Cartomant
                         </>
                     }
                     description={`${readers.length} profissionais ${readers.length === 1 ? 'encontrada' : 'encontradas'} para sua jornada.`}
-                    withMockup={true}
+                    withMockup={false}
                     className="pt-20 pb-20"
                 >
                     <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-6">

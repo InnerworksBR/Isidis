@@ -131,7 +131,7 @@ export async function signup(prevState: any, formData: FormData) {
             social_name: socialName,
             role: role,
             sexo: sexo || null,
-            cellphone: cellphone || null,
+            cellphone: cellphone ? cellphone.replace(/\D/g, "") : null,
             tax_id: cpf ? cpf.replace(/\D/g, "") : null, // Store clean CPF
         }
 

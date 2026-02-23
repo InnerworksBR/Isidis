@@ -45,8 +45,6 @@ export async function updateProfile(formData: FormData) {
         youtube_url: formData.get('youtube_url') as string,
         specialties: JSON.parse(formData.get('specialties') as string || '[]'),
         decks_used: JSON.parse(formData.get('decks_used') as string || '[]'),
-        pix_key_type: formData.get('pix_key_type') as string,
-        pix_key: formData.get('pix_key') as string,
         avatar_url: formData.get('avatar_url') as string,
         verification_status: 'APPROVED', // Auto-approve on update for now
         updated_at: new Date().toISOString(),

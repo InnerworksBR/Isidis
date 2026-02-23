@@ -32,8 +32,8 @@ export async function updateProfile(prevState: any, formData: FormData) {
 
     const updates: any = {
         full_name: fullName.trim(),
-        cellphone: cellphone.trim(),
-        tax_id: taxId.trim(),
+        cellphone: cellphone.replace(/\D/g, ''),
+        tax_id: taxId.replace(/\D/g, ''),
         bio: bio?.trim(),
         updated_at: new Date().toISOString(),
     }

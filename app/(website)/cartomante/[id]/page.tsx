@@ -5,7 +5,6 @@ import {
     Mic, Camera, FileText, Shield, MessageCircle, Sparkles, Heart,
     Instagram, Youtube, MapPin, Zap
 } from 'lucide-react'
-import { MainHero } from '@/components/marketing/MainHero'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -87,19 +86,35 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                 />
             )}
             {/* HERO BANNER */}
-            <MainHero
-                className="pt-32 pb-24"
-                badge={
-                    <div className="flex items-center gap-2">
+            <div className="relative w-full" style={{ minHeight: '420px' }}>
+                {/* Banner background */}
+                <div className="absolute inset-0 overflow-hidden">
+                    {profile.cover_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={profile.cover_url}
+                            alt="Banner"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-900 via-[#0a0a0f] to-purple-900" />
+                    )}
+                    {/* Gradient overlay so text is readable */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20" />
+                </div>
+
+                {/* Content on top of banner */}
+                <div className="relative z-10 container mx-auto px-6 pt-32 pb-16">
+                    {/* Badge */}
+                    <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-full mb-8">
                         <Sparkles className="w-3 h-3" />
                         <span>Perfil Profissional</span>
                     </div>
-                }
-                title={
-                    <div className="flex flex-col md:flex-row items-center md:items-end gap-6">
+
+                    <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
                         {/* Avatar */}
                         <div className="relative shrink-0">
-                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-primary/20 overflow-hidden bg-slate-800 shadow-2xl">
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white/20 overflow-hidden bg-slate-800 shadow-2xl">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={profile.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"}
@@ -109,52 +124,46 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
                             </div>
                             <div className="absolute bottom-1 right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-[#0a0a0f]" />
                         </div>
-                        <div className="text-center md:text-left">
+
+                        <div>
                             <h1 className="text-4xl md:text-6xl font-black text-white mb-2 leading-tight">
                                 {profile.full_name}
                             </h1>
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                            <p className="text-lg md:text-xl font-medium text-white/70 max-w-2xl mb-4 leading-relaxed">
+                                {profile.tagline || (profile.bio ? profile.bio.slice(0, 100) + '...' : 'Especialista em oráculos e orientação espiritual.')}
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-3 text-sm font-bold">
+                                <div className="flex items-center gap-1.5 text-amber-400 bg-amber-400/10 px-4 py-2 rounded-2xl border border-amber-400/20">
+                                    <Star className="w-4 h-4 fill-amber-400" />
+                                    <span>{avgRating}</span>
+                                    <span className="opacity-50 font-medium">({totalReviews})</span>
+                                </div>
+                                {profile.years_of_experience > 0 && (
+                                    <div className="flex items-center gap-2 text-indigo-300 bg-indigo-500/10 px-4 py-2 rounded-2xl border border-indigo-500/20">
+                                        <Zap className="w-4 h-4" />
+                                        <span>{profile.years_of_experience} Anos de Exp.</span>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-4 py-2 rounded-2xl border border-green-400/20">
+                                    <MapPin className="w-4 h-4" />
+                                    <span>Online</span>
+                                </div>
                                 {profile.instagram_handle && (
-                                    <Link href={`https://instagram.com/${profile.instagram_handle}`} target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-pink-500/20 hover:text-pink-500 transition-colors border border-white/10">
+                                    <Link href={`https://instagram.com/${profile.instagram_handle}`} target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-pink-500/20 hover:text-pink-500 transition-colors border border-white/10 text-white">
                                         <Instagram className="w-4 h-4" />
                                     </Link>
                                 )}
                                 {profile.youtube_url && (
-                                    <Link href={profile.youtube_url} target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-red-500/20 hover:text-red-500 transition-colors border border-white/10">
+                                    <Link href={profile.youtube_url} target="_blank" className="p-2 bg-white/5 rounded-full hover:bg-red-500/20 hover:text-red-500 transition-colors border border-white/10 text-white">
                                         <Youtube className="w-4 h-4" />
                                     </Link>
                                 )}
                             </div>
                         </div>
                     </div>
-                }
-                description={
-                    <div className="space-y-6">
-                        <p className="text-lg md:text-xl font-medium max-w-2xl opacity-80 leading-relaxed">
-                            {profile.tagline || (profile.bio ? profile.bio.slice(0, 100) + '...' : 'Especialista em oráculos e orientação espiritual.')}
-                        </p>
-
-                        <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
-                            <div className="flex items-center gap-1.5 text-amber-400 bg-amber-400/10 px-4 py-2 rounded-2xl border border-amber-400/20">
-                                <Star className="w-4 h-4 fill-amber-400" />
-                                <span>{avgRating}</span>
-                                <span className="opacity-50 font-medium">({totalReviews})</span>
-                            </div>
-                            {profile.years_of_experience > 0 && (
-                                <div className="flex items-center gap-2 text-indigo-300 bg-indigo-500/10 px-4 py-2 rounded-2xl border border-indigo-500/20">
-                                    <Zap className="w-4 h-4" />
-                                    <span>{profile.years_of_experience} Anos de Exp.</span>
-                                </div>
-                            )}
-                            <div className="flex items-center gap-2 text-green-400 bg-green-400/10 px-4 py-2 rounded-2xl border border-green-400/20">
-                                <MapPin className="w-4 h-4" />
-                                <span>Online</span>
-                            </div>
-                        </div>
-                    </div>
-                }
-                withMockup={true}
-            />
+                </div>
+            </div>
 
             {/* CONTENT GRID */}
             <div className="container mx-auto px-6 py-12">

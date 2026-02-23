@@ -7,6 +7,7 @@ import { createBilling } from '@/services/abacate'
 const PLATFORM_FEE_PERCENT = 8
 
 import { GigAddOn } from '@/types'
+import { stripEmojis } from '@/lib/utils'
 
 export async function createCheckoutSession(gigId: string, selectedAddOnIds: string[] = []) {
     const supabase = await createClient()
@@ -138,13 +139,13 @@ export async function createCheckoutSession(gigId: string, selectedAddOnIds: str
             products: [
                 {
                     externalId: order.id,
-                    name: `Leitura com ${reader?.full_name || 'Cartomante'} — ${gig.title}`,
+                    name: stripEmojis(`Leitura com ${reader?.full_name || 'Cartomante'} — ${gig.title}`),
                     quantity: 1,
                     price: gig.price,
                 },
                 ...selectedAddOns.map((addon: GigAddOn) => ({
                     externalId: `${order.id}-${addon.id}`,
-                    name: `Extra: ${addon.title}`,
+                    name: stripEmojis(`Extra: ${addon.title}`),
                     quantity: 1,
                     price: Math.round(addon.price * 100)
                 }))
@@ -152,8 +153,8 @@ export async function createCheckoutSession(gigId: string, selectedAddOnIds: str
             customer: {
                 name: buyerProfile.full_name || 'Cliente',
                 email: user.email!,
-                cellphone: buyerProfile.cellphone,
-                taxId: buyerProfile.tax_id,
+                cellphone: buyerProfile.cellphone.replace(/\D/g, ''),
+                taxId: buyerProfile.tax_id.replace(/\D/g, ''),
             },
             returnUrl: `${siteUrl}/cartomante/${gig.owner_id}`,
             completionUrl: `${siteUrl}/checkout/success?order_id=${order.id}`,
@@ -310,7 +311,7 @@ export async function createPixPayment(gigId: string, selectedAddOnIds: string[]
         }
 
         // PIX description limit is roughly 35-40 chars. Abacate says 37.
-        const cleanTitle = gig.title.substring(0, 20)
+        const cleanTitle = stripEmojis(gig.title).substring(0, 20)
         const pixDescription = `Isidis: ${cleanTitle}`.substring(0, 37)
 
         // 6. Call Abacate Pay to create direct PIX
@@ -320,8 +321,8 @@ export async function createPixPayment(gigId: string, selectedAddOnIds: string[]
             customer: {
                 name: buyerProfile.full_name || 'Cliente',
                 email: user.email!,
-                cellphone: buyerProfile.cellphone,
-                taxId: buyerProfile.tax_id,
+                cellphone: buyerProfile.cellphone.replace(/\D/g, ''),
+                taxId: buyerProfile.tax_id.replace(/\D/g, ''),
             },
             metadata: {
                 order_id: orderId as string

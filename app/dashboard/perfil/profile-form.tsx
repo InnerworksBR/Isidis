@@ -236,10 +236,11 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                                 </Label>
                                 <Input
                                     value={formData.tax_id}
-                                    onChange={e => handleChange('tax_id', formatCpf(e.target.value))}
-                                    className="h-11 bg-muted/30 border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all"
+                                    readOnly
+                                    className="h-11 bg-muted/10 border-border/30 rounded-xl text-muted-foreground/60 cursor-not-allowed italic"
                                     placeholder="000.000.000-00"
                                 />
+                                <p className="text-[10px] text-muted-foreground/50 italic px-1">O CPF não pode ser alterado após o cadastro.</p>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-muted-foreground text-sm font-medium flex items-center gap-2">
