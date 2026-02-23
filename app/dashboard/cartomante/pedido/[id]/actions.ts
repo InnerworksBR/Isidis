@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { sendReadingDelivered } from '@/lib/email'
+import { getUserEmail } from '@/lib/supabase/get-user-email'
 
 export interface ReadingCard {
     cardId: number
@@ -53,6 +54,19 @@ export async function sendReading(orderId: string, content: ReadingContent) {
         return { error: 'Adicione pelo menos uma interpretação (texto ou áudio).' }
     }
 
+    // Buscar dados do pedido ANTES de atualizar
+    const { data: order } = await supabase
+        .from('orders')
+        .select(`
+            id, client_id,
+            gigs(title),
+            reader:profiles!orders_reader_id_fkey(full_name),
+            client:profiles!orders_client_id_fkey(full_name)
+        `)
+        .eq('id', orderId)
+        .eq('reader_id', user.id)
+        .single()
+
     const { error } = await supabase
         .from('orders')
         .update({
@@ -69,30 +83,21 @@ export async function sendReading(orderId: string, content: ReadingContent) {
 
     // ── Disparar email para o cliente ─────────────────────────────────────────
     try {
-        const { data: order } = await supabase
-            .from('orders')
-            .select(`
-                id,
-                gigs(title),
-                client:profiles!orders_client_id_fkey(full_name, email),
-                reader:profiles!orders_reader_id_fkey(full_name)
-            `)
-            .eq('id', orderId)
-            .single()
-
-        if (order) {
+        if (order?.client_id) {
+            const clientEmail = await getUserEmail(order.client_id)
             const client = order.client as any
             const gig = order.gigs as any
             const reader = order.reader as any
 
-            if (client?.email) {
+            if (clientEmail) {
                 await sendReadingDelivered({
-                    clientEmail: client.email,
-                    clientName: client.full_name || 'Cliente',
+                    clientEmail,
+                    clientName: client?.full_name || 'Cliente',
                     orderId,
                     gigTitle: gig?.title || 'Leitura de Tarot',
                     readerName: reader?.full_name || 'Sua cartomante',
                 })
+                console.log('[Reading] Email de entrega enviado para', clientEmail)
             }
         }
     } catch (emailErr) {
@@ -110,7 +115,7 @@ export async function getOrder(orderId: string) {
 
     const { data: order } = await supabase
         .from('orders')
-        .select('*, gigs(title), profiles!orders_client_id_fkey(full_name, email)')
+        .select('*, gigs(title), profiles!orders_client_id_fkey(full_name)')
         .eq('id', orderId)
         .eq('reader_id', user.id)
         .single()
@@ -170,6 +175,19 @@ export async function sendPhysicalReading(orderId: string, content: PhysicalRead
         return { error: 'Adicione pelo menos uma foto, áudio ou interpretação.' }
     }
 
+    // Buscar dados do pedido ANTES de atualizar
+    const { data: order } = await supabase
+        .from('orders')
+        .select(`
+            id, client_id,
+            gigs(title),
+            reader:profiles!orders_reader_id_fkey(full_name),
+            client:profiles!orders_client_id_fkey(full_name)
+        `)
+        .eq('id', orderId)
+        .eq('reader_id', user.id)
+        .single()
+
     const { error } = await supabase
         .from('orders')
         .update({
@@ -186,30 +204,21 @@ export async function sendPhysicalReading(orderId: string, content: PhysicalRead
 
     // ── Disparar email para o cliente ─────────────────────────────────────────
     try {
-        const { data: order } = await supabase
-            .from('orders')
-            .select(`
-                id,
-                gigs(title),
-                client:profiles!orders_client_id_fkey(full_name, email),
-                reader:profiles!orders_reader_id_fkey(full_name)
-            `)
-            .eq('id', orderId)
-            .single()
-
-        if (order) {
+        if (order?.client_id) {
+            const clientEmail = await getUserEmail(order.client_id)
             const client = order.client as any
             const gig = order.gigs as any
             const reader = order.reader as any
 
-            if (client?.email) {
+            if (clientEmail) {
                 await sendReadingDelivered({
-                    clientEmail: client.email,
-                    clientName: client.full_name || 'Cliente',
+                    clientEmail,
+                    clientName: client?.full_name || 'Cliente',
                     orderId,
                     gigTitle: gig?.title || 'Leitura de Tarot',
                     readerName: reader?.full_name || 'Sua cartomante',
                 })
+                console.log('[Physical Reading] Email de entrega enviado para', clientEmail)
             }
         }
     } catch (emailErr) {

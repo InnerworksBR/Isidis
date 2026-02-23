@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { createNotification } from './notifications'
 import { sendTicketReply } from '@/lib/email'
+import { getUserEmail } from '@/lib/supabase/get-user-email'
 
 export type TicketCategory = 'REEMBOLSO' | 'SAQUE' | 'MUDANCA_PIX' | 'DUVIDA' | 'OUTRO';
 export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
@@ -117,13 +118,15 @@ export async function addTicketMessage({
             )
 
             // Send email to user when admin responds
-            const { data: userProfile } = await supabase
-                .from('profiles')
-                .select('full_name, email')
-                .eq('id', receiverId)
-                .single()
+            const userEmail = await getUserEmail(receiverId)
 
-            if (userProfile?.email) {
+            if (userEmail) {
+                const { data: userProfile } = await supabase
+                    .from('profiles')
+                    .select('full_name')
+                    .eq('id', receiverId)
+                    .single()
+
                 const { data: ticketData } = await supabase
                     .from('tickets')
                     .select('subject')
@@ -131,8 +134,8 @@ export async function addTicketMessage({
                     .single()
 
                 await sendTicketReply({
-                    userEmail: userProfile.email,
-                    userName: userProfile.full_name || 'Usuário',
+                    userEmail,
+                    userName: userProfile?.full_name || 'Usuário',
                     ticketId,
                     ticketSubject: ticketData?.subject || 'Suporte',
                     replyPreview: content,

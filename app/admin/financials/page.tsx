@@ -5,8 +5,14 @@ import { getAdminFinancials, FinancialSummary } from '@/app/actions/admin-financ
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils'
-import { DollarSign, ArrowUpRight, ArrowDownLeft, Activity } from 'lucide-react'
+import { DollarSign, TrendingUp, ArrowUpRight, Clock, Users, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
+
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+    PAID: { label: 'PAGO', color: 'text-blue-400 border-blue-500/40 bg-blue-500/10' },
+    DELIVERED: { label: 'ENTREGUE', color: 'text-yellow-400 border-yellow-500/40 bg-yellow-500/10' },
+    COMPLETED: { label: 'CONCLUÍDO', color: 'text-green-400 border-green-500/40 bg-green-500/10' },
+}
 
 export default function AdminFinancialsPage() {
     const [data, setData] = useState<FinancialSummary | null>(null)
@@ -34,77 +40,167 @@ export default function AdminFinancialsPage() {
 
     if (!data) return null
 
+    const platformPercent = data.totalRevenue > 0
+        ? ((data.platformFee / data.totalRevenue) * 100).toFixed(1)
+        : '0'
+
+    const repassePercent = data.totalRevenue > 0
+        ? ((data.totalRepasse / data.totalRevenue) * 100).toFixed(1)
+        : '0'
+
     return (
         <div className="space-y-8 animate-fade-in-up">
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">Financeiro</h2>
-                <p className="text-muted-foreground">Visão geral das receitas e movimentações da plataforma.</p>
+                <p className="text-muted-foreground">Visão geral das receitas, taxas e repasses da plataforma.</p>
             </div>
 
-            {/* KPIs */}
+            {/* KPIs — linha 1 */}
             <div className="grid gap-4 md:grid-cols-3">
+                {/* Receita Bruta */}
                 <Card className="bg-card-deep border-border/50">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Receita Bruta (Vendas)</CardTitle>
-                        <DollarSign className="h-4 w-4 text-green-500" />
+                        <CardTitle className="text-sm font-medium">Receita Bruta Total</CardTitle>
+                        <ShoppingCart className="h-4 w-4 text-violet-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-green-400">{formatCurrency(data.totalRevenue)}</div>
-                        <p className="text-xs text-muted-foreground">+20.1% em relação ao mês anterior</p>
+                        <div className="text-2xl font-bold text-violet-400">{formatCurrency(data.totalRevenue)}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {data.recentOrders.length} pedido{data.recentOrders.length !== 1 ? 's' : ''} recentes considerados
+                        </p>
                     </CardContent>
                 </Card>
 
+                {/* Taxa da Plataforma — o que fica pra empresa */}
+                <Card className="bg-card-deep border-green-500/20 border">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Taxa da Plataforma 🏢</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-green-500" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-green-400">{formatCurrency(data.platformFee)}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {platformPercent}% da receita bruta — lucro da empresa
+                        </p>
+                    </CardContent>
+                </Card>
+
+                {/* Repasse Cartomantes */}
+                <Card className="bg-card-deep border-amber-500/20 border">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Repasse Cartomantes 🔮</CardTitle>
+                        <Users className="h-4 w-4 text-amber-400" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-amber-400">{formatCurrency(data.totalRepasse)}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {repassePercent}% da receita bruta — total devido
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* KPIs — linha 2 */}
+            <div className="grid gap-4 md:grid-cols-2">
+                {/* Saques já pagos */}
                 <Card className="bg-card-deep border-border/50">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Saques Pagos</CardTitle>
+                        <CardTitle className="text-sm font-medium">Saques Pagos</CardTitle>
                         <ArrowUpRight className="h-4 w-4 text-red-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-red-400">{formatCurrency(data.totalWithdrawn)}</div>
-                        <p className="text-xs text-muted-foreground">Fluxo de saída para cartomantes</p>
+                        <p className="text-xs text-muted-foreground mt-1">Repassado via PIX para cartomantes</p>
                     </CardContent>
                 </Card>
 
+                {/* Repasse pendente */}
                 <Card className="bg-card-deep border-border/50">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Fluxo de Caixa (Net)</CardTitle>
-                        <Activity className="h-4 w-4 text-blue-500" />
+                        <CardTitle className="text-sm font-medium">Repasse Pendente</CardTitle>
+                        <Clock className="h-4 w-4 text-blue-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-blue-400">{formatCurrency(data.netRevenue)}</div>
-                        <p className="text-xs text-muted-foreground">Saldo retido no sistema</p>
+                        <div className="text-2xl font-bold text-blue-400">{formatCurrency(data.pendingRepasse)}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Saldo disponível não sacado pelos cartomantes</p>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Transactions List */}
+            {/* Tabela de Pedidos Recentes */}
             <Card className="bg-card-deep border-border/50">
                 <CardHeader>
-                    <CardTitle>Transações Recentes</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-violet-400" />
+                        Pedidos Recentes — Detalhamento Financeiro
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {data.recentTransactions.map((tx) => (
-                            <div key={tx.id} className="flex items-center justify-between p-4 rounded-lg bg-card/50 border border-border/50 hover:bg-card/80 transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div className={`p-2 rounded-full ${tx.type === 'SALE_CREDIT' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
-                                        {tx.type === 'SALE_CREDIT' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-foreground">{tx.user.full_name}</p>
-                                        <p className="text-xs text-muted-foreground">{new Date(tx.created_at).toLocaleDateString()} às {new Date(tx.created_at).toLocaleTimeString()}</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className={`font-bold ${tx.type === 'SALE_CREDIT' ? 'text-green-400' : 'text-red-400'}`}>
-                                        {tx.type === 'SALE_CREDIT' ? '+' : '-'}{formatCurrency(Math.abs(tx.amount))}
-                                    </div>
-                                    <Badge variant="outline" className="text-[10px] mt-1 border-border/50 bg-background/50">
-                                        {tx.status === 'COMPLETED' ? 'CONCLUÍDO' : tx.status === 'PENDING' ? 'PENDENTE' : 'FALHA'}
-                                    </Badge>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-border/50 text-muted-foreground">
+                                    <th className="text-left py-3 px-2">Data</th>
+                                    <th className="text-left py-3 px-2">Cliente</th>
+                                    <th className="text-left py-3 px-2">Cartomante</th>
+                                    <th className="text-left py-3 px-2">Serviço</th>
+                                    <th className="text-right py-3 px-2">Total</th>
+                                    <th className="text-right py-3 px-2 text-green-400">Empresa</th>
+                                    <th className="text-right py-3 px-2 text-amber-400">Repasse</th>
+                                    <th className="text-center py-3 px-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.recentOrders.length === 0 && (
+                                    <tr>
+                                        <td colSpan={8} className="text-center py-8 text-muted-foreground">
+                                            Nenhuma venda encontrada ainda.
+                                        </td>
+                                    </tr>
+                                )}
+                                {data.recentOrders.map((order) => {
+                                    const statusInfo = STATUS_LABELS[order.status] ?? { label: order.status, color: 'text-muted-foreground border-border/50 bg-background/50' }
+                                    return (
+                                        <tr
+                                            key={order.id}
+                                            className="border-b border-border/30 hover:bg-card/60 transition-colors"
+                                        >
+                                            <td className="py-3 px-2 text-muted-foreground whitespace-nowrap">
+                                                {new Date(order.created_at).toLocaleDateString('pt-BR')}
+                                            </td>
+                                            <td className="py-3 px-2 font-medium truncate max-w-[120px]">{order.client_name}</td>
+                                            <td className="py-3 px-2 text-violet-300 truncate max-w-[120px]">{order.reader_name}</td>
+                                            <td className="py-3 px-2 text-muted-foreground truncate max-w-[140px]">{order.gig_title}</td>
+                                            <td className="py-3 px-2 text-right font-bold text-foreground">
+                                                {formatCurrency(order.amount_total)}
+                                            </td>
+                                            <td className="py-3 px-2 text-right font-semibold text-green-400">
+                                                {formatCurrency(order.amount_platform_fee)}
+                                            </td>
+                                            <td className="py-3 px-2 text-right font-semibold text-amber-400">
+                                                {formatCurrency(order.amount_reader_net)}
+                                            </td>
+                                            <td className="py-3 px-2 text-center">
+                                                <Badge variant="outline" className={`text-[10px] ${statusInfo.color}`}>
+                                                    {statusInfo.label}
+                                                </Badge>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                            {data.recentOrders.length > 0 && (
+                                <tfoot>
+                                    <tr className="border-t-2 border-border/50 font-bold">
+                                        <td colSpan={4} className="py-3 px-2 text-muted-foreground">Totais</td>
+                                        <td className="py-3 px-2 text-right text-foreground">{formatCurrency(data.totalRevenue)}</td>
+                                        <td className="py-3 px-2 text-right text-green-400">{formatCurrency(data.platformFee)}</td>
+                                        <td className="py-3 px-2 text-right text-amber-400">{formatCurrency(data.totalRepasse)}</td>
+                                        <td />
+                                    </tr>
+                                </tfoot>
+                            )}
+                        </table>
                     </div>
                 </CardContent>
             </Card>

@@ -3,114 +3,123 @@
 import { createClient } from '@/lib/supabase/server'
 
 export interface FinancialSummary {
-    totalRevenue: number
-    totalWithdrawn: number
-    netRevenue: number // Assuming platform takes a cut, or just total in system
-    recentTransactions: TransactionWithUser[]
+    // Totais das ordens (fonte principal)
+    totalRevenue: number           // Receita bruta total (amount_total)
+    platformFee: number            // Taxa da plataforma / lucro empresa (amount_platform_fee)
+    totalRepasse: number           // Total de repasse para cartomantes (amount_reader_net)
+    // Saques já pagos
+    totalWithdrawn: number         // Saques concluídos (WITHDRAWAL COMPLETED)
+    // Saldo a pagar (repasse pendente)
+    pendingRepasse: number         // Repasse aguardando saque
+    // Transações recentes
+    recentOrders: OrderFinancialRow[]
 }
 
-export interface TransactionWithUser {
+export interface OrderFinancialRow {
     id: string
-    amount: number
-    type: string
-    status: string
     created_at: string
-    user: {
-        full_name: string
-        email: string
-    }
+    status: string
+    amount_total: number
+    amount_platform_fee: number
+    amount_reader_net: number
+    client_name: string
+    reader_name: string
+    gig_title: string
 }
 
 export async function getAdminFinancials(): Promise<{ data?: FinancialSummary, error?: string }> {
     const supabase = await createClient()
 
-    // check admin
+    // check auth
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Unauthorized' }
 
-    // In a real app we'd check strict RBAC here. Assuming auth middleware handles /admin protection.
+    // 1. Buscar todas as ordens PAGAS/ENTREGUES/CONCLUÍDAS
+    //    (sem join em profiles para evitar ambiguidade de FK — buscamos profiles separado)
+    const { data: orders, error: ordersError } = await supabase
+        .from('orders')
+        .select(`
+            id,
+            created_at,
+            status,
+            amount_total,
+            amount_platform_fee,
+            amount_reader_net,
+            client_id,
+            reader_id,
+            gig_id
+        `)
+        .in('status', ['PAID', 'DELIVERED', 'COMPLETED'])
+        .order('created_at', { ascending: false })
 
-    // 1. Total Revenue (Sales)
-    // Sum of all SALE_CREDIT transactions
-    const { data: revenueData, error: revenueError } = await supabase
-        .from('transactions')
-        .select('amount')
-        .eq('type', 'SALE_CREDIT')
-        .eq('status', 'COMPLETED')
+    if (ordersError) return { error: 'Falha ao buscar ordens: ' + ordersError.message }
 
-    if (revenueError) return { error: 'Failed to fetch revenue' }
-    const totalRevenue = revenueData.reduce((acc, curr) => acc + curr.amount, 0)
+    // 2. Calcular totais das ordens
+    let totalRevenue = 0
+    let platformFee = 0
+    let totalRepasse = 0
 
-    // 2. Total Withdrawn
+    for (const o of orders ?? []) {
+        totalRevenue += o.amount_total ?? 0
+        platformFee += o.amount_platform_fee ?? 0
+        totalRepasse += o.amount_reader_net ?? 0
+    }
+
+    // 3. Total saques já pagos (saídas do caixa)
     const { data: withdrawData, error: withdrawError } = await supabase
         .from('transactions')
         .select('amount')
         .eq('type', 'WITHDRAWAL')
         .eq('status', 'COMPLETED')
 
-    if (withdrawError) return { error: 'Failed to fetch withdrawals' }
+    if (withdrawError) return { error: 'Falha ao buscar saques' }
     const totalWithdrawn = withdrawData.reduce((acc, curr) => acc + Math.abs(curr.amount), 0)
 
-    // 3. Recent Transactions
-    // We need to join with wallets -> profiles to get user names
-    // Supabase JS join syntax depends on foreign keys.
-    // transactions -> wallet_id
-    // wallets -> user_id -> profiles?
-    // Let's try to fetch transactions and manually join if deep nesting is complex, 
-    // or use the relational query if setup correctly.
-
-    // Using a simpler approach: fetch specific transactions and then fetch profiles
-    const { data: recentTx, error: txError } = await supabase
+    // 4. Repasse pendente (créditos do cartomante ainda não sacados)
+    const { data: pendingData } = await supabase
         .from('transactions')
-        .select(`
-            id, amount, type, status, created_at, wallet_id
-        `)
-        .order('created_at', { ascending: false })
-        .limit(20)
+        .select('amount')
+        .eq('type', 'SALE_CREDIT')
+        .eq('status', 'COMPLETED')
 
-    if (txError) return { error: 'Failed to fetch transactions' }
+    const totalCredited = pendingData?.reduce((acc, curr) => acc + curr.amount, 0) ?? 0
+    const pendingRepasse = Math.max(0, totalCredited - totalWithdrawn)
 
-    // Fetch wallet owners
-    const walletIds = [...new Set(recentTx.map(t => t.wallet_id))]
-    const { data: wallets } = await supabase
-        .from('wallets')
-        .select('id, user_id')
-        .in('id', walletIds)
+    // 5. Resolver nomes de profiles e gigs para as ordens recentes
+    const recentRaw = (orders ?? []).slice(0, 30)
+    const allUserIds = [...new Set(recentRaw.flatMap(o => [o.client_id, o.reader_id]).filter(Boolean))]
+    const allGigIds = [...new Set(recentRaw.map(o => o.gig_id).filter(Boolean))]
 
-    // Map wallet -> user_id
-    const walletUserMap = new Map(wallets?.map(w => [w.id, w.user_id]) || [])
-    const userIds = [...new Set(wallets?.map(w => w.user_id) || [])]
+    const { data: profilesData } = allUserIds.length > 0
+        ? await supabase.from('profiles').select('id, full_name').in('id', allUserIds)
+        : { data: [] }
+    const { data: gigsData } = allGigIds.length > 0
+        ? await supabase.from('gigs').select('id, title').in('id', allGigIds)
+        : { data: [] }
 
-    // Fetch profiles
-    const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .in('id', userIds)
+    const profileMap = new Map((profilesData ?? []).map(p => [p.id, p.full_name]))
+    const gigMap = new Map((gigsData ?? []).map(g => [g.id, g.title]))
 
-    const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
-
-    const recentTransactions: TransactionWithUser[] = recentTx.map(tx => {
-        const userId = walletUserMap.get(tx.wallet_id)
-        const profile = userId ? profileMap.get(userId) : null
-        return {
-            id: tx.id,
-            amount: tx.amount,
-            type: tx.type,
-            status: tx.status,
-            created_at: tx.created_at,
-            user: {
-                full_name: profile?.full_name || 'Desconhecido',
-                email: profile?.email || 'N/A'
-            }
-        }
-    })
+    const recentOrders: OrderFinancialRow[] = recentRaw.map((o) => ({
+        id: o.id,
+        created_at: o.created_at,
+        status: o.status,
+        amount_total: o.amount_total,
+        amount_platform_fee: o.amount_platform_fee,
+        amount_reader_net: o.amount_reader_net,
+        client_name: profileMap.get(o.client_id) ?? 'Desconhecido',
+        reader_name: profileMap.get(o.reader_id) ?? 'Desconhecido',
+        gig_title: gigMap.get(o.gig_id) ?? 'N/A',
+    }))
 
     return {
         data: {
             totalRevenue,
+            platformFee,
+            totalRepasse,
             totalWithdrawn,
-            netRevenue: totalRevenue - totalWithdrawn, // Simple cash flow for now
-            recentTransactions
+            pendingRepasse,
+            recentOrders,
         }
     }
 }

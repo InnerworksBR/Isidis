@@ -74,33 +74,33 @@ export function PhysicalReadingView({
                 </div>
             )}
 
-            <div className="min-h-screen bg-[#12100a] text-amber-50">
+            <div className="min-h-screen bg-background text-foreground">
                 {/* Hero */}
-                <header className="relative px-6 pt-12 pb-8 text-center max-w-4xl mx-auto">
-                    <div className="absolute top-8 right-8 no-print">
+                <header className="relative px-4 sm:px-6 pt-12 pb-8 text-center max-w-4xl mx-auto">
+                    <div className="absolute top-8 right-4 sm:right-8 no-print">
                         <PrintReadingButton />
                     </div>
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full mb-4">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-accent bg-accent/10 border border-accent/20 px-3 py-1 rounded-full mb-4">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
                         Leitura Física
                     </span>
-                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2 px-8">
                         {readingTitle || 'Sua Leitura'}
                     </h1>
-                    <p className="text-sm text-amber-600">
+                    <p className="text-sm text-muted-foreground">
                         Entregue em {new Date(deliveredAt).toLocaleDateString('pt-BR', {
                             day: 'numeric', month: 'long', year: 'numeric'
-                        })} por <strong className="text-amber-400">{readerName}</strong>
+                        })} por <strong className="text-foreground">{readerName}</strong>
                     </p>
                 </header>
 
                 {/* Content */}
-                <main className="max-w-4xl mx-auto px-6 pb-16 space-y-12">
+                <main className="max-w-4xl mx-auto px-4 sm:px-6 pb-16 space-y-12">
                     {sections.map((section, idx) => (
                         <div key={section.id} className="space-y-6">
                             {/* Section Photo */}
                             {section.photoUrl && (
-                                <div className="relative rounded-2xl overflow-hidden border border-amber-700/20 shadow-2xl group">
+                                <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl group">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={section.photoUrl}
@@ -129,30 +129,30 @@ export function PhysicalReadingView({
 
                             {/* Section Audio */}
                             {section.audioUrl && (
-                                <div className="flex items-center gap-4 p-5 rounded-2xl bg-amber-950/30 border border-amber-700/20">
+                                <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl bg-card border border-border">
                                     <Button
                                         size="icon"
                                         onClick={() => togglePlay(idx, section.audioUrl!)}
-                                        className="w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-600 text-black shrink-0 shadow-lg shadow-amber-500/20"
+                                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shrink-0 shadow-lg"
                                     >
                                         {playingIdx === idx
-                                            ? <Pause className="w-6 h-6" />
-                                            : <Play className="w-6 h-6 pl-0.5" />
+                                            ? <Pause className="w-5 h-5 sm:w-6 sm:h-6" />
+                                            : <Play className="w-5 h-5 sm:w-6 sm:h-6 pl-0.5" />
                                         }
                                     </Button>
-                                    <div className="flex-1 space-y-1.5">
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-sm font-bold text-amber-200">Interpretação em Áudio</p>
+                                    <div className="flex-1 space-y-1.5 min-w-0">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="text-sm font-bold text-foreground truncate">Interpretação em Áudio</p>
                                             {playingIdx === idx && (
-                                                <span className="text-[10px] text-amber-600 font-mono">
+                                                <span className="text-[10px] text-muted-foreground font-mono shrink-0">
                                                     {formatTime(currentTime)} / {formatTime(duration)}
                                                 </span>
                                             )}
                                         </div>
                                         {/* Progress Bar */}
-                                        <div className="h-1.5 bg-amber-900/50 rounded-full overflow-hidden w-full">
+                                        <div className="h-1.5 bg-muted rounded-full overflow-hidden w-full">
                                             <div
-                                                className="h-full bg-amber-500 rounded-full transition-all"
+                                                className="h-full bg-accent rounded-full transition-all"
                                                 style={{
                                                     width: playingIdx === idx && duration > 0
                                                         ? `${(currentTime / duration) * 100}%`
@@ -167,12 +167,12 @@ export function PhysicalReadingView({
                             {/* Section Title + Text */}
                             {(section.title || section.interpretation) && (
                                 <div className="space-y-4">
-                                    <h2 className="text-xl font-bold text-amber-400 flex items-center gap-3 border-b border-amber-700/20 pb-3">
-                                        <span className="text-amber-600 text-sm font-mono">{String(idx + 1).padStart(2, '0')}.</span>
+                                    <h2 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-3 border-b border-border pb-3">
+                                        <span className="text-muted-foreground text-sm font-mono shrink-0">{String(idx + 1).padStart(2, '0')}.</span>
                                         {section.title.toUpperCase()}
                                     </h2>
                                     {section.interpretation && (
-                                        <div className="text-sm text-amber-100/80 leading-relaxed whitespace-pre-wrap">
+                                        <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
                                             {section.interpretation}
                                         </div>
                                     )}
@@ -182,23 +182,23 @@ export function PhysicalReadingView({
                             {/* Section Divider */}
                             {idx < sections.length - 1 && (
                                 <div className="flex items-center justify-center py-4">
-                                    <div className="w-16 h-px bg-amber-700/30" />
-                                    <Sparkles className="w-4 h-4 text-amber-700/40 mx-4" />
-                                    <div className="w-16 h-px bg-amber-700/30" />
+                                    <div className="w-16 h-px bg-border" />
+                                    <Sparkles className="w-4 h-4 text-muted-foreground/40 mx-4" />
+                                    <div className="w-16 h-px bg-border" />
                                 </div>
                             )}
                         </div>
                     ))}
 
                     {/* Reader Footer */}
-                    <div className="pt-8 border-t border-amber-700/20 text-center">
-                        <div className="inline-flex items-center gap-3 p-4 rounded-2xl bg-amber-950/30 border border-amber-700/20">
-                            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
-                                <Sparkles className="w-5 h-5 text-amber-400" />
+                    <div className="pt-8 border-t border-border text-center">
+                        <div className="inline-flex items-center gap-3 p-4 rounded-2xl bg-card border border-border">
+                            <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center">
+                                <Sparkles className="w-5 h-5 text-accent" />
                             </div>
                             <div className="text-left">
-                                <p className="text-sm font-bold text-white">{readerName}</p>
-                                <p className="text-[10px] text-amber-600">Cartomante • Isidis</p>
+                                <p className="text-sm font-bold text-foreground">{readerName}</p>
+                                <p className="text-[10px] text-muted-foreground">Cartomante • Isidis</p>
                             </div>
                         </div>
                     </div>

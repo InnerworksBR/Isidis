@@ -3,25 +3,24 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { sendReaderApproved, sendReaderRejected } from '@/lib/email'
+import { getUserEmail } from '@/lib/supabase/get-user-email'
 
 export async function updateCartomanteStatus(userId: string, status: 'APPROVED' | 'REJECTED') {
     const supabase = await createClient()
 
-    // Auth check
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Unauthorized')
 
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
     if (profile?.role !== 'ADMIN') throw new Error('Forbidden')
 
-    // Buscar dados do cartomante antes de atualizar
+    // Buscar nome antes de atualizar
     const { data: targetProfile } = await supabase
         .from('profiles')
-        .select('full_name, email')
+        .select('full_name')
         .eq('id', userId)
         .single()
 
-    // Update
     const { error } = await supabase
         .from('profiles')
         .update({ verification_status: status })
@@ -32,23 +31,25 @@ export async function updateCartomanteStatus(userId: string, status: 'APPROVED' 
         throw new Error('Failed to update status')
     }
 
-    // ── Disparar email para o cartomante ──────────────────────────────────────
+    // ── Email ────────────────────────────────────────────────────────────────
     try {
-        if (targetProfile?.email) {
+        const readerEmail = await getUserEmail(userId)
+        if (readerEmail) {
             if (status === 'APPROVED') {
                 await sendReaderApproved({
-                    readerEmail: targetProfile.email,
-                    readerName: targetProfile.full_name || 'Cartomante',
+                    readerEmail,
+                    readerName: targetProfile?.full_name || 'Cartomante',
                 })
             } else if (status === 'REJECTED') {
                 await sendReaderRejected({
-                    readerEmail: targetProfile.email,
-                    readerName: targetProfile.full_name || 'Cartomante',
+                    readerEmail,
+                    readerName: targetProfile?.full_name || 'Cartomante',
                 })
             }
+            console.log('[Admin] Email de status do cartomante enviado para', readerEmail)
         }
     } catch (emailErr) {
-        console.error('[Admin] Falha ao enviar email de status do cartomante:', emailErr)
+        console.error('[Admin] Falha ao enviar email de status:', emailErr)
     }
 
     revalidatePath('/admin/cartomantes')

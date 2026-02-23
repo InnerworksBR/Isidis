@@ -3,10 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import {
     sendOrderPaidToReader,
     sendOrderPaidToClient,
-    sendOrderCanceled,
 } from '@/lib/email'
-
-
+import { getUserEmail } from '@/lib/supabase/get-user-email'
 
 interface AbacateWebhookPayload {
     event: string
@@ -21,9 +19,8 @@ interface AbacateWebhookPayload {
 }
 
 export async function POST(request: Request) {
-    // Usamos service role key aqui para bypass RLS — webhooks não têm contexto de usuário
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-        console.error('CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set. Webhook will not function correctly.')
+        console.error('CRITICAL: SUPABASE_SERVICE_ROLE_KEY is not set.')
         return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
     }
 
@@ -32,7 +29,6 @@ export async function POST(request: Request) {
         process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
 
-    // Verificar secret do webhook
     const secret = request.headers.get('x-webhook-secret')
     const expectedSecret = process.env.ABACATE_WEBHOOK_SECRET
 
@@ -48,30 +44,28 @@ export async function POST(request: Request) {
         if (payload.event === 'billing.paid' || payload.data?.status === 'PAID') {
             const billingId = payload.data.id
 
-            // Buscar order pelo asaas_payment_id (que armazena o billing id do Abacate)
+            // Buscar order com dados de perfil (sem tentar buscar email de profiles)
             const { data: order, error: findError } = await supabaseAdmin
                 .from('orders')
                 .select(`
                     id, reader_id, client_id, amount_reader_net, status,
                     gigs(title),
-                    reader:profiles!orders_reader_id_fkey(full_name, email),
-                    client:profiles!orders_client_id_fkey(full_name, email)
+                    reader:profiles!orders_reader_id_fkey(full_name),
+                    client:profiles!orders_client_id_fkey(full_name)
                 `)
                 .eq('asaas_payment_id', billingId)
                 .single()
 
             if (findError || !order) {
                 console.warn('Webhook: Pedido não encontrado para billing:', billingId)
-                // Retornar 200 mesmo assim para evitar retries infinitos
                 return NextResponse.json({ received: true, warning: 'Order not found' })
             }
 
-            // Evitar processamento duplicado
             if (order.status === 'PAID' || order.status === 'DELIVERED' || order.status === 'COMPLETED') {
                 return NextResponse.json({ received: true, info: 'Already processed' })
             }
 
-            // Atualizar status do pedido para PAID
+            // Atualizar status para PAID
             const { error: updateError } = await supabaseAdmin
                 .from('orders')
                 .update({ status: 'PAID' })
@@ -82,7 +76,7 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'DB update failed' }, { status: 500 })
             }
 
-            // Criar wallet para a cartomante se não existir
+            // Criar wallet e transação para a cartomante
             const { data: existingWallet } = await supabaseAdmin
                 .from('wallets')
                 .select('id')
@@ -100,7 +94,6 @@ export async function POST(request: Request) {
                 walletId = newWallet?.id
             }
 
-            // Criar transação de crédito para a cartomante
             if (walletId) {
                 await supabaseAdmin
                     .from('transactions')
@@ -115,27 +108,32 @@ export async function POST(request: Request) {
 
             console.log('Webhook: Pedido', order.id, 'atualizado para PAID')
 
-            // ── Disparar emails ──────────────────────────────────────────────
-            const reader = order.reader as any
-            const client = order.client as any
-            const gig = order.gigs as any
-            const gigTitle = gig?.title || 'Leitura de Tarot'
-
+            // ── Disparar emails usando auth.users para buscar emails ───────────────
             try {
+                const [readerEmail, clientEmail] = await Promise.all([
+                    getUserEmail(order.reader_id),
+                    getUserEmail(order.client_id),
+                ])
+
+                const reader = order.reader as any
+                const client = order.client as any
+                const gig = order.gigs as any
+                const gigTitle = gig?.title || 'Leitura de Tarot'
+
+                console.log('Webhook: Emails encontrados — reader:', readerEmail, ' client:', clientEmail)
+
                 await Promise.all([
-                    // Email para a cartomante
-                    reader?.email && sendOrderPaidToReader({
-                        readerEmail: reader.email,
-                        readerName: reader.full_name || 'Cartomante',
+                    readerEmail && sendOrderPaidToReader({
+                        readerEmail,
+                        readerName: reader?.full_name || 'Cartomante',
                         orderId: order.id,
                         gigTitle,
                         clientName: client?.full_name || 'Cliente',
                         amount: order.amount_reader_net,
                     }),
-                    // Email para o cliente
-                    client?.email && sendOrderPaidToClient({
-                        clientEmail: client.email,
-                        clientName: client.full_name || 'Cliente',
+                    clientEmail && sendOrderPaidToClient({
+                        clientEmail,
+                        clientName: client?.full_name || 'Cliente',
                         orderId: order.id,
                         gigTitle,
                         readerName: reader?.full_name || 'Sua cartomante',
@@ -143,7 +141,6 @@ export async function POST(request: Request) {
                 ])
                 console.log('Webhook: Emails de confirmação enviados para pedido', order.id)
             } catch (emailErr) {
-                // Não falhar o webhook por causa de email
                 console.error('Webhook: Falha ao enviar emails:', emailErr)
             }
         }
