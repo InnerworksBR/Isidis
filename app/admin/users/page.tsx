@@ -1,15 +1,32 @@
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function AdminUsersPage() {
-    const supabase = await createClient();
+    // We use the admin client to list all users from auth
+    const { data: { users: authUsers }, error: authError } = await supabaseAdmin.auth.admin.listUsers();
 
+    // We still fetch profiles for profile-specific data (role, full_name, etc.)
+    const supabase = await createClient();
     const { data: profiles } = await supabase
         .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*');
+
+    // Merge users and profiles
+    const users = (authUsers || []).map(authUser => {
+        const profile = profiles?.find(p => p.id === authUser.id);
+        return {
+            id: authUser.id,
+            email: authUser.email,
+            full_name: profile?.full_name || authUser.user_metadata?.full_name,
+            avatar_url: profile?.avatar_url,
+            role: profile?.role || authUser.user_metadata?.role || 'CLIENT',
+            created_at: authUser.created_at,
+            has_profile: !!profile
+        };
+    }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return (
         <div className="space-y-6">
@@ -20,35 +37,44 @@ export default async function AdminUsersPage() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Usuário</TableHead>
+                            <TableHead>Email</TableHead>
                             <TableHead>Role</TableHead>
                             <TableHead>Cadastro</TableHead>
-                            <TableHead>ID</TableHead>
+                            <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {profiles?.map((profile) => (
-                            <TableRow key={profile.id}>
+                        {users.map((user) => (
+                            <TableRow key={user.id}>
                                 <TableCell className="flex items-center gap-3">
                                     <Avatar>
-                                        <AvatarImage src={profile.avatar_url || ''} />
-                                        <AvatarFallback>{profile.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
+                                        <AvatarImage src={user.avatar_url || ''} />
+                                        <AvatarFallback>{user.full_name?.slice(0, 2).toUpperCase() || 'U'}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">
-                                        <span className="font-medium">{profile.full_name || 'Sem nome'}</span>
-                                        {/* Email is in auth.users, difficult to fetch in one go without admin join. 
-                                            For now showing basic profile info. */}
+                                        <span className="font-medium">{user.full_name || 'Sem nome'}</span>
+                                        <span className="text-xs text-muted-foreground font-mono">{user.id}</span>
                                     </div>
                                 </TableCell>
+                                <TableCell>{user.email}</TableCell>
                                 <TableCell>
-                                    <Badge variant={profile.role === 'ADMIN' ? 'destructive' : profile.role === 'READER' ? 'default' : 'secondary'}>
-                                        {profile.role}
+                                    <Badge variant={user.role === 'ADMIN' ? 'destructive' : user.role === 'READER' ? 'default' : 'secondary'}>
+                                        {user.role}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    {new Date(profile.created_at).toLocaleDateString('pt-BR')}
+                                    {new Date(user.created_at).toLocaleDateString('pt-BR')}
                                 </TableCell>
-                                <TableCell className="font-mono text-xs text-muted-foreground">
-                                    {profile.id}
+                                <TableCell>
+                                    {!user.has_profile ? (
+                                        <Badge variant="outline" className="text-amber-500 border-amber-500/50">
+                                            Sem perfil
+                                        </Badge>
+                                    ) : (
+                                        <Badge variant="outline" className="text-green-500 border-green-500/50">
+                                            OK
+                                        </Badge>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

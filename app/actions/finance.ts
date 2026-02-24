@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { createWithdrawal } from '@/services/abacate'
 
 export async function getWalletBalances(walletId: string) {
     const supabase = await createClient()
@@ -56,7 +57,43 @@ export async function requestWithdrawal(amountCents: number, pixKey: string) {
         return { error: `Saldo insuficiente. Disponível: R$ ${(availableBalance / 100).toFixed(2)}` }
     }
 
-    // 3. Create Withdrawal Transaction
+    // 3. Create Automated Withdrawal with AbacatePay
+    let abacateTxnId = null
+    try {
+        const profile = await supabase.from('profiles').select('pix_key_type').eq('id', user.id).single()
+
+        // Map our internal pix types to AbacatePay types
+        const typeMap: Record<string, 'CPF' | 'CNPJ' | 'EMAIL' | 'PHONE' | 'RANDOM'> = {
+            'CPF': 'CPF',
+            'CNPJ': 'CNPJ',
+            'EMAIL': 'EMAIL',
+            'CELULAR': 'PHONE',
+            'ALEATORIA': 'RANDOM',
+            'CPF/CNPJ': pixKey.length > 11 ? 'CNPJ' : 'CPF'
+        }
+
+        const abacateResponse = await createWithdrawal({
+            externalId: `withdraw-${Date.now()}`,
+            amount: amountCents,
+            method: 'PIX',
+            pix: {
+                type: typeMap[profile.data?.pix_key_type || ''] || 'CPF',
+                key: pixKey
+            },
+            description: `Saque MagicPlace - ${user.id}`
+        })
+
+        if (abacateResponse.error) {
+            return { error: 'AbacatePay: ' + abacateResponse.error }
+        }
+
+        abacateTxnId = abacateResponse.data?.id
+    } catch (err: any) {
+        console.error('Error calling AbacatePay Withdrawal:', err)
+        return { error: 'Erro na integração com AbacatePay: ' + err.message }
+    }
+
+    // 4. Create Withdrawal Transaction in our DB
     const { error: insertError } = await supabase
         .from('transactions')
         .insert({
@@ -64,11 +101,11 @@ export async function requestWithdrawal(amountCents: number, pixKey: string) {
             amount: -amountCents, // Store as negative
             type: 'WITHDRAWAL',
             status: 'PENDING',
-            external_id: `PIX::${pixKey}` // Store PIX info here for now
+            external_id: abacateTxnId || `PIX::${pixKey}`
         })
 
     if (insertError) {
-        return { error: 'Falha ao solicitar saque: ' + insertError.message }
+        return { error: 'Falha ao registrar saque no sistema: ' + insertError.message }
     }
 
     revalidatePath('/dashboard/cartomante/carteira')

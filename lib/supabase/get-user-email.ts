@@ -1,16 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
-
-let _adminClient: ReturnType<typeof createClient> | null = null
-
-function getAdminClient() {
-    if (!_adminClient) {
-        _adminClient = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        )
-    }
-    return _adminClient
-}
+import { supabaseAdmin as admin } from './admin'
 
 /**
  * Busca o email de um usuário a partir do seu ID usando o
@@ -18,7 +6,6 @@ function getAdminClient() {
  */
 export async function getUserEmail(userId: string): Promise<string | null> {
     try {
-        const admin = getAdminClient()
         const { data: { user }, error } = await admin.auth.admin.getUserById(userId)
         if (error || !user) return null
         return user.email ?? null

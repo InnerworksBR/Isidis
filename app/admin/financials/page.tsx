@@ -1,11 +1,14 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from 'react'
-import { getAdminFinancials, FinancialSummary } from '@/app/actions/admin-financials'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getAdminFinancials, FinancialSummary, updateWithdrawalStatus } from '@/app/actions/admin-financials'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils'
-import { DollarSign, TrendingUp, ArrowUpRight, Clock, Users, ShoppingCart } from 'lucide-react'
+import { DollarSign, TrendingUp, ArrowUpRight, Clock, Users, ShoppingCart, Check, X, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -17,22 +20,39 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 export default function AdminFinancialsPage() {
     const [data, setData] = useState<FinancialSummary | null>(null)
     const [loading, setLoading] = useState(true)
+    const [processing, setProcessing] = useState<string | null>(null)
+
+    async function load() {
+        setLoading(true)
+        try {
+            const { data, error } = await getAdminFinancials()
+            if (error) throw new Error(error)
+            if (data) setData(data)
+        } catch (err) {
+            toast.error('Erro ao carregar dados financeiros')
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        async function load() {
-            try {
-                const { data, error } = await getAdminFinancials()
-                if (error) throw new Error(error)
-                if (data) setData(data)
-            } catch (err) {
-                toast.error('Erro ao carregar dados financeiros')
-                console.error(err)
-            } finally {
-                setLoading(false)
-            }
-        }
         load()
     }, [])
+
+    const handleWithdrawalAction = async (id: string, action: 'COMPLETED' | 'FAILED') => {
+        setProcessing(id)
+        try {
+            const result = await updateWithdrawalStatus(id, action)
+            if (result.error) throw new Error(result.error)
+            toast.success(action === 'COMPLETED' ? 'Saque aprovado!' : 'Saque rejeitado.')
+            await load()
+        } catch (err: any) {
+            toast.error(err.message || 'Erro ao processar ação')
+        } finally {
+            setProcessing(null)
+        }
+    }
 
     if (loading) {
         return <div className="p-8 text-center text-muted-foreground animate-pulse">Carregando financeiro...</div>
@@ -126,6 +146,64 @@ export default function AdminFinancialsPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Gestão de Saques Pendentes */}
+            <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-amber-500">
+                        <AlertCircle className="h-5 w-5" />
+                        Solicitações de Saque Pendentes
+                    </CardTitle>
+                    <CardDescription className="text-amber-500/60">
+                        Os saques agora são **automáticos** via AbacatePay. Esta lista serve para monitorar o status das transferências.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-amber-500/20 text-amber-500/70 font-bold">
+                                    <th className="text-left py-3 px-2">Data</th>
+                                    <th className="text-left py-3 px-2">Cartomante</th>
+                                    <th className="text-left py-3 px-2">Chave PIX</th>
+                                    <th className="text-right py-3 px-2">Valor</th>
+                                    <th className="text-center py-3 px-2">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.pendingWithdrawals.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} className="text-center py-8 text-muted-foreground/50 italic">
+                                            Nenhuma solicitação pendente.
+                                        </td>
+                                    </tr>
+                                )}
+                                {data.pendingWithdrawals.map((req) => (
+                                    <tr key={req.id} className="border-b border-amber-500/10 hover:bg-amber-500/5 transition-colors">
+                                        <td className="py-4 px-2 text-muted-foreground">
+                                            {new Date(req.created_at).toLocaleDateString('pt-BR')}
+                                        </td>
+                                        <td className="py-4 px-2 font-bold text-slate-200">
+                                            {req.user_name}
+                                        </td>
+                                        <td className="py-4 px-2">
+                                            <code className="bg-background/50 px-2 py-1 rounded text-amber-200/80 text-xs">
+                                                {req.pix_key}
+                                            </code>
+                                        </td>
+                                        <td className="py-4 px-2 text-right font-black text-white text-lg">
+                                            {formatCurrency(req.amount)}
+                                        </td>
+                                        <td className="py-4 px-2 text-center text-muted-foreground/50 italic">
+                                            Processamento automático
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Tabela de Pedidos Recentes */}
             <Card className="bg-card-deep border-border/50">

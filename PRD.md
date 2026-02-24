@@ -37,10 +37,10 @@ O **Magicplace** é um marketplace de nicho focado em serviços de Tarô e Esote
 - **Como taróloga,** quero solicitar o saque do meu saldo disponível e receber na minha conta bancária.
 
 ## 4. Regras de Negócio
-1.  **Taxa da Plataforma:** 20% sobre o valor da Gig (retido na fonte). A Taróloga recebe 80%.
+1.  **Taxa da Plataforma:** 15% sobre o valor da Gig (retido na fonte). A Taróloga recebe 85%.
 2.  **Fluxo de Pagamento:**
     - Cliente paga R$ 50,00 -> Plataforma recebe R$ 50,00 no Abacate Pay.
-    - Ledger Interno: Crédito de R$ 40,00 para Taróloga (Status: Bloqueado).
+    - Ledger Interno: Crédito de R$ 42,50 para Taróloga (Status: Bloqueado).
 3.  **Liberação de Saldo:** O saldo migra de "Bloqueado" para "Disponível" 48 horas após a entrega do serviço, se não houver disputa.
 4.  **Saque Mínimo:** R$ 20,00.
 

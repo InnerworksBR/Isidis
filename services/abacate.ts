@@ -173,3 +173,51 @@ export async function checkPixQrCodeStatus(id: string): Promise<{ data: { status
 
     return JSON.parse(responseBody)
 }
+
+export interface CreateWithdrawRequest {
+    externalId: string
+    amount: number
+    method: 'PIX'
+    pix: {
+        type: 'CPF' | 'CNPJ' | 'EMAIL' | 'PHONE' | 'RANDOM'
+        key: string
+    }
+    description?: string
+}
+
+export interface WithdrawalResponse {
+    data: {
+        id: string
+        status: string
+        devMode: boolean
+        receiptUrl: string
+        kind: 'WITHDRAW'
+        amount: number
+        platformFee: number
+        createdAt: string
+        updatedAt: string
+        externalId: string
+    } | null
+    error: string | null
+}
+
+export async function createWithdrawal(data: CreateWithdrawRequest): Promise<WithdrawalResponse> {
+    const apiKey = process.env.ABACATE_PAY_API_KEY
+    if (!apiKey) throw new Error('ABACATE_PAY_API_KEY is not configured')
+
+    const response = await fetch(`${ABACATE_API_URL}/withdraw/create`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+
+    const responseBody = await response.text()
+    if (!response.ok) {
+        throw new Error(`Abacate Pay Withdrawal Error (${response.status}): ${responseBody}`)
+    }
+
+    return JSON.parse(responseBody)
+}

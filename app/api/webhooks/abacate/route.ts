@@ -143,6 +143,22 @@ export async function POST(request: Request) {
             } catch (emailErr) {
                 console.error('Webhook: Falha ao enviar emails:', emailErr)
             }
+        } else if (payload.event === 'withdraw.done' || payload.event === 'withdraw.failed') {
+            const withdrawId = payload.data.id
+            const newStatus = payload.event === 'withdraw.done' ? 'COMPLETED' : 'FAILED'
+
+            const { error: updateError } = await supabaseAdmin
+                .from('transactions')
+                .update({ status: newStatus })
+                .eq('external_id', withdrawId)
+                .eq('type', 'WITHDRAWAL')
+
+            if (updateError) {
+                console.error('Webhook: Erro ao atualizar status do saque:', updateError)
+                return NextResponse.json({ error: 'DB update failed' }, { status: 500 })
+            }
+
+            console.log(`Webhook: Saque ${withdrawId} atualizado para ${newStatus}`)
         }
 
         return NextResponse.json({ received: true })

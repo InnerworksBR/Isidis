@@ -2,6 +2,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Sparkles, DollarSign, Activity } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getAdminFinancials } from "@/app/actions/admin-financials";
+import { formatCurrency } from "@/lib/utils";
+
+export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboard() {
     const supabase = await createClient();
@@ -16,11 +20,10 @@ export default async function AdminDashboard() {
     // Pending Gigs
     const { count: pendingGigsCount } = await supabase.from('gigs').select('*', { count: 'exact', head: true }).eq('status', 'PENDING');
 
-    // Revenue (Sum transactions where type = PLATFORM_FEE)
-    // Supabase JS doesn't do SUM easily without a stored procedure or fetch all. 
-    // For scalability, better use RPC. For now, let's fetch last 100 transactions and sum in JS (MVP).
-    // Or better, just show count of orders for now.
     const { count: orderCount } = await supabase.from('orders').select('*', { count: 'exact', head: true });
+
+    // Real financial data
+    const { data: financialData } = await getAdminFinancials();
 
     return (
         <div className="space-y-6">
@@ -72,9 +75,11 @@ export default async function AdminDashboard() {
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">R$ --</div>
-                        <p className="text-xs text-muted-foreground">
-                            Em desenvolvimento
+                        <div className="text-2xl font-bold text-green-400">
+                            {financialData ? formatCurrency(financialData.platformFee) : 'R$ 0,00'}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Lucro da plataforma
                         </p>
                     </CardContent>
                 </Card>
