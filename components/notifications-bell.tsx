@@ -78,9 +78,16 @@ export function NotificationsBell({ currentUserId }: { currentUserId?: string })
                 table: 'notifications',
                 filter: `user_id=eq.${currentUserId}`
             }, (payload) => {
-                // Add new notification to list optimistically or just revalidate
-                mutate()
-                // Could also show a toast here
+                // Add new notification to list optimistically
+                mutate((currentData: any) => {
+                    const newNotification = payload.new;
+                    if (!currentData) return [newNotification];
+                    if (currentData.some((n: any) => n.id === newNotification.id)) return currentData;
+                    return [newNotification, ...currentData];
+                }, false);
+
+                // Revalidate with server in the background to ensure sync
+                mutate();
             })
             .subscribe()
 

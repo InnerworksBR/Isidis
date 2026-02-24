@@ -14,6 +14,7 @@ import { AnalyticsTracker } from '@/components/analytics-tracker'
 import { UserSidebar } from '@/components/user-sidebar'
 import { DashboardBottomNav } from '@/components/layout/dashboard-bottom-nav'
 import { MainHero } from '@/components/marketing/MainHero'
+import { usePresence } from '@/components/providers/presence-provider'
 import type { ReaderData } from './page'
 import { useDebounce } from '@/hooks/use-debounce' // We might need to create this or use setTimeout
 
@@ -407,6 +408,9 @@ export function CartomantesClient({ readers, initialFilters, userId }: Cartomant
 /* ──── Reader Card Component ──── */
 
 function ReaderCard({ reader }: { reader: ReaderData }) {
+    const { onlineUsers } = usePresence()
+    const isOnline = onlineUsers.has(reader.id) || reader.isOnline
+
     return (
         <div className="rounded-2xl border border-indigo-500/10 bg-[#12122a] hover:border-indigo-500/30 transition-all group overflow-hidden relative">
             {reader.gigId && (
@@ -436,7 +440,7 @@ function ReaderCard({ reader }: { reader: ReaderData }) {
 
                 {/* Status badges */}
                 <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
-                    {reader.isOnline && (
+                    {isOnline && (
                         <Badge className="bg-green-500/90 text-white border-none text-[10px] font-bold px-2 py-0.5 gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                             AO VIVO

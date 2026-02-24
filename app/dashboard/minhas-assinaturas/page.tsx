@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Repeat, CalendarDays, Clock, CreditCard, MessageSquare, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { UserSidebar } from '@/components/user-sidebar'
@@ -113,7 +114,7 @@ export default async function ClientSubscriptionsPage() {
                                         <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
                                             {reader?.avatar_url ? (
                                                 // eslint-disable-next-line @next/next/no-img-element
-                                                <img src={reader.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+                                                <Image src={reader.avatar_url} alt="" width={48} height={48} className="w-12 h-12 rounded-full object-cover" />
                                             ) : (
                                                 <span className="text-sm font-bold text-purple-400">{readerInitials}</span>
                                             )}

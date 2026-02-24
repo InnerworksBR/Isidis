@@ -1,6 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { GigForm } from './gig-form'
+import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+const GigForm = dynamic(() => import('./gig-form').then(mod => mod.GigForm), {
+    loading: () => <div className="p-8 text-center text-slate-400">Carregando formulário...</div>
+})
 
 export default async function NovoGigPage({
     searchParams
@@ -32,9 +37,9 @@ export default async function NovoGigPage({
                         Para manter a qualidade do nosso santuário, você precisa completar seu perfil profissional antes de criar serviços.
                         Após salvar seu perfil completo, você poderá criar seus gigs.
                     </p>
-                    <a href="/dashboard/cartomante/perfil" className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all">
+                    <Link href="/dashboard/cartomante/perfil" className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all">
                         Complete Profile
-                    </a>
+                    </Link>
                 </div>
             </div>
         )

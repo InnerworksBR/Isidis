@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { Star } from 'lucide-react'
 
@@ -61,7 +62,7 @@ export function InteractiveTarotCards() {
                             </div>
                             {/* Front */}
                             <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl glass-strong border-white/20 p-1 shadow-2xl overflow-hidden">
-                                <img src={card.front} alt={card.title} className="w-full h-full object-cover rounded-xl" />
+                                <Image src={card.front} alt={card.title} fill sizes="300px" className="object-cover rounded-xl" />
                             </div>
                         </div>
                     </div>
@@ -90,7 +91,7 @@ export function InteractiveTarotCards() {
                             </div>
                             {/* Front */}
                             <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl glass-strong border-white/20 p-1 shadow-2xl overflow-hidden">
-                                <img src={card.front} alt={card.title} className="w-full h-full object-cover rounded-xl" />
+                                <Image src={card.front} alt={card.title} fill sizes="300px" className="object-cover rounded-xl" />
                             </div>
                         </div>
                     </div>

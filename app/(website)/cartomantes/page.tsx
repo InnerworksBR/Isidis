@@ -83,6 +83,7 @@ async function getAllReaders(filters: FilterParams): Promise<ReaderData[]> {
 
     // Filter by Price and Rating in memory (since they are derived/mocked)
     return processedReaders.filter(r => {
+        if (!r.gigId) return false
         if (filters.priceMin !== undefined && r.price < filters.priceMin) return false
         if (filters.priceMax !== undefined && r.price > filters.priceMax) return false
         if (filters.rating !== undefined && r.rating < filters.rating) return false

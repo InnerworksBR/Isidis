@@ -1,21 +1,28 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Search, ArrowRight, Sparkles, Shield, Zap, Star, Users, Camera, MessageCircle, ShieldCheck, Heart, Play } from 'lucide-react'
 import { PractitionerCard, type PractitionerProps } from '@/components/practitioner-card'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { unstable_cache } from 'next/cache'
 import { getLandingStats } from '@/lib/data/stats'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { PageSection } from '@/components/layout/PageSection'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { cn } from '@/lib/utils'
-import { InteractiveTarotCards } from '@/components/interactive-tarot-cards'
+import dynamic from 'next/dynamic'
+const InteractiveTarotCards = dynamic(() => import('@/components/interactive-tarot-cards').then(mod => mod.InteractiveTarotCards))
 import { BetaBanner } from '@/components/beta-banner'
 import { MainHero } from '@/components/marketing/MainHero'
 
-async function getFeaturedReaders(): Promise<PractitionerProps[]> {
-  const supabase = await createClient()
+const _getFeaturedReaders = async (): Promise<PractitionerProps[]> => {
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   // Fetch READER profiles with their cheapest gig price
   const { data: readers } = await supabase
@@ -54,8 +61,10 @@ async function getFeaturedReaders(): Promise<PractitionerProps[]> {
       tags: reader.specialties || [],
       gigId: readerGigs.length > 0 ? readerGigs[0].id : undefined,
     }
-  }).filter(r => r.price > 0) // Only show readers who have active gigs with prices
+  }).filter(r => r.gigId !== undefined) // Only show readers who have active gigs
 }
+
+const getFeaturedReaders = unstable_cache(_getFeaturedReaders, ['featured-readers'], { revalidate: 3600 })
 
 export default async function Home() {
   const [readers, stats] = await Promise.all([
@@ -68,7 +77,7 @@ export default async function Home() {
       <BetaBanner />
       <MainHero
         badge="O Marketplace de Tarot mais Moderno do Brasil"
-        badgeIcon={<img src="/logo.png" alt="" className="w-4 h-4 object-contain" />}
+        badgeIcon={<Image src="/logo.png" alt="" width={16} height={16} className="w-4 h-4 object-contain" />}
         title={
           <>
             Encontre clareza para sua <span className="text-gradient-primary">jornada espiritual</span>
@@ -225,7 +234,7 @@ export default async function Home() {
                   <p className="text-lg font-bold italic text-primary">"Isidis me deu a clareza que eu precisava em um momento de transição de carreira. A interface é mágica."</p>
                   <div className="flex items-center gap-3 mt-4">
                     <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
-                      <img src="https://i.pravatar.cc/100?u=4" alt="user" className="w-full h-full object-cover" />
+                      <Image src="https://i.pravatar.cc/100?u=4" alt="user" width={40} height={40} className="w-full h-full object-cover" />
                     </div>
                     <div className="text-sm">
                       <div className="font-bold">Mariana S.</div>

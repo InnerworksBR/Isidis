@@ -19,6 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface Gig {
     id: string
@@ -302,10 +303,10 @@ export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floatin
                                         )}>
                                             <div className="h-32 w-full bg-muted relative">
                                                 {msg.gig.image_url ? (
-                                                    <img src={msg.gig.image_url} alt={msg.gig.title} className="w-full h-full object-cover" />
+                                                    <Image fill sizes="300px" src={msg.gig.image_url} alt={msg.gig.title} className="object-cover" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center bg-indigo-900/20">
-                                                        <img src="/logo.png" alt="" className="w-8 h-8 object-contain opacity-50" />
+                                                        <Image src="/logo.png" alt="" width={32} height={32} className="w-8 h-8 object-contain opacity-50" />
                                                     </div>
                                                 )}
                                             </div>
@@ -378,10 +379,10 @@ export function ChatWindow({ currentUser, otherUser, orderId, variant = 'floatin
                                                         >
                                                             <div className="w-12 h-12 rounded-md bg-muted shrink-0 overflow-hidden border border-border/50">
                                                                 {gig.image_url ? (
-                                                                    <img src={gig.image_url} alt="" className="w-full h-full object-cover" />
+                                                                    <Image src={gig.image_url} alt="" width={48} height={48} className="w-full h-full object-cover" />
                                                                 ) : (
                                                                     <div className="w-full h-full flex items-center justify-center bg-indigo-900/10">
-                                                                        <img src="/logo.png" alt="" className="w-4 h-4 object-contain opacity-30" />
+                                                                        <Image src="/logo.png" alt="" width={16} height={16} className="w-4 h-4 object-contain opacity-30" />
                                                                     </div>
                                                                 )}
                                                             </div>

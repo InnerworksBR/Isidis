@@ -11,6 +11,8 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { PageSection } from '@/components/layout/PageSection'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { UserSidebar } from '@/components/user-sidebar'
+import { RealtimeRefresher } from '@/components/realtime-refresher'
+import { OnlineReaders } from '@/components/online-readers'
 
 export default async function DashboardHome() {
     const supabase = await createClient()
@@ -27,7 +29,7 @@ export default async function DashboardHome() {
             .select('*')
             .eq('role', 'READER')
             .eq('verification_status', 'APPROVED')
-            .limit(5)
+            .limit(50)
             .returns<Profile[]>(),
         getCategoryCounts(),
         getBestSellingGigs(4)
@@ -38,6 +40,7 @@ export default async function DashboardHome() {
     return (
         <div className="min-h-screen bg-background-deep text-slate-200 font-sans selection:bg-purple-500/30 flex overflow-hidden">
             <UserSidebar />
+            <RealtimeRefresher userId={user.id} />
 
             <main className="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide pb-24 md:pb-8">
                 {/* 1. Header Hero (Full Width) */}
@@ -103,40 +106,7 @@ export default async function DashboardHome() {
                             </Link>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                            {activeReaders && activeReaders.slice(0, 4).map((reader, i) => (
-                                <Link href={`/cartomante/${reader.id}`} key={reader.id} className="bg-card-item border border-white/5 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center text-center relative group hover:border-purple-500/30 transition-all">
-                                    <div className="relative mb-4">
-                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full p-1 bg-gradient-to-tr from-purple-500 to-amber-500 relative">
-                                            <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-card-item">
-                                                <Image
-                                                    src={reader.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`}
-                                                    alt={reader.full_name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="absolute bottom-0 right-0 w-4 h-4 md:w-5 md:h-5 bg-green-500 border-4 border-card-item rounded-full" />
-                                    </div>
-
-                                    <h3 className="text-base md:text-lg font-serif text-white">{reader.full_name}</h3>
-                                    <p className="text-[10px] md:text-xs text-slate-400 mb-3">{reader.specialties?.[0] || 'Tarot & Vidência'}</p>
-
-                                    <div className="flex items-center gap-1 text-amber-400 text-[10px] md:text-xs font-bold mb-4">
-                                        <Star className="w-3 h-3 fill-current" /> {reader.rating_average || '5.0'} ({reader.reviews_count || 0})
-                                    </div>
-
-                                    <div className="text-[9px] md:text-[10px] font-bold text-green-400 bg-green-400/10 px-2 md:px-3 py-1 rounded-full mb-6 uppercase tracking-wider text-xs">
-                                        Atendimento Imediato
-                                    </div>
-
-                                    <div className="w-full rounded-full border border-white/10 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all font-bold text-xs h-9 md:h-11 flex items-center justify-center mt-auto">
-                                        Consultar
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+                        <OnlineReaders initialReaders={activeReaders || []} />
                     </PageSection>
 
                     {/* 5. Recomendados */}

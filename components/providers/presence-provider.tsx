@@ -39,68 +39,75 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
 
     // 2. Presence Logic
     useEffect(() => {
-        if (!user) {
-            console.log('PresenceProvider: No user joined yet to track presence (but listening)')
-        }
-
-        console.log('PresenceProvider: Subscribing to global_presence')
-        const channel = supabase.channel('global_presence', {
+        let isMounted = true;
+        let channel = supabase.channel('global_presence', {
             config: {
                 presence: {
-                    key: user ? user.id : undefined,
+                    key: user ? user.id : 'anonymous',
                 },
             },
-        })
+        });
 
-        channel
-            .on('presence', { event: 'sync' }, () => {
-                const newState = channel.presenceState()
-                console.log('PresenceProvider Sync:', newState)
-                const onlineIds = new Set<string>()
+        const setupPresence = async () => {
+            channel
+                .on('presence', { event: 'sync' }, () => {
+                    if (!isMounted) return;
+                    const newState = channel.presenceState();
+                    const onlineIds = new Set<string>();
 
-                for (const id in newState) {
-                    const presences = newState[id] as any[]
-                    presences.forEach(p => {
-                        if (p.user_id) onlineIds.add(p.user_id)
-                    })
-                }
-                console.log('PresenceProvider Online Users:', Array.from(onlineIds))
-                setOnlineUsers(onlineIds)
-            })
-            .subscribe(async (status) => {
-                console.log('PresenceProvider Status:', status)
-                if (status === 'SUBSCRIBED') {
-                    // If user is logged in, track them
-                    if (user) {
-                        console.log('PresenceProvider: Tracking user:', user.id)
-                        await channel.track({
-                            user_id: user.id,
-                            online_at: new Date().toISOString(),
-                        })
+                    for (const id in newState) {
+                        const presences = newState[id] as { user_id?: string }[];
+                        presences.forEach(p => {
+                            if (p.user_id) onlineIds.add(p.user_id);
+                        });
                     }
-                }
-            })
+
+                    setOnlineUsers(new Set(onlineIds));
+                })
+                .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                    console.log('join', key, newPresences)
+                })
+                .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                    console.log('leave', key, leftPresences)
+                })
+                .subscribe(async (status) => {
+                    console.log('Presence Status:', status);
+                    if (status === 'SUBSCRIBED') {
+                        if (user) {
+                            try {
+                                await channel.track({
+                                    user_id: user.id,
+                                    online_at: new Date().toISOString(),
+                                });
+                                console.log('Successfully tracked user:', user.id);
+                            } catch (e) {
+                                console.error('Error tracking presence', e);
+                            }
+                        }
+                    }
+                });
+        };
+
+        setupPresence();
 
         const handleUnload = () => {
             if (user) {
-                // Attempt to explicitly untrack before the tab closes completely
-                channel.untrack().catch(() => { })
+                channel.untrack().catch(() => { });
             }
-            supabase.removeChannel(channel)
-        }
+            supabase.removeChannel(channel);
+        };
 
-        window.addEventListener('beforeunload', handleUnload)
+        window.addEventListener('beforeunload', handleUnload);
 
         return () => {
-            console.log('PresenceProvider: Cleaning up/Unsubscribing')
-            window.removeEventListener('beforeunload', handleUnload)
-
+            isMounted = false;
+            window.removeEventListener('beforeunload', handleUnload);
             if (user) {
-                channel.untrack().catch(() => { })
+                channel.untrack().catch(() => { });
             }
-            supabase.removeChannel(channel)
-        }
-    }, [supabase, user]) // Re-run if user changes to track/untrack
+            supabase.removeChannel(channel);
+        };
+    }, [supabase, user]); // Re-run if user changes to track/untrack
 
     return (
         <PresenceContext.Provider value={{ onlineUsers }}>

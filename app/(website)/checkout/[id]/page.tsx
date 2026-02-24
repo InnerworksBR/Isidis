@@ -1,7 +1,11 @@
 import { notFound, redirect } from 'next/navigation'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckoutForm } from './checkout-form'
+import dynamic from 'next/dynamic'
+const CheckoutForm = dynamic(() => import('./checkout-form').then(mod => mod.CheckoutForm), {
+    loading: () => <div className="p-4 w-full text-center text-slate-400">Carregando pagamento...</div>
+})
 import { User, Shield, Zap, CheckCircle2 } from 'lucide-react'
 import { GigAddOn } from '@/types'
 
@@ -53,7 +57,7 @@ export default async function CheckoutPage({ params, searchParams }: { params: P
                 <CardContent className="space-y-6">
                     <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-xl">
                         {reader?.avatar_url ? (
-                            <img src={reader.avatar_url} alt={reader.full_name || ''} className="w-16 h-16 rounded-full object-cover" />
+                            <Image src={reader.avatar_url} alt={reader.full_name || ''} width={64} height={64} className="w-16 h-16 rounded-full object-cover" />
                         ) : (
                             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                                 <User className="w-7 h-7 text-primary/40" />

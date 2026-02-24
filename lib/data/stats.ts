@@ -1,5 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { unstable_cache } from 'next/cache'
 import { Gig, Profile } from '@/types'
+
+const getPublicClient = () => createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export type LandingStats = {
     totalConsultations: number
@@ -15,8 +22,8 @@ export type CategoryCount = {
     image: string
 }
 
-export async function getLandingStats(): Promise<LandingStats> {
-    const supabase = await createClient()
+const _getLandingStats = async (): Promise<LandingStats> => {
+    const supabase = getPublicClient()
 
     // count completed orders
     const { count: totalConsultations } = await supabase
@@ -51,8 +58,10 @@ export async function getLandingStats(): Promise<LandingStats> {
     }
 }
 
-export async function getCategoryCounts(): Promise<CategoryCount[]> {
-    const supabase = await createClient()
+export const getLandingStats = unstable_cache(_getLandingStats, ['landing-stats'], { revalidate: 3600 })
+
+const _getCategoryCounts = async (): Promise<CategoryCount[]> => {
+    const supabase = getPublicClient()
 
     // This is a bit complex in Supabase without a dedicated category table/column on profiles or gigs.
     // Assuming 'specialties' in profiles or some category field in gigs. 
@@ -85,7 +94,7 @@ export async function getCategoryCounts(): Promise<CategoryCount[]> {
     if (Object.values(counts).every(c => c === 0)) {
         return [
             { category: 'Amor & Relacionamentos', count: 0, slug: 'Amor & Relacionamentos', image: 'https://images.unsplash.com/photo-1518136247453-74e7b5265980?auto=format&fit=crop&q=80&w=800' },
-            { category: 'Carreira & Financas', count: 0, slug: 'Carreira & Financas', image: 'https://images.unsplash.com/photo-1454165833965-39967a942d67?auto=format&fit=crop&q=80&w=800' },
+            { category: 'Carreira & Financas', count: 0, slug: 'Carreira & Financas', image: 'https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?auto=format&fit=crop&q=80&w=800' },
             { category: 'Espiritualidade', count: 0, slug: 'Espiritualidade', image: 'https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?auto=format&fit=crop&q=80&w=800' },
             { category: 'Saude & Bem-estar', count: 0, slug: 'Saude & Bem-estar', image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800' }
         ]
@@ -93,11 +102,13 @@ export async function getCategoryCounts(): Promise<CategoryCount[]> {
 
     return [
         { category: 'Amor & Relacionamentos', count: counts['Amor & Relacionamentos'], slug: 'Amor & Relacionamentos', image: 'https://images.unsplash.com/photo-1518136247453-74e7b5265980?auto=format&fit=crop&q=80&w=800' },
-        { category: 'Carreira & Financas', count: counts['Carreira & Financas'], slug: 'Carreira & Financas', image: 'https://images.unsplash.com/photo-1454165833965-39967a942d67?auto=format&fit=crop&q=80&w=800' },
+        { category: 'Carreira & Financas', count: counts['Carreira & Financas'], slug: 'Carreira & Financas', image: 'https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?auto=format&fit=crop&q=80&w=800' },
         { category: 'Espiritualidade', count: counts['Espiritualidade'], slug: 'Espiritualidade', image: 'https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?auto=format&fit=crop&q=80&w=800' },
         { category: 'Saude & Bem-estar', count: counts['Saude & Bem-estar'], slug: 'Saude & Bem-estar', image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800' }
     ]
 }
+
+export const getCategoryCounts = unstable_cache(_getCategoryCounts, ['category-counts'], { revalidate: 3600 })
 
 export async function getBestSellingGigs(limit: number = 3): Promise<(Gig & { owner: Profile })[]> {
     const supabase = await createClient()

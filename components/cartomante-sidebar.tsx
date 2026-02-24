@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -43,7 +44,7 @@ export function CartomanteSidebar({ profile, userId }: CartomanteSidebarProps) {
             {/* Logo */}
             <div className="px-5 py-5 border-b border-white/5">
                 <Link href="/" className="flex items-center gap-2">
-                    <img src="/logo.png" alt="Isidis Logo" className="w-8 h-8 object-contain" />
+                    <Image src="/logo.png" alt="Isidis Logo" width={32} height={32} className="w-8 h-8 object-contain" />
                     <span className="font-bold text-primary">Isidis</span>
                 </Link>
             </div>
@@ -76,7 +77,7 @@ export function CartomanteSidebar({ profile, userId }: CartomanteSidebarProps) {
                 <div className="flex items-center gap-3 px-3 py-2.5">
                     {profile?.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={profile.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover border border-primary/20" />
+                        <Image src={profile.avatar_url} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover border border-primary/20" />
                     ) : (
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-purple-900 flex items-center justify-center text-white font-bold text-xs border border-primary/20">
                             {firstName.substring(0, 2).toUpperCase()}

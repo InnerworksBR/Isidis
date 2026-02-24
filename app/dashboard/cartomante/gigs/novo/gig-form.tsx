@@ -205,7 +205,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
 
     // Calculations
     const price = parseFloat(formData.price || '0')
-    const platformFee = price * 0.08
+    const platformFee = price * 0.15
     const earnings = price - platformFee
 
     // Progress Calculation
@@ -414,7 +414,7 @@ export function GigForm({ initialData }: { initialData?: Gig }) {
                                         <span>R$ {price.toFixed(2)}{formData.pricing_type === 'RECURRING' ? '/mês' : ''}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-rose-400/80 text-lg">
-                                        <span>Taxa da Plataforma (8%)</span>
+                                        <span>Taxa da Plataforma (15%)</span>
                                         <span>- R$ {platformFee.toFixed(2)}</span>
                                     </div>
                                     <div className="h-px bg-white/10 my-2" />

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
@@ -24,7 +25,7 @@ export async function Navbar() {
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <img src="/logo.png" alt="Isidis Logo" className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110" />
+                    <Image src="/logo.png" alt="Isidis Logo" width={40} height={40} className="w-10 h-10 object-contain transition-transform duration-300 group-hover:scale-110" />
                     <span className="text-xl font-bold text-gradient-primary tracking-tight">Isidis</span>
                 </Link>
 

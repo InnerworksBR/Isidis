@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { CartomanteSidebar } from '@/components/cartomante-sidebar'
@@ -14,6 +15,7 @@ import { NotificationsBell } from '@/components/notifications-bell'
 import { WithdrawalModal } from '@/components/withdrawal-modal'
 import { CopyLinkButton } from '@/components/copy-link-button'
 import { getWalletBalances } from '@/app/actions/finance'
+import { RealtimeRefresher } from '@/components/realtime-refresher'
 
 export default async function CartomanteDashboard() {
     const supabase = await createClient()
@@ -105,6 +107,7 @@ export default async function CartomanteDashboard() {
     return (
         <div className="min-h-screen bg-background-deep text-slate-200 font-sans selection:bg-purple-500/30 flex overflow-hidden">
             <CartomanteSidebar profile={profile} userId={user.id} />
+            <RealtimeRefresher userId={user.id} />
 
             {/* ──── Main Content ──── */}
             <main className="relative z-10 flex-1 h-screen overflow-y-auto scrollbar-hide pb-24 md:pb-8">
@@ -256,7 +259,7 @@ export default async function CartomanteDashboard() {
                                                     <div className="w-full sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-black/40 shrink-0 border border-white/5 relative aspect-video sm:aspect-square">
                                                         {gig?.image_url ? (
                                                             // eslint-disable-next-line @next/next/no-img-element
-                                                            <img src={gig.image_url} alt="" className="w-full h-full object-cover" />
+                                                            <Image src={gig.image_url} alt="" fill sizes="100px" className="object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center">
                                                                 <Mic className="w-6 h-6 text-indigo-400/50" />

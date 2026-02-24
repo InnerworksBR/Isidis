@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'sjwgovfexzqkhdsfcsyb.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
     ],
   },
   experimental: {

@@ -86,7 +86,7 @@ export default async function SubscriptionsPage() {
 
     // Monthly revenue from active subscriptions
     const monthlyRevenue = activeSubs.reduce((sum, sub) => {
-        const fee = Math.round(sub.monthly_price * 0.08)
+        const fee = Math.round(sub.monthly_price * 0.15)
         return sum + (sub.monthly_price - fee)
     }, 0)
 

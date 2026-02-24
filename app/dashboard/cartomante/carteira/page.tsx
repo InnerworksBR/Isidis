@@ -14,7 +14,7 @@ import { NotificationsBell } from '@/components/notifications-bell'
 import { MainHero } from '@/components/marketing/MainHero'
 import { getWalletBalances } from '@/app/actions/finance'
 
-const PLATFORM_FEE_PERCENT = 8
+const PLATFORM_FEE_PERCENT = 15
 
 export default async function WalletPage() {
     const supabase = await createClient()

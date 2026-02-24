@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Instagram } from 'lucide-react'
@@ -13,7 +14,7 @@ export async function Footer() {
                     {/* Brand */}
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4">
-                            <img src="/logo.png" alt="Isidis Logo" className="w-8 h-8 object-contain" />
+                            <Image src="/logo.png" alt="Isidis Logo" width={32} height={32} className="w-8 h-8 object-contain" />
                             <span className="text-lg font-bold text-gradient-primary">Isidis</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed">

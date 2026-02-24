@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Play, Star, Zap, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -144,7 +145,7 @@ export function MainHero({
                                             'https://sacred-texts.com/tarot/pkt/img/ar09.jpg'
                                         ].map((url, i) => (
                                             <div key={i} className="flex-shrink-0 w-20 aspect-[2/3] rounded-lg bg-muted/50 border border-white/10 flex items-center justify-center relative overflow-hidden group/card">
-                                                <img src={url} alt="Tarot Card" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover/card:opacity-100 transition-opacity" />
+                                                <Image src={url} alt="Tarot Card" fill sizes="100px" className="object-cover opacity-60 group-hover/card:opacity-100 transition-opacity" />
                                                 <Star className="w-4 h-4 text-white/40 relative z-10" />
                                             </div>
                                         ))}
@@ -176,7 +177,7 @@ export function MainHero({
                                         <div className="flex -space-x-2">
                                             {[1, 2, 3].map(i => (
                                                 <div key={i} className="w-6 h-6 rounded-full border border-background bg-muted overflow-hidden">
-                                                    <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" className="w-full h-full object-cover" />
+                                                    <Image src={`https://i.pravatar.cc/100?u=${i}`} alt="user" width={24} height={24} className="w-full h-full object-cover" />
                                                 </div>
                                             ))}
                                         </div>

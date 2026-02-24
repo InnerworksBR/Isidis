@@ -38,6 +38,11 @@ export default async function CartomantePage({ params }: { params: Promise<{ id:
         .eq('status', 'APPROVED')
         .order('price', { ascending: true })
 
+    // Hide profile if the cartomante has no active gigs and the viewer is not the cartomante themselves
+    if ((!gigs || gigs.length === 0) && user?.id !== id) {
+        notFound()
+    }
+
     // Fetch reviews for this reader
     const { data: reviews } = await supabase
         .from('reviews')
