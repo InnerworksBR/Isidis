@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { revalidatePath } from 'next/cache'
 
 export interface FinancialSummary {
     // Totais das ordens (fonte principal)
@@ -173,6 +174,38 @@ export async function updateWithdrawalStatus(id: string, status: 'COMPLETED' | '
         console.error('Error updating withdrawal status:', error)
         return { error: 'Falha ao atualizar status do saque' }
     }
+
+    return { success: true }
+}
+
+export async function adminCancelOrder(orderId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
+
+    // 1. Mark order as CANCELED
+    const { error: orderError } = await supabaseAdmin
+        .from('orders')
+        .update({ status: 'CANCELED' })
+        .eq('id', orderId)
+
+    if (orderError) {
+        console.error('Error canceling the order:', orderError)
+        return { error: 'Falha ao cancelar o pedido no banco de dados' }
+    }
+
+    // 2. Mark related transaction as FAILED to reverse balances
+    const { error: txError } = await supabaseAdmin
+        .from('transactions')
+        .update({ status: 'FAILED' })
+        .eq('order_id', orderId)
+
+    if (txError) {
+        console.error('Error failing related transactions:', txError)
+    }
+
+    revalidatePath('/admin')
+    revalidatePath('/admin/financials')
 
     return { success: true }
 }

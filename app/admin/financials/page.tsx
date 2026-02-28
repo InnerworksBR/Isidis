@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useEffect, useState } from 'react'
-import { getAdminFinancials, FinancialSummary, updateWithdrawalStatus } from '@/app/actions/admin-financials'
+import { getAdminFinancials, FinancialSummary, updateWithdrawalStatus, adminCancelOrder } from '@/app/actions/admin-financials'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -49,6 +49,22 @@ export default function AdminFinancialsPage() {
             await load()
         } catch (err: any) {
             toast.error(err.message || 'Erro ao processar ação')
+        } finally {
+            setProcessing(null)
+        }
+    }
+
+    const handleCancelOrder = async (id: string) => {
+        if (!confirm('Tem certeza que deseja cancelar este pedido? Se já foi pago no PIX/Cartão, você também precisará realizar o estorno manualmente no painel da AbacatePay.')) return;
+
+        setProcessing(id)
+        try {
+            const result = await adminCancelOrder(id)
+            if (result.error) throw new Error(result.error)
+            toast.success('Pedido cancelado com sucesso!')
+            await load()
+        } catch (err: any) {
+            toast.error(err.message || 'Erro ao cancelar o pedido')
         } finally {
             setProcessing(null)
         }
@@ -226,12 +242,13 @@ export default function AdminFinancialsPage() {
                                     <th className="text-right py-3 px-2 text-green-400">Empresa</th>
                                     <th className="text-right py-3 px-2 text-amber-400">Repasse</th>
                                     <th className="text-center py-3 px-2">Status</th>
+                                    <th className="text-center py-3 px-2">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.recentOrders.length === 0 && (
                                     <tr>
-                                        <td colSpan={8} className="text-center py-8 text-muted-foreground">
+                                        <td colSpan={9} className="text-center py-8 text-muted-foreground">
                                             Nenhuma venda encontrada ainda.
                                         </td>
                                     </tr>
@@ -263,6 +280,13 @@ export default function AdminFinancialsPage() {
                                                     {statusInfo.label}
                                                 </Badge>
                                             </td>
+                                            <td className="py-3 px-2 text-center">
+                                                {order.status !== 'CANCELED' && (
+                                                    <Button variant="ghost" size="sm" onClick={() => handleCancelOrder(order.id)} disabled={processing === order.id} className="h-8 text-xs text-red-500 hover:text-red-400 hover:bg-red-500/10">
+                                                        {processing === order.id ? '...' : <X className="w-4 h-4" />}
+                                                    </Button>
+                                                )}
+                                            </td>
                                         </tr>
                                     )
                                 })}
@@ -274,7 +298,7 @@ export default function AdminFinancialsPage() {
                                         <td className="py-3 px-2 text-right text-foreground">{formatCurrency(data.totalRevenue)}</td>
                                         <td className="py-3 px-2 text-right text-green-400">{formatCurrency(data.platformFee)}</td>
                                         <td className="py-3 px-2 text-right text-amber-400">{formatCurrency(data.totalRepasse)}</td>
-                                        <td />
+                                        <td colSpan={2} />
                                     </tr>
                                 </tfoot>
                             )}

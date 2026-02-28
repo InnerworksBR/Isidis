@@ -19,9 +19,9 @@ export default async function ApprovalsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Aprovações Pendentes</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Solicitação de Onboarding</h1>
                     <p className="text-muted-foreground">
-                        Analise e aprove as solicitações de cadastro de novas cartomantes.
+                        Analise e aprove as solicitações de onboarding de novas cartomantes.
                     </p>
                 </div>
             </div>

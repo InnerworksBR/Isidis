@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { updateGigStatus } from "../actions";
-import { Check, X } from "lucide-react";
+import { Check, X, Eye } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function AdminGigsPage() {
     const supabase = await createClient();
@@ -77,10 +78,19 @@ function GigApprovalCard({ gig, showActions = true }: { gig: any, showActions?: 
                     <div className="font-semibold">
                         {(gig.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </div>
+
+                    <div className="pt-2">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={`/servico/${gig.id}`} target="_blank">
+                                <Eye className="w-4 h-4 mr-2" />
+                                Ver Gig Completa
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 {showActions && (
-                    <div className="flex flex-col gap-2 justify-center border-l pl-6 border-border/50">
+                    <div className="flex flex-col gap-2 justify-center border-l-0 md:border-l md:pl-6 border-border/50 mt-4 md:mt-0">
                         <form action={async () => {
                             'use server'
                             await updateGigStatus(gig.id, 'APPROVED')

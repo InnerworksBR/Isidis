@@ -6,6 +6,7 @@ import { LayoutDashboard, Users, Sparkles, DollarSign, LogOut, CheckCircle2, Lif
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { AdminMobileNav } from "@/components/admin-mobile-nav";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -47,7 +48,7 @@ export default async function AdminLayout({
                     </Link>
                     <Link href="/admin/approvals" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all">
                         <CheckCircle2 className="w-5 h-5" />
-                        Aprovações (New)
+                        Solicitação de Onboarding
                     </Link>
                     <Link href="/admin/financials" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl transition-all">
                         <DollarSign className="w-5 h-5" />
@@ -72,7 +73,10 @@ export default async function AdminLayout({
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
                 <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card/30 backdrop-blur-md">
-                    <h1 className="text-lg font-semibold text-foreground">Painel Administrativo</h1>
+                    <div className="flex items-center gap-4">
+                        <AdminMobileNav />
+                        <h1 className="text-lg font-semibold text-foreground hidden md:block">Painel Administrativo</h1>
+                    </div>
                     <div className="flex items-center gap-4">
                         <NotificationsBell currentUserId={user.id} />
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">

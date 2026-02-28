@@ -96,10 +96,10 @@ export default async function Home() {
         <PageContainer>
           <div className="flex flex-wrap items-center justify-around gap-8 md:gap-16 text-center">
             {[
-              { value: stats.totalConsultations > 0 ? `${stats.totalConsultations}+` : '—', label: 'Consultas Realizadas', icon: Zap },
-              { value: stats.satisfactionRate > 0 ? `${stats.satisfactionRate}%` : '—', label: 'Satisfação Garantida', icon: Heart },
-              { value: stats.activeReaders > 0 ? `${stats.activeReaders}+` : '—', label: 'Cartomantes', icon: Users },
-              { value: stats.averageRating > 0 ? `${stats.averageRating}` : '—', label: 'Avaliação Média', icon: Star, fill: true },
+              { value: stats.totalConsultations > 0 ? `${stats.totalConsultations}+` : '0', label: 'Consultas Realizadas', icon: Zap },
+              { value: stats.satisfactionRate > 0 ? `${stats.satisfactionRate}%` : '100%', label: 'Satisfação Garantida', icon: Heart },
+              { value: stats.activeReaders > 0 ? `${stats.activeReaders}+` : '0', label: 'Cartomantes', icon: Users },
+              { value: stats.averageRating > 0 ? `${stats.averageRating}` : '5.0', label: 'Avaliação Média', icon: Star, fill: true },
             ].map((stat, i) => (stat &&
               <div key={stat.label} className="group cursor-default">
                 <div className="flex items-center gap-3 mb-1 justify-center">

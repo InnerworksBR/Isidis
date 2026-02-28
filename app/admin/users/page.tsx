@@ -3,6 +3,9 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Edit } from "lucide-react";
 
 export default async function AdminUsersPage() {
     // We use the admin client to list all users from auth
@@ -41,6 +44,7 @@ export default async function AdminUsersPage() {
                             <TableHead>Role</TableHead>
                             <TableHead>Cadastro</TableHead>
                             <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Ações</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -75,6 +79,13 @@ export default async function AdminUsersPage() {
                                             OK
                                         </Badge>
                                     )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Button variant="ghost" size="icon" asChild>
+                                        <Link href={`/admin/users/${user.id}`}>
+                                            <Edit className="h-4 w-4" />
+                                        </Link>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
